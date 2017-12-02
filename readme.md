@@ -5,7 +5,7 @@
 
 	- flex-grow设置伸长占比、flex-shrink设置收缩占比、flex-basis设置初始大小（可以设置百分比、或长度值、或auto！）
 	- 动画transition设置在:hove中，则只有鼠标触动时有动画效果，离开时没有。因此需要设置在对应的元素样式中！
-	- [1.html]()
+	- [1.html](./code/1.html)
 
 2. 轮播图
 	
