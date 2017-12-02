@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>flex动画
+</title>
+	
+	<style>
+	.wrapper{
+		width:600px;
+		height:200px;
+		margin:30px auto;
+		display:flex;
+		flex-direction:rows;
+	}
+	.wrapper div{
+		width:30px;
+		height:100%;
+		flex: 1 1 auto;
+		transition: width 0.7s ease-out;
+		
+	}
+	.wrapper div:nth-child(1){
+		background:red
+	}
+		.wrapper div:nth-child(2){
+		background:blue;
+	}
+		.wrapper div:nth-child(3){
+		background:green;
+	}
+	.wrapper div:hover{
+		width:400px;
+		
+	}
+
+		
+	</style>
+</head>
+<body>
+	<div class="wrapper">
+		<div></div>
+		<div></div>
+		<div></div>
+	</div>
+</body>
+</html>

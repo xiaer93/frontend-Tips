@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>两栏布局</title>
+	
+	<style>
+	.wrapper{
+		margin:20px 10px;
+	}
+	.wrapper>div{
+		width:100%;
+		height:150px;
+		margin-top:20px;
+		border:1px solid black;
+	}	
+	</style>
+</head>
+<body>
+	<div class="wrapper">
+		<!--float布局-->
+		<div class="layout-float">
+			<style>
+				.layout-float>article{
+					height:auto;
+				}
+				.float-left{
+					float:left;
+					width:200px;
+					background:red;
+				}
+				.float-right{
+					margin-left:200px;
+					background:blue;
+				}
+			</style>
+			<article class="float-left">
+				<p>这是左边</p>
+			</article>
+			<article class="float-right">
+				<p>这是右边</p>
+				<p>float布局</p>
+			</article>
+		</div>
+		<!--margin和position布局-->
+		<div class="layout-position-margin">
+			<style>
+				.layout-position-margin{
+					position:relative;
+				}
+				.layout-position-margin>article{
+					height:auto;
+				}
+				.position-margin-left{
+					position:absolute;
+					left:0;
+					top:0;
+					width:200px;
+					background:red;
+				}
+				.position-margin-right{
+					margin-left:200px;
+					background:blue;
+				}
+			</style>
+			<article class="position-margin-left">
+				<p>这是左边</p>
+			</article>
+			<article class="position-margin-right">
+				<p>这是右边</p>
+				<p>position和margin布局</p>
+			</article>
+		</div>
+		<!--float加负margin布局-->
+		<div class="layout-float-margin">
+			<style>
+				.layout-float-margin>article{
+					height:auto;
+					float:left;
+				}
+				.margin-left{
+					width:200px;
+					background:red;
+					margin-left:-100%;
+					/*此刻可以使用position：relative或者在marginright中嵌套子元素实现分栏*/
+				}
+				.margin-right{
+					box-sizing:border-box;
+					padding-left:200px;
+					width:100%;
+					background:blue;
+				}
+			</style>
+			<article class="margin-right">
+				<p>这是右边</p>
+				<p>负margin布局</p>
+			</article>
+			<article class="margin-left">
+				<p>这是左边</p>
+			</article>
+		</div>
+		<!--inline-block布局-->
+		<div class="layout-inline">
+			<style>
+				.layout-inline{
+					font-size:0;
+				}
+				.layout-inline>article{
+					height:auto;
+					display:inline-block;
+					font-size:16px;
+				}
+				.inline-left{
+					width:200px;
+					background:red;
+				}
+				.inline-right{
+					width:calc(100% - 200px);
+					background:blue;
+				}
+			</style>
+			<article class="inline-left">
+				<p>这是左边</p>
+			</article>
+			<article class="inline-right">
+				<p>这是右边</p>
+				<p>inline-block布局</p>
+			</article>
+		</div>
+		<!--table布局-->
+		<div class="layout-table">
+			<style>
+				.layout-table{
+					display:table;
+				}
+				.layout-table>article{
+					display:table-cell;
+				}
+				.table-left{
+					width:200px;
+					min-width:200px;
+					background:red;
+				}
+				.table-right{
+					background:blue;
+				}
+			</style>
+			<article class="table-left">
+				<p>这是左边</p>
+			</article>
+			<article class="table-right">
+				<p>这是右边</p>
+				<p>table布局</p>
+			</article>
+		</div>
+		<!--flex布局-->
+		<div class="layout-flex">
+			<style>
+				.layout-flex{
+					display:flex;
+					flex-direction:rows;
+				}
+				.layout-flex>article{
+					
+				}
+				.flex-left{
+					width:200px;
+					flex:0 0 auto;
+					background:red;
+				}
+				.flex-right{
+					flex:1 1 auto;
+					background:blue;
+				}
+			</style>
+			<article class="flex-left">
+				<p>这是左边</p>
+			</article>
+			<article class="flex-right">
+				<p>这是右边</p>
+				<p>flex布局</p>
+			</article>
+		</div>
+		<!--grid布局-->
+		<div class="layout-grid">
+			<style>
+				.layout-grid{
+					display:grid;
+					 grid-template-columns:200px 1fr;
+				}
+				.layout-flex>article{
+					
+				}
+				.grid-left{
+					grid-column:1;
+					background:red;
+				}
+				.grid-right{
+					grid-column:2;
+					background:blue;
+				}
+			</style>
+			<article class="grid-left">
+				<p>这是左边</p>
+			</article>
+			<article class="grid-right">
+				<p>这是右边</p>
+				<p>grid布局</p>
+			</article>
+		</div>
+		<!--position布局-->
+		<div class="layout-position">
+			<style>
+				.layout-position{
+					position:relative;
+				}
+				.layout-position>article{
+					
+				}
+				.position-left{
+					width:200px;
+					background:red;
+				}
+				.position-right{
+				/*必须同时设置left和right，否则长度自适应了！！*/
+					position:absolute;
+					left:200px;
+					top:0;
+					bottom:0;
+					right:0;
+					background:blue;
+				}
+			</style>
+			<article class="position-left">
+				<p>这是左边</p>
+			</article>
+			<article class="position-right">
+				<p>这是右边</p>
+				<p>position布局</p>
+			</article>
+		</div>
+	</div>
+</body>
+</html>
