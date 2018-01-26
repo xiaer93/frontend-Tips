@@ -1,0 +1,222 @@
+/*清除样式*/
+html,body,div,ul,ol,li{
+    margin:0;
+    padding:0;
+}
+table{
+    list-style: none;
+}
+/*wrapper布局*/
+body{
+    min-width: 720px;
+    font-size: 66.7%;
+    background-color: #232323;
+}
+.wrapper{
+    margin: 0 20px;
+    background-color: #dedede;
+}
+article{
+    margin: 20px;
+}
+article p{
+    font-size: 1.57em;
+    line-height: 1.5em;
+    text-indent: 2em;
+    letter-spacing: 2px;
+}
+.content img{
+    height: 150px;
+}
+
+
+/*头部布局*/
+.header{
+    overflow: hidden;/*清除浮动，避免坍塌；但是如果子浮动元素有阴影，会看不见！*/
+    width:100%;
+    height: 60px;
+    background-color: #888888;
+}
+.headerLogo{
+    float: left;
+    padding:10px 0 10px 40px;
+}
+.header img{
+    height: 40px;
+    vertical-align: middle;
+}
+.headerMenu{
+    text-align: right;
+    margin: 16px 15px 0 0;
+    font-size: 1.6em;
+}
+
+.headerMenu li{
+    display: inline-block;
+    padding:4px 8px;
+    color: white;
+    text-align: center;
+    cursor: pointer;
+}
+/*文章主体*/
+/*第一部分*/
+.container{
+    width: 100%;
+    background-color: rgb(222,222,222);
+}
+.content{
+    margin: 20px;
+    background: white;
+    box-shadow: 1px 1px 5px gray;
+    overflow: hidden;
+}
+.content h1{
+    font-size: 1.8em;
+}
+.content h2{
+    font-size: 1.6em;
+    color: rgb(101,110,117);
+    font-weight: normal;
+}
+.content address{
+    font-size: 1.5em;
+    color: rgb(101,110,117);
+    font-weight: normal;
+}
+/*第二部分*/
+.anotherMenu ol{
+    list-style:none;
+    font-size: 1.6em;
+}
+/*第三部分*/
+.pictureBox{
+    margin: 20px;
+}
+.pictureBox figure{
+    padding: 20px;
+    margin: 20px 0;
+    width: 400px;
+    border: solid 1px gray;
+}
+.pictureBox figcaption{
+    padding-bottom: 10px;
+    text-align: center;
+    font-size: 1.6em;
+
+}
+.pictureBox img{
+    display: block;
+    width: 400px;
+}
+/*第三部分*/
+.orderRank ol{
+    list-style-type: decimal;
+    list-style-position: inside;
+}
+.table{
+    width: 100%;
+}
+.table h3{
+    font-size: 1.5em;
+}
+.table table{
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 1.4em;
+}
+.table table thead{
+    color: white;
+    background-color: rgb(51,51,51);
+}
+.table table tfoot{
+    background-color: rgb(204,204,204);
+}
+.table table td{
+    padding: 2px 3px;
+    border: solid 1px rgb(204,204,204);
+}
+/*第四部分*/
+.sideNav{
+    margin: 20px;
+}
+.sideTitle{
+    margin-left: 20px;
+    height: 45px;
+    border-left: 2px solid rgb(202,202,202);
+}
+.sideTitle h2{
+    line-height: 45px;
+    margin-left: 5px;
+}
+.sideNav form{
+    width:100%;
+    font-size: 1.5em;
+}
+.register{
+    width: 500px;
+    margin:0 auto;
+}
+.sideNav label{
+    float: left;
+    width: 120px;
+    height: 30px;
+    line-height: 30px;
+    text-align: right;
+    margin-right: 8px;
+}
+.registerHeader{
+    width: 350px;
+}
+.registerHeader input{
+    height: 20px;
+    padding: 5px;
+    width: 200px;
+}
+.registerHeader p{
+    margin-left: 125px;
+    color: #888888;
+}
+/*单选框复选框、还有多行文本域*/
+.registerBody{
+    overflow: hidden;
+}
+.registerBody div{
+    height: 30px;
+}
+.registerBody .noFloat{
+    float: none;
+}
+.registerBody select{
+    height: 30px;
+}
+.registerBody input{
+    vertical-align: middle;
+    margin-bottom: 7px;
+}.registerBody .noHeight{
+     height:auto;
+ }
+ /*提交按钮*/
+.registerButton input{
+    width: 100%;
+    padding: 5px 0;
+    color: white;
+    font-size: 20px;
+    background-color: rgb(51,85,208);
+    border-radius: 10px;
+    outline: none;
+    box-shadow: none;
+}
+
+/*footer部分*/
+.footer{
+    width: 100%;
+    height: 70px;
+    background-color: black;
+}
+.footer .copyright{
+    text-align: center;
+    line-height: 70px;
+    font-size: 1.4em;
+    color: white;
+}

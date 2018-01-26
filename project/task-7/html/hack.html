@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.js"></script>
+    <<script>
+        $(document).ready(function ($) {
+            // language=JQuery-CSS
+            $(".autoImg_word ul").bind("click",function (event) {
+                    var id = event.target.id;
+                    var word = $(".word_content>div");
+                    switch (id) {
+                        case "one":
+                            word.each(function () {
+                                $(this).css("display", "none");
+                            });
+                            $(word[0]).css("display", "block");
+                            $(".autoImg_word ul li:gt(0)").css("backgroundColor","transparent");
+                            $(".autoImg_word ul li:eq(0)").css("backgroundColor","crimson");
+                            break;
+                        case "two":
+                            word.each(function () {
+                                $(this).css("display", "none")
+                            });
+                            $(word[1]).css("display", "block");
+                            $(".autoImg_word ul li:eq(0)").css("backgroundColor","transparent");
+                            $(".autoImg_word ul li:eq(2)").css("backgroundColor","transparent");
+                            $(".autoImg_word ul li:eq(1)").css("backgroundColor","crimson");
+                            break;
+                        case "three":
+                            word.each(function () {
+                                $(this).css("display", "none")
+                            });
+                            $(word[2]).css("display", "block");
+                            $(".autoImg_word ul li:lt(2)").css("backgroundColor","transparent");
+                            $(".autoImg_word ul li:eq(2)").css("backgroundColor","crimson");
+                            break;
+                    }});
+            bindSelect("country");
+            bindSelect("province");
+            bindSelect("city");
+
+        });
+
+        function bindSelect(selectId) {
+            var selectId="#"+selectId;
+            /*判断单击对象的属性，如果为select多选项，则下拉选项框！*/
+            $(selectId).bind("click",function (event) {
+                if(event.target.id===this.id){
+                    $("ul",this).slideDown("normal");
+                }else {
+                    $(".select ul").slideUp("normal");
+                }
+                /*如果单击选项，则显示消息*/
+                if($("ul",this).css("display")==="block"){
+                    var target=event.target;
+                    if($("ul",this).has(target).length>0){
+                        console.log(target);
+                        $(this).find("span").text($(target).text());
+                        $(this).find("li").removeClass("select_li_choice");
+                        $(target).addClass("select_li_choice");
+                    }
+                }
+                /*停止冒泡，避免无限循环*/
+                event.stopPropagation();
+            });
+            /*如果document被单击，则触发selectbox事件*/
+            $(document.body).bind("click",function (event) {
+                $(selectId).trigger(event);
+            });
+        }
+    </script>
+    <style>
+        /*通用代码*/
+        body,ul{
+            margin: 0;
+            padding: 0;
+            background-color: #eeeeee;
+        }
+        a{
+            text-decoration: none;
+        }
+
+        .wrapper{
+            margin: 0 auto;
+            width: 1080px;
+        }
+        .container{
+            min-width: 800px;
+            width: 100%;
+            background-color: white;
+        }
+        /*实现图片随浏览器缩放，而文字内容时钟居中的两栏布局*/
+        .autoImg{
+            width: 100%;
+            font-size: 0;
+        }
+        .autoImg_img{
+            display: inline-block;
+            width: 65%;
+        }
+        .autoImg_word{
+            display: inline-block;
+            overflow: hidden;
+            width: 35%;
+            position: relative;
+            font-size: 14px;
+        }
+        .autoImg_img img{
+            width: 100%;
+        }
+        .autoImg_word img{
+            width: 185.7%;
+        }
+        .word_content{
+            position: absolute;
+            top:50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+
+            text-align: center;
+            font-size: 14px;
+            font-family: "Microsoft YaHei", "sans-serif";
+            color: rgb(170,170,170);
+        }
+        .word_content h3{
+            font-size: 16px;
+        }
+        .word_content p{
+            color: rgb(170,170,170);
+            text-align: left;
+            line-height: 26px;
+        }
+        .word_content a{
+            display: inline-block;
+            margin-top: 20px;
+            border: solid 1px gray;
+            background-color: white;
+            padding: 4px 10px;
+        }
+
+        .autoImg_word ul{
+            list-style: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .autoImg_word ul li{
+            width: 10px;
+            height: 10px;
+            border: 1px solid crimson;
+            border-radius: 10px;
+
+            float: left;
+            margin-left: 10px;
+
+            cursor: pointer;
+        }
+        .autoImg_word ul li:first-child{
+            margin-left: 0;
+            background-color: crimson;
+        }
+
+        /*使用列表排列图片*/
+        .lineRows{
+            width: 100%;
+            text-align: center;
+        }
+        .lineRows ul{
+            display: inline-block;
+            width: 100%;
+            font-size: 0;
+            list-style: none;
+        }
+        .lineRows ul li{
+            display: inline-block;
+            width: 25%;
+            height: 200px;
+            font-size: 14px;
+        }
+        .lineRows ul li figure{
+            position: relative;
+            margin: 0;
+            text-align: center;
+        }
+        .lineRows ul li figcaption{
+            display: inline-block;
+            padding: 0 50px;
+            border-left: 2px solid sienna;
+        }
+        .lineRows ul li:first-child figcaption{
+            border-left: none;
+        }
+        .lineRows ul li div{
+            width: 43px;
+            height: 43px;
+            background: url("../rec/mission7_sprit.png") no-repeat;
+
+            display: inline-block;
+            margin: 50px;
+        }
+        .lineRows ul li:nth-child(2) div{
+            background-position: -43px 0;
+        }
+        .lineRows ul li:nth-child(3) div{
+            background-position: -86px 0;
+        }
+        .lineRows ul li:nth-child(4) div{
+            background-position: -129px 0;
+        }
+
+        /*自定义选择框*/
+        .selectBox{
+            width: 100%;
+            height: 340px;
+            margin-top: 50px;
+
+            background: url("../rec/mission7_city.jpg") no-repeat;
+            -webkit-background-size: cover;
+            background-size: cover;
+
+            overflow: hidden;
+
+        }
+        .selectBox>ul{
+            width: 100%;
+            list-style: none;
+            text-align: center;
+            margin-top: 170px;
+            background-color: transparent;
+        }
+        .selectBox>ul li{
+            display: inline-block;
+        }
+        .select{
+            width: 270px;
+            height: 36px;
+            line-height: 36px;
+            border: 1px solid sienna;
+            background-color: #eeeeee;
+
+            display: inline-block;
+            margin-left: 30px;
+            text-align: left;
+
+            cursor: pointer;
+            position: relative;
+
+        }
+        .selectBox ul li:first-child div{
+            margin-left: 0;
+        }
+        .select span{
+            margin-left: 8px;
+        }
+        .iconEmail{
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background: url("../rec/mission7_sprit.png") no-repeat -146px -157px;
+            position: absolute;
+            right:8px;
+            top:50%;
+            margin-top: -9px;
+        }
+        .select ul{
+            width: 100%;
+            border: 1px solid sienna;
+            border-top-color: transparent;
+            background-color: #eeeeee;
+            position: absolute;
+            left: -1px;
+            top: 36px;
+
+            display: none;
+        }
+        .select ul li{
+            box-sizing: border-box;
+            width: 100%;
+            height: 36px;
+            text-align: left;
+            padding-left: 30px;
+
+            position: relative;
+        }
+        .select ul li i{
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background: url("../rec/mission7_sprit.png") no-repeat -147px -157px;
+
+            position: absolute;
+            left:3px;
+            top:50%;
+            margin-top: -9px;
+
+            opacity: 0;
+        }
+
+        .select ul li:hover{
+            background-color: #BF4F49;
+            background-image: url("../rec/mainbody3-select-li.png");
+            background-repeat: no-repeat;
+            background-position: 5px center ;
+        }
+        .select_li_choice{
+            background-color: #BF4F49;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="container">
+            <div class="autoImg">
+                <div class="autoImg_img">
+                    <img src="../rec/mission7_newWorld.jpg" alt="">
+                </div>
+                <div class="autoImg_word">
+                    <img src="../rec/newWorldbg.png" alt="">
+                    <div class="word_content">
+                        <div id="word1">
+                            <h3>居中文字的标题1</h3>
+                            <p>居中文字的正文内容居中文字的正文内容居中文字的正文内容居中文字的正文内容居中文字的正文内容居中文字的正文内容</p>
+                            <a href="">更多故事</a>
+                        </div>
+                        <div style="display: none;">
+                            <h3>居中文字的标题2</h3>
+                            <p>居中文字的正文内容居中文字的正文内容居中文字的正文内容居中文字的正文内容居中文字的正文内容居中文字的正文内容</p>
+                            <a href="">更多故事</a>
+                        </div>
+                        <div style="display: none;">
+                            <h3>居中文字的标题3</h3>
+                            <p>居中文字的正文内容居中文字的正文内容居中文字的正文内容居中文字的正文内容居中文字的正文内容居中文字的正文内容</p>
+                            <a href="">更多故事</a>
+                        </div>
+                        <ul>
+                            <li id="one"></li>
+                            <li id="two"></li>
+                            <li id="three"></li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+            <div class="lineRows">
+                <ul>
+                    <li>
+                        <figure><div></div>
+                            <figcaption>打造全新世界，让你更爱你的生活</figcaption>
+                        </figure>
+                    </li>
+                    <li>
+                        <figure><div></div>
+                            <figcaption>丰富有趣的公益活动，发挥新世界的主人翁意识</figcaption>
+                        </figure>
+                    </li>
+                    <li>
+                        <figure><div></div>
+                            <figcaption>时尚的新理念，超前体验未知的生活</figcaption>
+                        </figure>
+                    </li>
+                    <li>
+                        <figure><div></div>
+                            <figcaption>完善的培养机制，培养你全新的世界观</figcaption>
+                        </figure>
+                    </li>
+
+
+
+
+                </ul>
+            </div>
+            <div class="selectBox">
+                <ul>
+                    <li>
+                        <div class="select" id="country">
+                            <i class="iconEmail"></i>
+                            <span>国家</span>
+                            <ul>
+                                <li id="china"><i></i>中国</li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="select" id="province">
+                            <span>省份</span>
+                            <i class="iconEmail"></i>
+                            <ul>
+                                <li><i></i>湖北</li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="select" id="city">
+                            <span>城市</span>
+                            <i class="iconEmail"></i>
+                            <ul>
+                                <li><i></i>武汉1</li>
+                                <li><i></i>武汉2</li>
+                                <li><i></i>武汉3</li>
+                                <li><i></i>武汉4</li>
+                                <li><i></i>武汉5</li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

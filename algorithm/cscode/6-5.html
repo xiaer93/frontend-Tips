@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>竖直三栏布局flex</title>
+	
+	<style>
+	html,body{
+		height:100%;
+		margin:0;
+	}
+	.wrapper{
+		width:600px;
+		height:100%;
+		margin:0 auto;
+		position:relative;/*形成定位包含块！*/
+	}
+	.top,.bottom,.center{
+		position:absolute;
+	}
+	.top,.bottom{
+		width:100%;
+		height:100px;
+		background:red;
+	}
+	.top{
+		top:0;
+	}
+	.bottom{
+		bottom:0;
+	}
+	.center{
+		width:100%;
+		top:100px;
+		bottom:100px;
+		background:yellow;
+	}
+
+
+		
+	</style>
+</head>
+<body>
+	<div class="wrapper">
+		<div class="top"></div>
+		<div class="center">
+			这里是中间部分，可上下伸缩！</br>
+			position：absolute布局！
+		</div>
+		<div class="bottom"></div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no">
+    <title>网格布局</title>
+
+    <style>
+        /*清除样式*/
+        body,html{
+            margin: 0;
+            padding:0;
+        }
+
+        /*设置布局*/
+        .wrapper,.container{
+            width: 100%;
+        }
+        .container{
+            box-sizing: border-box;
+            font-size: 0;
+            padding-left:20px;
+        }
+        .col{
+            display: inline-block;
+            box-sizing: border-box;
+            margin: 20px 20px 0 0;
+            height: 50px;
+            border: 1px solid #999;
+        }
+
+        .row div{
+
+        }
+        .row div:first-child{
+
+        }
+
+        @media screen and (min-width: 768px){
+            .cols-md-1{
+                width: calc(8.33% - 20px);
+            }
+            .cols-md-2{
+                width: calc(16.66% - 20px);
+            }
+            .cols-md-3{
+                width: calc(25.00% - 20px);
+            }
+            .cols-md-4{
+                width: calc(33.33% - 20px);
+            }
+            .cols-md-6{
+                width: calc(50.00% - 20px);
+            }
+        }
+        @media screen and (max-width: 768px){
+
+            .cols-sm-2{
+                width: calc(16.66% - 20px);
+            }
+            .cols-sm-3{
+                width: calc(25.00% - 20px);
+            }
+            .cols-sm-6{
+                width: calc(50% - 20px);
+            }
+            .cols-sm-8{
+                width: calc(66.66% - 20px);
+            }
+            .cols-sm-12{
+                width: calc(100% - 20px);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="container">
+            <div class="row">
+                <div class="col cols-md-4 cols-sm-6"></div>
+                <div class="col cols-md-4 cols-sm-6"></div>
+                <div class="col cols-md-4 cols-sm-12"></div>
+            </div>
+            <div class="row">
+                <div class="col cols-md-3 cols-sm-3"></div>
+                <div class="col cols-md-6 cols-sm-6"></div>
+                <div class="col cols-md-3 cols-sm-3"></div>
+            </div>
+            <div class="row">
+                <div class="col cols-md-1 cols-sm-2"></div>
+                <div class="col cols-md-1 cols-sm-2"></div>
+                <div class="col cols-md-2 cols-sm-8"></div>
+                <div class="col cols-md-2 cols-sm-3"></div>
+                <div class="col cols-md-6 cols-sm-3"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

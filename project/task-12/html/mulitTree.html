@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>多叉树</title>
+    <script type="text/javascript" src="../js/jquery.js"></script>
+
+    <script>
+
+        /*多叉树*/
+        function MulitTreeNode(data) {
+            this.data=data;
+            this.parent=null;
+            this.childTree=[];
+        }
+        function MulitTree(data) {
+            var node=new MulitTreeNode(data)
+            this._root=node;/*创建根节点*/
+        }
+        MulitTree.prototype.traverseDF=function (callback) {
+            (function recurse(node) {
+                if(node!==null){
+                    callback(node);
+                    for(var i=0;i<node.childTree.length;++i){
+                        recurse(node.childTree[i]);
+                    }
+                }
+            })(this._root);
+        };
+        /*深度遍历非递归版本*/
+        MulitTree.prototype.traverseDFStack=function (callback) {
+            var stack=[];
+            (function (node) {
+              stack.push(node);
+              while (stack.length>0){
+                  var tmp=stack.pop();
+                  callback(tmp);
+                  for(var i=0;i<tmp.childTree.length;++i){
+                      stack.push(tmp.childTree[i]);
+                  }
+              }
+          })(this._root);
+        };
+        /*广度遍历*/
+        MulitTree.prototype.traverseBF=function (callback) {
+            var queue=[];
+            (function (node) {
+                queue.push(node);
+                while (queue.length>0){
+                    var tmp=queue.shift();
+                    for(var i=0;i<tmp.childTree.length;++i){
+                        queue.push(tmp.childTree[i]);
+                    }
+                    callback(tmp);
+                }
+            })(this._root);
+        };
+        /*绑定回调函数，callback为回调函数，traversal为遍历方法.this指向的执行环境为调用该方法的对象！*/
+        MulitTree.prototype.contains=function (callback,traversal) {
+            traversal.call(this,callback);
+        };
+        /*添加元素*/
+        MulitTree.prototype.add=function (data,toData,traversal) {
+            var child=new MulitTreeNode(data),
+                parent=null,
+                callback=function (node) {
+                    if(node.data===toData)
+                        parent=node;
+                };
+            console.log("add",this);
+            this.contains(callback,traversal);
+            if(parent){
+                parent.childTree.push(child);
+                child.parent=parent;
+            }else{
+                throw new Error("找不到父元素，无法添加数据！")
+            }
+        };
+        /*删除元素*/
+        MulitTree.prototype.remove=function (data,fromdata,traversal) {
+            var tree=this,
+                parent=null,
+                childToRemove=null,
+                index;
+            var callback=function (node) {
+                if(node.data===fromdata){
+                    parent=node;
+                }
+            };
+            this.contains(callback,traversal);
+            console.log("remove",this);
+            if(parent){
+                index=findIndex(parent.childTree,data);
+                if(index===undefined){
+                    throw new Error("找不到被删除的数据!");
+                }else{
+                    childToRemove=parent.childTree.splice(index,1);
+                }
+            }else{
+                throw new Error("找不到父元素！");
+            }
+            return childToRemove;
+        };
+        /*返回索引*/
+        function findIndex(arr, data) {
+            var index;
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i].data === data) {
+                    index = i;
+                }
+            }
+            return index;
+        }
+
+
+        /*1.读取json数据，以下面数据为例*/
+        var treeNodes = [
+            {
+                id: 1,
+                name: '1',
+                children: [
+                    {
+                        id: 11,
+                        name: '11',
+                        children: [
+                            {
+                                id: 111,
+                                name: '111',
+                                children:[]
+                            },
+                            {
+                                id: 112,
+                                name: '112'
+                            }
+                        ]
+                    },
+                    {
+                        id: 12,
+                        name: '12',
+                        children: []
+                    }
+                ],
+                users: []
+            },
+            {
+                id: 2,
+                name: '2',
+                children: [
+                    {
+                        id: 22,
+                        name: '22',
+                        children: []
+                    }
+                ]
+            }
+        ];
+        /*json转多叉树*/
+        function JsontoTree() {
+            var tree=new MulitTree("root");
+
+            var stack=[];
+            for (var i=0;i<treeNodes.length;++i){
+                stack.push(treeNodes[i]);
+                treeNodes[i].parent="root";
+
+                while (stack.length>0){
+                    var tmp=stack.pop();
+                    tree.add(tmp.id,tmp.parent,tree.traverseDFStack);
+                    if(tmp.children !== undefined){
+                        for(var j=0;j<tmp.children.length;++j){
+                            tmp.children[j].parent=tmp.id;
+                            stack.push(tmp.children[j]);
+                        }
+                    }
+                }
+            }
+            return tree;
+        }
+        /*多叉树转json*/
+        function TreetoJson() {
+            var tree=JsontoTree();
+            var root={};
+            /*读取树，并建立对象，父节点名为键名称，值为子节点数组*/
+            tree.traverseDF(function (node) {
+                if (node.parent!==null){
+                    if(typeof root[node.parent.data] === "undefined"){
+                        root[node.parent.data]=[];
+                    }
+                    var obj={};
+                    obj.id=node.data;
+                    obj.children=[];
+                    root[node.parent.data].push(obj);
+                }
+            });
+            /*遍历root对象，遍历root对象中的值，并把对象的值所指引的对象添加进子元素数组！*/
+            function collaspeArray() {
+                var ret=jQuery.extend({},root);
+                for(var i in ret){/*一般自定义对象没有length属性*/
+                    var tmp=ret[i];
+                    for(var j=0;j<ret[i].length;++j){
+                        if(typeof ret[tmp[j].id] !== "undefined"){
+                            if(tmp[j].children.length>0)
+                                tmp[j].children.push(ret[tmp[j].id]);
+                            else
+                                tmp[j].children=ret[tmp[j].id];
+                        }
+                    }
+                }
+                return ret;
+            }
+            return(collaspeArray());
+        }
+        /*2.读取json数据，以下面数据为例*/
+
+
+        /*创建dom模型，延时多叉树结构*/
+        /*算法和逻辑分离*/
+        function TreeDom(selector) {
+            this.tree=new MulitTree(selector);
+
+            this.tree.add("好好学习",".container",this.tree.traverseDF);
+            this.tree.add("天天向上",".container",this.tree.traverseDF);
+            this.tree.add("加油加油",".container",this.tree.traverseDF);
+            this.tree.add("javascript","好好学习",this.tree.traverseDF);
+            this.tree.add("css","好好学习",this.tree.traverseDF);
+            this.tree.add("html","好好学习",this.tree.traverseDF);
+            this.tree.add("学霸","加油加油",this.tree.traverseDF);
+            this.tree.add("起飞吧","加油加油",this.tree.traverseDF);
+
+            /*树和dom相互转换*/
+            this.DomToTree=function () {
+                this.tree=new MulitTree(selector);
+                var queue=[];
+                var tmp=$(">div",selector);/*根节点.selector没有父节点，所以创建树后从他的子节点开始搜索！*/
+                if(tmp.children("div").length>0){
+                    for(var i=0;i<tmp.children("div").length;++i){
+                        tmp.children("div").data("parent",tmp);/*给所有元素绑定父元素，在添加树的节点时，可以通过data找到父元素！*/
+                        queue.push(tmp.children("div")[i]);/*将子元素放入队列中*/
+                    }
+
+                    while (queue.length>0){
+                        var tmp=queue.shift();
+                        var child=$(tmp).children("div");
+                        if(child.length>0){
+                            child.data("parent",tmp);
+                            for(var i=0;i<child.length;++i){
+                                queue.push(child[i])
+                            }
+                        }
+                        this.tree.add($(tmp).children("span").text(),$($(tmp).data("parent")).children("span").text(),this.tree.traverseDF);
+                    }
+                }
+
+
+            };
+            this.TreeToDom=function () {
+                var dom=(function recurse(node) {
+                    if(node!==null){
+                        var div=$("<div><span>"+node.data+"</span></div>");
+                        for(var i=0;i<node.childTree.length;++i){
+                            var tmp=recurse(node.childTree[i]);
+                            div.append(tmp);
+                        }
+                        return div;
+                    }
+                })(this.tree._root);
+                $(selector).html(dom);
+            };
+
+            /*插入元素*/
+            this.insert=function (data,todata) {
+                this.tree.add(data,todata,this.tree.traverseDF);
+                this.TreeToDom();
+            };
+            /*删除*/
+            this.delete=function (data,fromdata) {
+                this.tree.remove(data,fromdata,this.tree.traverseDF)
+                this.TreeToDom();
+            };
+
+            /*广度遍历*/
+            this.bfs=function (callback) {
+                var queue=[];
+                var tmp=$(">div",selector);
+                queue.push(tmp);
+
+                var stop=setTimeout(function () {
+                    if(queue.length>0){
+                        var tmp=queue.shift();
+                        var child=$(tmp).children("div");
+                        if(child.length>0){
+                            child.data("parent",tmp);
+                            for(var i=0;i<child.length;++i){
+                                queue.push(child[i])
+                            }
+                        }
+                        $(".container div").css("backgroundColor","white");
+                        $(tmp).css("backgroundColor","yellow");
+                        if(typeof callback === "function"){
+                            if(callback(tmp,stop)===true)
+                                return;
+                        }
+                       stop=setTimeout(arguments.callee,500);
+                    }
+                },0);
+            };
+            /*深度遍历*/
+            this.dfs=function (callback) {
+                var stack=[];
+                var tmp=$(">div",selector);
+                stack.push(tmp);
+
+                var stop=setTimeout(function (callback) {
+                    if(stack.length>0){
+                        var tmp=stack.pop();
+                        var child=$(tmp).children("div");
+                        if(child.length>0){
+                            for(var i=0;i<child.length;++i){
+                                stack.push(child[i])
+                            }
+                        }
+                        $(".container div").css("backgroundColor","white");
+                        $(tmp).css("backgroundColor","yellow");
+                        if(typeof callback === "function"){
+                            if(callback(tmp,stop)===true)/*找到数据则返回true*/
+                                return;
+                        }
+                       stop=setTimeout(arguments.callee,500);
+                    }
+                },0);
+                };
+            /*查找*/
+            this.find=function(data,selectFunc){
+                selectFunc(function (tmp,stop) {
+                    if($(tmp).children("span").text()===data){
+                        $(tmp).css("backgroundColor","red");
+                        clearTimeout(stop);
+                        return true;
+                    }
+                })
+            }
+
+
+        }
+
+
+
+        $(document).ready(function ($) {
+            var tree=new TreeDom(".container");
+            tree.TreeToDom();
+
+            /*单击选中的元素*/
+            var selectDiv=undefined;
+            $(".addNodes").click(function (event) {
+                var data=$("input[type='text'").val();
+
+                var selectFunc;
+                switch ($("input[name='order']:checked").val()){
+                    case "dforder":
+                        selectFunc=tree.dfs;
+                        break;
+                    case "bforder":
+                        selectFunc=tree.bfs;
+                        break;
+                }
+
+                switch (event.target.name){
+                    case "insert":
+                        tree.insert(data,$(selectDiv).children("span").text());
+                        break;
+                    case "delete":
+                        tree.delete($(selectDiv).children("span").text(),$(selectDiv).prevAll("span").text());
+                        break;
+                    case "find":
+                       tree.find(data,selectFunc);
+                        break;
+                    case "start":
+                        selectFunc();
+                        break;
+                }
+            });
+
+            $(".container").click(function (event) {
+                var target=event.target;
+                $(".container div").css("backgroundColor","white");
+                if(target.tagName.toLowerCase()==="span"){
+                    target=$(target).parent()[0];
+                }
+                $(target).css("backgroundColor","yellow");
+                selectDiv=target;
+            })
+        })
+
+
+    </script>
+
+    <style>
+        html{
+            width:100%;
+            height: 100%;
+        }
+        body{
+            width: 100%;
+            height: 100%;
+        }
+        .wrapper{
+            display: flex;
+            width: 95%;
+            height: 95%;
+            margin: auto;
+            flex-direction: column;
+        }
+        .control{
+
+        }
+        .container{
+            flex: 1;
+        }
+        .container div{
+            display: flex;
+            align-items: stretch;
+            position: relative;
+            box-sizing: border-box;
+            width: 100%;
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid black;
+            cursor: pointer;
+        }
+        .container span{
+            position: absolute;
+            background-color: red;
+            left: 0;
+            top: 0;
+        }
+
+        .sortFunc p{
+            display: inline-block;
+            cursor: pointer;
+        }
+
+    </style>
+
+</head>
+<body>
+<div class="wrapper">
+    <div class="control">
+        <form class="addNodes">
+            <div>
+                <input type="text" pattern="[\w]+" value="20" placeholder="请输入字符插入">
+                <input type="button" value="插入" name="insert">
+                <input type="button" value="删除" name="delete">
+                <input type="button" value="查找" name="find">
+                <input type="button" value="动画" name="start">
+            </div>
+
+            <div class="sortFunc">
+                <p><input type="radio" value="bforder" name="order" checked="checked"><label for="">广度遍历</label></p>
+                <p><input type="radio" value="dforder" name="order"><label for="">深度遍历</label></p>
+            </div>
+        </form>
+    </div>
+    <div class="container">
+        <div>
+            <span>.container</span>
+        </div>
+    </div>
+</div>
+</body>
+</html>

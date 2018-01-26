@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.js"></script>
+    <title>表单验证(使用html5新特性)</title>
+    <style>
+        body{
+
+        }
+       div{
+		width:250px;
+		height:42px;
+		float:left;
+	   }
+	   span{
+		vertical-align:middle;
+	   }
+
+    </style>
+</head>
+<body>
+	<div>
+		<span>sdaf</span>
+	</div>
+
+<script>
+    $(document).ready(function ($) {
+
+    });
+
+    /*此无效函数为什么不能在$(document)中运行，函数运行环境！*/
+    var input=document.getElementById("pwd");
+    input.oninvalid=function (event) {
+        event.target.setCustomValidity('密码只能为数字！');
+    };
+
+    /*表单控件事件*/
+    /*
+    * oninput，在对象value值发生发生改变时奏效
+    * onchange，失去焦点，对于input时，只有当文本内容改变时才触发！
+    *
+    * 表单控件的方法
+    * input.checkValidity()，用于检测表单控件的值是否有效！
+    * */
+</script>
+</body>
+</html>

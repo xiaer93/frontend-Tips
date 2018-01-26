@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>BFC综合分析</title>
+	<meta name="viewpoart" content="width=device-width"/>
+	
+	<style>
+
+	.wrapper{
+		width:600px;
+		margin:0 auto;
+	}
+	.wrapper>article{
+		border:1px solid black;
+		margin:20px 0;
+	}
+	/*1*/
+	.margin_10{
+		margin:10px 0;
+		background:red;
+	}
+	.wrap{
+		overflow:hidden;
+	}
+	/*2*/
+	.float-left{
+		float:left;
+		width:100px;
+		height:80px;
+		background:red;
+	}
+	.bfc{
+		height:100px;
+		overflow:hidden;
+		background:yellow;
+	}
+	
+	/*3*/
+	.clearFloat{
+		overflow:hidden;
+		padding:10px;/*外层如果不是bfc，会发生高度坍塌，设置padding仅仅为了好看！*/
+		background:yellow;
+	}
+	/*4*/
+	.contain{
+		font-size:25px;
+		overflow:hidden;
+		background:red;
+	}
+	</style>
+</head>
+<body>
+	<div class="wrapper">
+		<!--bfc内部box外边距发生重叠-->
+		<article id="one">
+			<div class="margin_10">
+				第一个box，上下margin，10px
+			</div>
+			<div class="wrap">
+				<div class="margin_10">
+					第二个box，上下margin，10px</br>
+					规则：bfc内相邻box外边距叠加！
+				</div>
+			</div>
+		</article>
+		<!--bfc不与浮动重叠-->
+		<article id="two">
+			<div class="float-left">
+				这是浮动元素
+			</div>
+			<div class="bfc">
+				这是bfc，块级上下文！</br>
+				规则：bfc不与浮动元算重叠！
+			</div>
+		</article>
+		<!--计算高度时，内部float参与计算-->
+		<article id="three">
+			<div class="clearFloat">
+				<div class="float-left">
+					这是浮动元素</br>
+					规则：计算高度时，内部float参与计算
+				</div>
+			</div>
+		</article>
+		<!--bfc是一个隔离容器，容器外面不会影响到容器内，反之同理。bfc清除浮动应用了这条规则！-->
+		<article id="four">
+			<div class="contain">
+				<div class="margin_10" style="background:yellow;">
+					这是bfc内部的box。fontsize继承为25px;margin为10px</br>
+					规则：bfc为独立容器，内部box的margin都被包裹，不会影响外部元素！
+				</div>
+			</div>
+		</article>
+	</div>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>包含块分析</title>
+	<meta name="viewpoart" content="width=device-width"/>
+	
+	<style>
+
+	.wrapper{
+		width:600px;
+		margin:0 auto;
+	}
+	.wrapper>article{
+		border:1px solid #eee;
+		margin:20px 0;
+		height:100px;
+		width:100%;
+		font-size:16px;
+		background:yellow;
+		box-shadow:1px 1px 6px;
+	}
+	/*1*/
+	#one{
+		
+	}
+	#one div{
+		width:50%;
+		height:50%;
+		font-size:120%;
+		padding:1%;
+		background:green;
+	}
+	/*2*/
+	#two{
+		height:150px
+	}
+	#two>div{
+		position:relative;
+		background:rgba(255,255,255,0.3)
+	}
+	#two>div>div{
+		display:inline-block;
+		background:green;
+		width:48%;
+		vertical-align:text-top;/*行内块元素默认为基线对齐*/
+	}
+	.absolute{
+		position:absolute;
+		right:0;
+	}
+
+	/*3*/
+	#three{
+		
+	}
+	#three>div{
+		padding:10px;/*relative没有脱离文档流，以父元素的contentbox为宽度依据！*/
+	}
+	#three>div>div{
+		height:100%;
+		background:green;
+	}
+	
+	/*4*/
+	#four{
+		height:200px;
+	}
+	#four div{
+		box-sizing:border-box;
+		border:1px solid black;
+		float:left;
+		width:50%;
+		height:100%;
+		
+		background:url("https://tse4-mm.cn.bing.net/th?id=OIP.SMkOc0_1_T6mZHiYfn0tswCCCC&w=130&h=130&c=7&qlt=90&o=4&pid=1.7") no-repeat;
+	}
+	#four div:nth-child(1){
+		background-position:0% 0%;
+	}
+	#four div:nth-child(2){
+		background-position:100% 100%;
+	}
+
+
+	
+	</style>
+</head>
+<body>
+	<div class="wrapper">
+		<!--元素的width、height、font-size、margin、padding-->
+		<article id="one">
+			<div>width、height、font-size的百分比是相对于<strong>包含块</strong>的相同属性计算出来的！</div>
+			<span>我是16px!</span>
+		</article>
+		<!--如果父元素没有明确的高度（其高度取内容高度），且子元素不是定位元素（父元素不是定位块），则该子元素百分比值将为auto，即看起来失效了-->
+		<article id="two">
+			<div>
+				<div style="height:140px;">我的高度140px，撑起包含块的高度</div>
+				<div class="absolute" style="height:100%;">我的高度100%，希望占满包含块的高度。我的父元素高度为auto，所以height：100%继承的高度也为auto！</br>
+					但是我的父元素设置了position:relative，我也设置了position:absolute，所以我的高度继承将继承自最近的定位块！
+				</div>
+			</div>
+		</article>
+
+		<!--relative参照分析-->
+		<article id="three" style="font-size:15px;">
+			<div style="font-size:10px;">
+				<div style="position:relative;font-size:200%">
+					<strong>relative没有脱离文档流</strong>
+					我的字体大小为200%，继承自10px，结果为20px;</br>
+				</div>
+			</div>
+		</article>
+		<!--background-position分析-->
+		
+		<article id="four">
+			<div>0%，0%</div>
+			
+			<div>100%，100%</div>
+		</article>
+		
+		<article style="height:auto;">
+			<div>
+				<p>对于普通元素(包括浮动元素)，其参照为父元素；对于position:absolute，其参照为position不为static的父元素；对于fixed，其参照为浏览器窗口；对于relative，其没有脱离文档流（left等定位元素相对自身，其余同参照父元素）</p>
+				<p>width、margin、padding、left、right、text-align参照与父元素的宽度</p>
+				<p>height、top、bottom参照与父元素的高度</p>
+				<p>font-size、line-height(百分比)参照与父元素字体大小</p>
+				<p>border-radius、transform：translate参照与自身尺寸（border-box）</p>
+				<p>对于background-position：比较特殊，案例演示</p>
+			</div>
+		</article>
+	</div>
+	<footer>参考自<a href="https://css-tricks.com/centering-css-complete-guide/">Centering in CSS: A Complete Guide</a></footer>
+</body>
+</html>

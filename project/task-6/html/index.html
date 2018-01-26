@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>报纸排版</title>
+    <link rel="stylesheet" href="../css/index.css">
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.js"></script>
+    <script>
+        $(document).ready(function ($) {
+            var cssRed={right:"450px"},
+                cssGreen={left:"450px"};
+            (function () {
+                $(".green").animate(cssGreen,{duration:3000,queue:false});
+                $(".red").animate(cssRed,{duration:3000,queue:false,complete:arguments.callee});
+                if(cssRed.right==="0"){
+                    cssGreen.left="450px";
+                    cssRed.right="450px";
+                }else{
+                    cssRed.right="0";
+                    cssGreen.left="0"
+                }
+            })();
+
+        })
+    </script>
+</head>
+<body>
+<div class="wrapper unit_center">
+    <div class="container">
+        <div class="header">
+            <div class="headerLogo">
+                <span>ife.baidu.com</span>
+            </div>
+            <div class="headerDate"><span>2016.03</span></div>
+        </div>
+        <div class="main">
+            <div class="top clearFloat">
+                <div class="topL leftFloat">
+                    <div class="topPicture">
+                        <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511062958&di=bbb9d36f8388df2e8b3ef9e98cb5e775&imgtype=jpg&er=1&src=http%3A%2F%2Fi1.51cto.com%2Fimages%2F201612%2F920cda952e0087bc4fc7199baf4ff9968555d3.png" alt="">
+                        <div class="leftColorBox green"></div>
+                        <div class="leftColorBox red"></div>
+                    </div>
+                    <div class="topContent">
+                        <h2>what</h2>
+                        <p>前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端
+                            前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前
+                            前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端
+                            前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前
+                            前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端
+                            前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前
+                            前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端
+                            前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前
+                            前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端
+
+                        </p>
+                    </div>
+                </div>
+                <div class="topR rightFloat">
+                    <div class="topNum">
+                        <h1><span>a</span>bout<br/><span>t</span>echnologe</h1>
+                        <h2>about technologe about technologe about technologe</h2>
+                        <h3 class="font_116">700</h3>
+                        <div>
+                            <h4 class="font_55">3.2</h4>
+                            <p class="font_special"><span>css</span><br/><span>csscsscsscss</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom clearFloat">
+                <div class="bottomL leftFloat">
+                    <div class="bottomHeader">
+                        <h2><span>The</span>technologe<br/>of pront</h2>
+                        <h3>前段技术领域</h3>
+                    </div>
+                    <div class="bottomPaperOne">
+                        <p>
+                            前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端
+                            前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端
+                            <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1510468375958&di=9f65c1f07691634e4f6760ced5956bff&imgtype=0&src=http%3A%2F%2Fimg.educity.cn%2Fimg_10%2F263%2F2014010201%2F47197015931.png" alt="">
+                            前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前
+                        </p><p>前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前
+                            前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端
+                            前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前
+                            前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端
+                            前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前
+                            前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端
+                        </p>
+                    </div>
+                </div>
+                <div class="bottomR rightFloat">
+                    <div class="bottomTitle">
+                        <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1510468280163&di=e397ec3e4b07ac5863a7c827ede47042&imgtype=0&src=http%3A%2F%2Fa1.jikexueyuan.com%2Fhome%2F201601%2F28%2F9d07%2F56a978d332389.jpg" alt="">
+                        <div><p>前段技术<span>前端技术前端技术</span></p></div>
+                    </div>
+                    <div class="bottomPaperTwo">
+                        <div class="bottomLink">
+                            <ul>
+                                <li>前端前端前端前端前端......前端前端</li>
+                                <li>前端前端前端前端......前端前端前端</li>
+                                <li>前端前端前端前端前端前端......前端</li>
+                            </ul>
+                        </div>
+                        <div class="bottomQuote clearFloat">
+                            <div class="bottomQuoteL leftFloat">
+                                <div>
+                                    <p id="zero">0</p>
+                                    <p id="one">ONE TWO<br>THREE FOUR FIVE<br/></p>
+                                    <p id="two">hello world hello world hello world</p>
+
+                                </div>
+                            </div>
+                            <div class="bottomQuoteR rightFloat">
+                                <blockquote>
+                                    <p>
+                                        <span class="leftFloat">“</span>
+                                        hello world hello world hello world hello world hello world hello world hello world hello world world hello world hello world world hello
+                                        <span class="rightFloat">”</span>
+                                    </p>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <span>ife.baidu.com</span>
+        </div>
+    </div>
+</div>
+</body>
+</html>

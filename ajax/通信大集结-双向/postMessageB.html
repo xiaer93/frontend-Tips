@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>双向跨域</title>
+</head>
+<style>
+    body{
+        margin:0;
+    }
+</style>
+<body>
+<div>本页为80端口，收到来自localhost:63342网页A的消息：<span></span></div>
+<script>
+
+    window.onmessage=function (event) {
+
+        //if(event.origin!==target)对发送信息的源进行判断
+        var s=document.getElementsByTagName("span")[0];
+        s.innerText=event.data;
+
+        var target="http://localhost:63342";
+        event.source.postMessage("我是来自B的信使！","*");
+    };
+</script>
+</body>
+</html>

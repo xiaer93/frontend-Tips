@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>多级菜单</title>
+    <meta name="viewport" content="width=device-width,user-scalable=no">
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <style>
+        ul,li{
+            list-style: none;
+            margin: 0;
+            padding:0;
+        }
+        html,body{
+            height: 100%;
+        }
+        #mulitnav{
+            width: 500px;
+            height: 100%;
+            padding: 10px 0;
+            margin: 20px auto;
+        }
+        li{
+            margin: 10px 0;
+        }
+        #mulitnav>li ul{
+            display: none;
+        }
+        li,a{
+            cursor: pointer;
+        }
+
+        /*颜色方案*/
+        #mulitnav{
+
+            background-color: yellow;
+        }
+        .hasclick{
+            padding: 11px 0 1px 0;
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+    <ul id="mulitnav">
+        <li>
+            <span>一级菜单1</span>
+            <ul>
+                <li><span>二级菜单11</span></li>
+                <li><span>二级菜单12</span></li>
+            </ul>
+
+        </li>
+        <li>
+            <span>一级菜单2</span>
+            <ul>
+                <li><span>二级菜单21</span></li>
+                <li>
+                    <span>二级菜单22</span>
+                    <ul>
+                        <li><span>三级菜单221</span></li>
+                        <li><span>三级菜单222</span></li>
+                        <li><span>三级菜单223</span></li>
+                    </ul>
+                </li>
+                <li>
+                    <span>二级菜单23</span>
+                </li>
+            </ul>
+
+        </li>
+        <li>
+            <span>一级菜单3</span>
+            <ul>
+                <li><span>二级菜单31</span></li>
+                <li><span>二级菜单32</span>
+                    <ul>
+                        <li><span>三级菜单321</span></li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    <div class="footer" style="position: fixed;bottom: 0;left: 35%;">
+        <p>
+          菜单栏地址条：<span id="updateNavLocation"></span>
+        </p>
+    </div>
+    <script>
+        function MulitNav(selectorText,paddingSpacing) {
+            var selectorText=selectorText;
+            var paddingSpacing=paddingSpacing;
+
+            /*初始化导航菜单截面*/
+            var initNav=function () {
+                var initLevel=1;/*菜单等级*/
+                var initUl=$("#"+selectorText).first();
+                (function setPadding(ul,level) {
+                    var sonLevel=level;
+                    var sonLi=$(">li",ul);
+                    sonLi.css("paddingLeft",paddingSpacing*sonLevel+"px");
+                    var i=0,
+                        len=sonLi.length;
+                    for(;i<len;++i){
+                        if($(">ul",sonLi[i]).length>0){
+                            setPadding($(">ul",sonLi[i]).first(),sonLevel+1);
+                        }
+                    }
+                })(initUl,initLevel);
+            };
+
+            /*插入菜单项，向菜单中插入项目。搜索为refString，被插入为sonString(innerHTML，必须遵循子菜单html格式)*/
+            var insertNav=function (refString,sonString) {
+                var refSpan;
+                refSpan=$("span","#"+selectorText).filter(function (index) {
+                    if($(this).text()===refString){
+                        return true;
+                    }
+                });
+                refSpan.next("ul").append($(sonString));
+                initNav();
+            };
+
+            /*删除菜单项，将菜单中指定项目删除，被删除为sonString*/
+            var deleteNav=function (sonString) {
+                var refSpan;
+                refSpan=$("span","#"+selectorText).filter(function (index) {
+                    if($(this).text()===sonString){
+                        return true;
+                    }
+                });
+                /*将jQuery对象中所有元素移除，如果传入参数将作为选择器，只有匹配项才会被移除！*/
+                refSpan.parent("li").remove();
+                initNav();
+            };
+            /*响应单击事件*/
+            var clickNav=function () {
+                (function () {
+                  $("#"+selectorText).click(function(event){
+                      /*阻止事件继续冒泡至document*/
+                      event.stopPropagation();/*此event经过jQuery修改*/
+
+                      /*处理click程序*/
+                      var target=event.target;
+                      /*如果单击li的子元素span，则将taget改为li元素*/
+                      if(target.tagName.toLowerCase()==="span"){
+                          target=$(target).parent("li")[0];/*first方法返回的是jq对象*/
+                      }
+
+                      if(target.tagName.toLowerCase()==="li" && $(this).has(target)){
+                          /*关闭所有同级菜单*/
+                          $(target).parent("ul").children("li").children("ul").css("display","none");
+
+                          /*打开自己的子菜单*/
+                          $(target).children("ul").css("display","block");
+
+                          /*获取路径*/
+                          var locationNav=$(target).children("span").text(),
+                              parentTarget=$(target).parent("ul");
+
+                          $(target).parents("li").filter(function (index) {
+                              if($("#"+selectorText).has(this))
+                                  return true;
+                          }).each(function (index, element) {
+                              locationNav=$(element).children("span").text()+" / "+locationNav;
+                          });
+                          $("#updateNavLocation").text(locationNav);
+
+                          /*改变样式*/
+                          $("#"+selectorText).children("li").each(function (index) {
+                              controlClass(this,false);/*删除所有一级菜单li元素样式*/
+                          });
+                          controlClass(target,true);/*给单击元素添加背景*/
+                      }
+                  })
+              })();
+            };
+            /*关闭函数*/
+            var closeNav=function () {
+                $(">li","#"+selectorText).find("ul").css("display","none");
+                $("#"+selectorText).children("li").each(function (index) {
+                    controlClass(this,false);/*删除所有一级菜单li元素样式*/
+                });
+            };
+
+            /*控制样式函数*/
+            var controlClass=function (element , flag) {
+                var controlLI;
+                if($(element).parent("ul").attr("id")!==selectorText){
+                    controlLI=$(element).parents("li").filter(function (index) {
+                        if($(this).parent("ul").attr("id")===selectorText)
+                            return true;
+                    })
+                }else{
+                    controlLI=$(element);
+                }
+                if(flag===true){
+                    controlLI.addClass("hasclick");
+                }else{
+                    controlLI.removeClass("hasclick");
+                }
+
+
+            };
+
+            initNav();
+            var navObject={
+                initN:initNav,
+                insertN:initNav,
+                clickN:clickNav,
+                closeN:closeNav
+            };
+
+            return navObject;
+        }
+
+        var nav=new MulitNav("mulitnav",15);
+        nav.clickN();
+
+        $(document).click(function (event) {
+            nav.closeN();
+        })
+    </script>
+</body>
+</html>

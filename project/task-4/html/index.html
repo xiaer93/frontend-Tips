@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>定位居中</title>
+    <style>
+        html{
+            height: 100%;
+        }
+        body{
+            height:100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .wrapper{
+            height: 100%;
+            background-color: #eee;
+            margin: 20px;
+        }
+        /*小球在尺寸固定盒子中相对定位！*/
+        .box1{
+            position: absolute;
+            overflow: hidden;
+            width: 400px;
+            height: 200px;
+            background-color: #ccc;
+            /*相对于body居中！*/
+            top:50%;
+            left: 50%;
+            margin-left: -200px;
+            margin-top: -100px;
+        }
+        .son{
+            width: 100px;
+            height: 100px;
+            border-radius: 100px;
+            background-color: yellow;
+        }
+        .s1{
+            position: absolute;
+            left: -50px;
+            top: -50px;
+        }
+        .s2{
+            position: absolute;
+            left: 350px;
+            top: 150px;
+        }
+        /*消灾在变动盒子居中*/
+        .box2{
+            position: relative;
+            margin-top: 20px;
+            width: 60%;                 /*相对父元素宽高计算值*/
+            height: 30%;
+            background-color: #ccc;
+        }
+        .s3{
+            position: absolute;
+            top:50%;
+            left:50%;
+            margin-left: -50px;
+            margin-top: -50px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="box1">
+            <div class="son s1"></div>
+            <div class="son s2"></div>
+        </div>
+        <div class="box2">
+            <div class="son s3"></div>
+        </div>
+    </div>
+</body>
+</html>

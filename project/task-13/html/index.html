@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>听命令的小方框</title>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.js"></script>
+
+    <script>
+
+    </script>
+
+    <style>
+        html{
+            height: 100%;
+        }
+        body{
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+        .wrapper{
+            display: flex;
+            min-width: 450px;
+            height: 100%;
+        }
+        .container{
+            margin: auto;
+            text-align: center;
+            position: relative;
+        }
+        table{
+            box-sizing: border-box;
+            border-collapse: collapse;
+            text-align: center;
+
+        }
+        td,th{
+            box-sizing: border-box;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+        }
+        tbody td{
+            border: 1px solid #dedede;
+        }
+        tbody tr:first-child td{
+            border-top: 1px solid black;
+        }
+        tbody tr:last-child td{
+            border-bottom: 1px solid black;
+        }
+        tbody th{
+            border-right: 1px solid black;
+        }
+        tbody>tr td:last-child{
+            border-right: 1px solid black;
+        }
+        input[type='text']{
+            width: 200px;
+        }
+        
+        .ball{
+            position: absolute;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            width: 40px;
+            height: 40px;
+            left: 40px;
+            top: 40px;
+
+        }
+        .top{
+            background: linear-gradient(to top,blue 0,blue 70%,red 70%,red 100%);
+        }
+        .right{
+            background: linear-gradient(to right,blue 0,blue 70%,red 70%,red 100%);
+        }
+        .bottom{
+            background: linear-gradient(to bottom,blue 0,blue 70%,red 70%,red 100%);
+        }
+        .left{
+            background: linear-gradient(to left,blue 0,blue 70%,red 70%,red 100%);
+        }
+
+
+    </style>
+    
+    <script>
+
+        /*没有记录错误，命令字符串错误，越界错误！*/
+        $(document).ready(function ($) {
+            var ballMove=new ParseCommand();
+            $("input[type='button']").click(function () {
+                ballMove.parseString($("input[type='text']").val());
+                ballMove.start();
+            });
+            $(document).keydown(function (event) {
+                var code=event.which;
+                var order=[];
+                switch (code){
+                    case 38:
+                        order.push(226);
+                        break;
+                    case 40:
+                        order.push(228);
+                        break;
+                    case 37:
+                        order.push(232);
+                        break;
+                    case 39:
+                        order.push(240);
+                        break;
+                }
+                ballMove.start(order);
+            });
+        });
+
+
+        /*
+        *基础前进转角命令
+        * GO        1
+        * TUN LEF   32
+        * TUN RIG   64
+        * TUN BAC   128
+        *方向不变并移动
+        * TRA LEF   8
+        * TRA TOP   2
+        * TRA RIG   16
+        * TRA BOT   4
+        *方向变化并移动
+        * MOV LEF   232
+        * MOV TOP   226
+        * MOV RIG   240
+        * MOV BOT   228
+        * */
+        /*解析命令字符串函数，并调用小球动作函数*/
+        function ParseCommand() {
+            var order=[];
+            this.parseString=function (stringCommand) {
+
+                /*将go转为“goo goo”，再使用正则表达式匹配命令*/
+                var stringCommand=stringCommand.toLowerCase();
+                stringCommand=stringCommand.replace(/go/g,"goo goo");
+                var commands=stringCommand.match(/([a-z]{3}[ ]+[a-z]{3})/g);
+
+                /*读取命令，转为数值存入order中*/
+                var i=0,
+                    tmp,
+                    len=commands.length;
+                order=[];
+                for(;i<len;++i){
+                    tmp=commands[i];
+                    switch (tmp){
+                        case "goo goo":
+                            order.push(1);
+                            break;
+                        case "tun lef":
+                            order.push(32);
+                            break;
+                        case "tun rig":
+                            order.push(64);
+                            break;
+                        case "tun bac":
+                            order.push(128);
+                            break;
+                        case "tra lef":
+                            order.push(8);
+                            break;
+                        case "tra top":
+                            order.push(2);
+                            break;
+                        case "tra rig":
+                            order.push(16);
+                            break;
+                        case "tra bot":
+                            order.push(4);
+                            break;
+                        case "mov lef":
+                            order.push(232);
+                            break;
+                        case "mov top":
+                            order.push(226);
+                            break;
+                        case "mov rig":
+                            order.push(240);
+                            break;
+                        case "mov bot":
+                            order.push(228);
+                            break;
+                        default:
+                            console.log("无效指令"+tmp);
+                            break;
+                    }
+                }
+            };
+
+            /*创建小球，以备接受命令运动*/
+            var ball=new Action(".ball");
+            this.start=function (keyboard) {
+                if(typeof keyboard !== "undefined"){
+                    order=keyboard;/*传入键盘命令，方向键：上下左右*/
+                }
+                if(order.length>0){
+                    setTimeout(function () {
+                        ball.parse(order.shift());
+                        if(order.length>0){
+                            setTimeout(arguments.callee,500);
+                        }
+                    },0);
+                }
+            }
+
+        }
+        /*小球动作封装*/
+        function Action(selector) {
+            var position={
+                x:1,
+                y:1,
+                rotate:0
+            };
+            var deepClone=function(initalObj,finalObj) {
+                var ret=null;
+                (function (initalObj,finalObj) {
+                    var obj=finalObj || {};
+                    for(var i in initalObj){
+                        if(typeof initalObj[i] === "object"){
+                            obj[i]=(initalObj[i].constructor===Array)?[]:{};
+                            arguments.callee(initalObj[i],obj[i]);
+                        }else{
+                            obj[i]=initalObj[i];
+                        }
+                    }
+                    ret=obj;
+                })(initalObj,finalObj);
+                return ret;
+            };
+
+            this.parse=function (command) {
+              var ret=deepClone(position,undefined);
+              if(command & 1){
+                  if(ret.rotate===0)
+                      ret.y-=1;
+                  if(ret.rotate===90)
+                      ret.x+=1;
+                  if(ret.rotate===180)
+                      ret.y+=1;
+                  if(ret.rotate===270)
+                      ret.x-=1;
+              }
+              if(command & 2){
+                  ret.y-=1;
+              }
+              if(command & 4){
+                  ret.y+=1;
+              }
+              if(command & 8){
+                  ret.x-=1;
+              }
+              if(command & 16){
+                  ret.x+=1
+              }
+              if(command &32){
+                  ret.rotate-=90;
+              }
+              if(command & 64){
+                  ret.rotate+=90;
+              }
+              if(command & 128){
+                  ret.rotate+=180;
+              }
+              if(command & 224){
+                  if(command & 2){
+                      ret.rotate=0;
+                  }
+                  if(command & 4){
+                      ret.rotate=180;
+                  }
+                  if(command & 8){
+                      ret.rotate=270;
+                  }
+                  if(command & 16){
+                      ret.rotate=90;
+                  }
+              }
+              if(checkValidity(ret)){
+                  position=ret;
+              }else{
+                  console.log("范围越界:"+command);
+              }
+              move();
+            };
+
+            var clearBg=function () {
+                $(selector).removeClass("top").removeClass("left").removeClass("bottom").removeClass("right");
+            };
+            var move=function () {
+                var ball=$(selector).css({top:position.y*40+"px",left:position.x*40+"px"});
+                switch (position.rotate){
+                    case 0:
+                        clearBg();
+                        ball.addClass("top");
+                        break;
+                    case 90:
+                        clearBg();
+                        ball.addClass("right");
+                        break;
+                    case 180:
+                        clearBg();
+                        ball.addClass("bottom");
+                        break;
+                    case 270:
+                        clearBg();
+                        ball.addClass("left");
+                        break;
+                }
+
+            };
+            /*边界检查*/
+            var checkValidity=function (ret) {
+                if(ret.x<1 || ret.x>10)
+                    return false;
+                if(ret.y<1 || ret.y>10)
+                    return false;
+
+                if(ret.rotate<0)
+                    ret.rotate=-ret.rotate;
+                ret.rotate=ret.rotate % 360;
+                return true;
+            };
+            /*返回坐标信息*/
+            this.getPosition=function () {
+                var ret={};
+                ret.x=position.x-1;
+                ret.y=position.y-1;
+                ret.rotate=position.rotate;
+                return ret;
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="container">
+            <table>
+                <thead>
+                    <tr>
+                    <th></th>
+                    <th>1</th>
+                    <th>2</th>
+                    <th>3</th>
+                    <th>4</th>
+                    <th>5</th>
+                    <th>6</th>
+                    <th>7</th>
+                    <th>8</th>
+                    <th>9</th>
+                    <th>10</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    <th>1</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                    <tr>
+                        <th>2</th>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th>3</th>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th>4</th>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th>5</th>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th>6</th>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th>7</th>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th>8</th>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th>9</th>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th>10</th>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+                
+            </table>
+            <form action="">
+                <label for="command">GO</label>
+                <input type="text" pattern="[a-zA-Z ]+" placeholder="请输入指令" id="command" value="mov bot mov bot mov bot mov bot">
+                <input type="button" value="执行">
+            </form>
+            <div class="ball top"></div>
+            <div style="height: 80px;overflow: scroll;text-align: left">
+                Tips:    支持键盘操作，上下左右方向键！<br/>
+                Tips:    支持连续命令，如“go go go”<br/>
+                GO：     向红色边所面向的方向前进一格<br/>
+                TUN LEF：向左转（逆时针旋转90度）<br/>
+                TUN RIG：向右转（顺时针旋转90度）<br/>
+                TUN BAC：向右转（旋转180度）<br/>
+                TRA LEF：向屏幕的左侧移动一格，方向不变<br/>
+                TRA TOP：向屏幕的上面移动一格，方向不变<br/>
+                TRA RIG：向屏幕的右侧移动一格，方向不变<br/>
+                TRA BOT：向屏幕的下面移动一格，方向不变<br/>
+                MOV LEF：方向转向屏幕左侧，并向屏幕的左侧移动一格<br/>
+                MOV TOP：方向转向屏幕上面，向屏幕的上面移动一格<br/>
+                MOV RIG：方向转向屏幕右侧，向屏幕的右侧移动一格<br/>
+                MOV BOT：方向转向屏幕下面，向屏幕的下面移动一格<br/>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

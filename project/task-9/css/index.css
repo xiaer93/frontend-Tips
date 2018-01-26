@@ -1,0 +1,768 @@
+/*响应式栅格化实现代码*/
+.cols-md1{
+    width: 8.33%;
+}
+.cols-md2{
+    width: 16.66%;
+}
+.cols-md3{
+    width: 25.00%;
+}
+.cols-md4{
+    width: 33.33%;
+}
+.cols-md5{
+    width: 41.66%;
+}
+.cols-md6{
+     width: 50.00%;
+ }
+.cols-md7{
+      width: 58.33%;
+}
+.cols-md8{
+    width: 66.66%;
+}
+.cols-md9{
+    width: 74.99%;
+}
+.cols-md10{
+    width: 83.33%;
+}
+.cols-md11{
+    width: 91.66%;
+}
+.cols-md12{
+    width: 100%;
+}
+/*通用代码*/
+.clearFloat:after,.clearFloat:before{
+    display: table;
+    content: "";
+}
+.clearFloat:after{
+    clear: both;
+}
+
+/*清除样式*/
+html,body,div,ul,li,table{
+    margin: 0;
+    padding: 0;
+}
+
+/*通用代码*/
+/*设置伸缩盒容器*/
+.flexBox{
+    display: flex;
+    flex-direction: row;
+}
+ul{
+    list-style: none;
+}
+a{
+    text-decoration: none;
+}
+ul li{
+    cursor: pointer;
+}
+
+.lastDiv{
+    margin-right: 0 !important;
+}
+/*wrapper*/
+body{
+    width: 1280px;
+}
+.wrapper{
+    width: 100%;
+}
+/*header*/
+.header{
+    overflow: hidden;
+    width: 100%;
+    height: 55px;
+    background-color: #2189bf;
+}
+/*头部logo，通过2个div叠加出来*/
+.logo{
+    float: left;
+    height: 100%;
+    margin-left: 50px;
+}
+.logo>div{
+    position: relative;
+    margin-top: 10px;
+    width: 35px;
+    height: 35px;
+    background-color: #fff;
+}
+.logo>div>div{
+    position: absolute;
+    right:0;
+    bottom: 0;
+    width: 10px;
+    height: 10px;
+    border: 3px solid #2189bf;
+    border-right: none;
+    border-bottom: none;
+    background-color: #ffffff;
+}
+
+.searchBox{
+    overflow: hidden;
+    margin-top: 13px;
+    margin-right: 80px;
+    text-align: right;
+}
+.searchBox input{
+    box-sizing: border-box;
+    height: 30px;
+    width: 285px;
+    padding: 0 18px 0 38px;
+    border: none;
+    -webkit-border-radius: 30px;
+    -moz-border-radius: 30px;
+    border-radius: 30px;
+}
+.searchBox div:first-child{
+    width: 285px;
+    display: inline-block;
+}
+.searchBox div:last-child{
+    display: inline-block;
+    margin-right: 25px;
+    width: 60px;
+}
+/*使用i标签添加图标的外层定位*/
+.icon{
+    position: relative;
+}
+.searchBox div:first-child i{
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    top: 6px;
+    left: 12px;
+    background: url("../rec/sprint.png") no-repeat;
+}
+.searchBox div:last-child i{
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    top: 5px;
+    left: 15px;
+    background: url("../rec/sprint.png") no-repeat -20px 0;
+}
+.searchBox a{
+
+    line-height: 30px;
+    font-size: 12px;
+    color: #fff;
+    font-family: "Microsoft Tai Le", "sans-serif";
+}
+
+/*主体部分*/
+/*侧边栏*/
+.sideNav{
+    background-color: #2a2e3d;
+    font-size: 12px;
+    color: #6e8095;
+
+    /*临时高度*/
+    height: 1280px;
+}
+.person{
+    width: 100%;
+    height: 150px;
+}
+.personName{
+    width: 100%;
+    height: 55px;
+    text-align: center;
+    margin-top: 20px;
+}
+.personName img{
+    height: 100%;
+    width: 55px;
+}
+.personName span{
+    line-height: 55px;
+    padding: 0 20px;
+}
+.personInfo{
+    width: 100%;
+    height: 75px;
+    text-align: center;
+    font-size: 0;
+}
+.personInfo>div{
+    box-sizing: border-box;
+    display: inline-block;
+    width: 50%;
+    margin: 25px 0;
+    font-size: 12px;
+}
+.personInfo>div:first-child{
+    border-right: solid 1px #323647;
+    text-align: right;
+    padding-right: 35px;
+}
+.personInfo>div:last-child{
+    border-left: solid 1px #323647;
+    text-align: left;
+    padding-left: 35px;
+}
+.person>div span{
+    display: block;
+}
+/*导航菜单*/
+.navigation{
+    width: 100%;
+}
+.childList{
+    display: none;
+}
+.childListList{
+    display: none;
+}
+
+.navigation>ul>li{
+    padding: 7px 0 7px 45px;
+}
+.navigation span{
+    position: relative;
+    padding-left: 20px;
+    font-size: 12px;
+    font-family: "SimHei","serif";
+    color: #ffffff;
+}
+.myreport:before{
+    content: "";
+    width: 12px;
+    height: 12px;
+    background: url("../rec/sprint.png") no-repeat;
+    background-position: -50px -2px;
+    position: absolute;
+    left: 0;
+    top:0;
+}
+.myfile:before{
+    content: "";
+    width: 12px;
+    height: 12px;
+    position: absolute;
+    left: 0;
+    top:0;
+    background: url("../rec/sprint.png") no-repeat;
+    background-position: -65px -2px;
+}
+.mydocument:before{
+    content: "";
+    width: 12px;
+    height: 12px;
+    background: url("../rec/sprint.png") no-repeat;
+    background-position: -37px -2px;
+    position: absolute;
+    left: 0;
+    top:0;
+}
+.navigation>ul>li ul{
+    margin-left: 20px;
+    margin-top: 15px;
+}
+
+/*调节子菜单的上下间距*/
+.navigation>ul>li li{
+    margin: 15px 0 15px 0;
+}
+.childList li:last-child{
+    margin-bottom: 0;
+}
+/*上面内容重点*/
+
+
+/*主体内容*/
+.content{
+    background-color: #eeeeed;
+}
+.mainHeader{
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    font-size: 13px;
+    font-family: "SimHei","sans-serif";
+    padding-left: 30px;
+    background-color: #fff;
+}
+
+.mainContent{
+    padding: 0 60px;
+}
+.mainContent>div{
+    margin-top: 15px;
+    /*background-color: white;*/
+}
+/*第一列*/
+.contentRa{
+    font-size: 12px;
+    color: #aaaaaa;
+    background-color: white;
+}
+
+.contentRa>div{
+    padding: 10px 10px;
+    text-align: center;
+}
+.contentRa input,.contentRa select{
+    box-sizing: border-box;
+    border: 1px solid #cbcbcb;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+.contentRa select{
+
+    background-image: url("../rec/12.png");
+    background-repeat: no-repeat;
+    background-position: 95% center;
+
+    width: 70px;
+    height: 25px;
+    margin-left: 15px;
+}
+.contentRa input{
+    width: 70px;
+    height: 25px;
+    margin-left: 15px;
+}
+.aindex select{
+
+}
+.abuy>div:nth-last-of-type(1){
+    margin-top: 6px;
+}
+.abuy select{
+    width: 120px;
+}
+.adate{
+
+}
+#selectDate,#selectProject{
+    width: 120px;
+}
+#selectPeoples,#selectDays{
+    width: 70px;
+}
+.adate>div:last-child{
+    margin-top: 6px;
+}
+/*content主题中的button格式相同*/
+.content button{
+    display: inline-block;
+    width: 50px;
+    height: 25px;
+    background-color: #388bc2;
+    border: none;
+    border-radius: 5px;
+}
+.content button:active{
+    background-color: crimson;
+    padding: 0;
+}
+
+.abutton{
+    position: relative;
+}
+.abutton button{
+    position: absolute;
+    top:50%;
+    left: 50%;
+    margin-top: -12px;
+    margin-left: -25px;
+    color: #fff;
+}
+
+/*contentRb*/
+.contentRb{
+    border: none !important;
+    height: 70px;
+    overflow: hidden;
+}
+.contentRb>div{
+    height: 100%;
+    float: left;
+}
+.contentRb>div>div{
+    background-color: white;
+}
+.bicon>div{
+    box-sizing: border-box;
+    margin-right: 5px;
+    height: 100%;
+    border: 1px solid #d7d9dc;
+    border-radius: 1px;
+}
+.btime>div{
+    box-sizing: border-box;
+    /*margin-right: 5px;    btime不用网格布局，通过外层设置margin实现间距*/
+    height: 100%;
+    border: 1px solid #d7d9dc;
+    border-radius: 1px;
+}
+.btime>div{
+    text-align: center;
+    border-top: 3px solid #4388c9;
+}
+.btime>div p{
+    margin: 7px 0;
+}
+.btime>div p:last-child{
+    font-family: "Microsoft YaHei","serif";
+    font-size: 21px;
+    color: #ec6500;
+}
+.bhistory div{
+    box-sizing: border-box;
+    height: 100%;
+    border: 1px solid #d7d9dc;
+    border-radius: 1px;
+}
+.bhistory div a{
+    display: inline-block;
+    height: 100%;
+    line-height: 70px;/*父元素高度由内容撑起，子元素如何居中！》》？？？固定高度的模块有哪些？*/
+    margin-left: 55px;
+}
+
+.bicon i{
+    display: inline-block;
+    position: absolute;
+    width: 12px;
+    height: 18px;
+    top: 26px;
+    left: 50%;
+    margin-left: -6px;
+    background: url("../rec/sprint.png") no-repeat;
+}
+.toLeft i{
+    background-position: -65px -20px;
+}
+.toRight i{
+    background-position: -80px -20px;
+}
+.bhistory i{
+    display: inline-block;
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    left: 12px;
+    top: 19px;
+    background: url("../rec/sprint.png") no-repeat;
+    background-position: -30px -20px;
+}
+
+
+/*交易量部分*/
+.contentRc{
+    border: none !important;
+}
+.contentRc h3{
+    margin: 0;
+    padding-left: 0 !important;
+    padding-bottom: 3px;
+    background-color: #eeeeed;
+}
+.ctrade>div{
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    margin-right: 5%;
+    height: 75px;
+    border: 1px solid #d2d4d7;
+    border-left: 3px solid #43b29e;
+    background-color: white;
+}
+.ctrade div p{
+    padding-left: 5px;
+    margin: 5px 0;
+}
+.ctrade div img{
+    content: "";
+    display: inline-block;
+    position: absolute;
+    width: 70px;
+    height: 50px;
+    top:50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background-color: #43b29e;
+}
+/*第四部分*/
+/*设置边框*/
+.haveBorders{
+    margin-right: 5px;
+    height: 100%;
+    border: 1px solid grey;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #fff;
+}
+.content_h3{
+    margin: 0;
+    padding-left: 40px;
+    height: 40px;
+    line-height: 40px;
+    font-size: 12px;
+    color: #aaaaaa;
+    font-family: "SimHei","sans-serif";
+    background-color: #f3f5f6;
+}
+/*第四部分*/
+.contentRd{
+    background-color: transparent !important;
+}
+.dtable{
+
+}
+.dform form{
+    margin: 10px 20px;
+}
+.dform label{
+    display: block;
+    padding-left: 10px;
+    font-size: 12px;
+    font-family: "Microsoft YaHei","sans-serif";
+    color: #c3c2c2;
+}
+.dform p{
+    margin: 0;
+}
+.dform input{
+    box-sizing: border-box;
+    padding: 0;
+    padding-left: 10px;
+    background-color: white;
+    border: none;
+    color: #535353;
+
+}
+.dform textarea{
+    box-sizing: border-box;
+    padding-left: 10px;
+    border-color: transparent transparent #cacbcc transparent;
+    resize: none;
+    width: 100%;
+    height: 128px;
+}
+.dform form>div:nth-child(1),.dform form>div:nth-child(2){
+    height: 45px;
+}
+.dform form>div:nth-child(3){
+    height: 145px;
+}
+.dform form>div:nth-child(2) p{
+    box-sizing: border-box;
+    width: 50%;
+    float: left;
+    border-top: 1px solid #c3c2c2;
+    border-bottom: 1px solid #c3c2c2;
+}
+.dform form>div:nth-child(2) p>input{
+    width: 100%;
+}
+.dform form>div:nth-child(2) p:first-child{
+    border-right: 1px solid #c3c2c2;
+}
+.dform form>div:last-child{
+    height: 30px;
+    margin-top: 5px;
+}
+.dform form>div:last-child>p{
+    float: left;
+    display: table;
+    overflow: hidden;
+    margin-top: 4px;
+}
+.dform form>div:last-child label{
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 5px;
+    padding-left: 5px;
+}
+.dform form>div:last-child>button{
+    float: right;
+}
+
+
+.database{
+    margin: 10px 10px 20px 10px;
+
+}
+.database>ul{
+    overflow: hidden;
+    text-align: center;
+    /*让table上升1px*/
+    margin-bottom: -1px;
+}
+.database>ul>li{
+    box-sizing: border-box;
+    float: left;
+    margin-left: 5px;
+    width: 85px;
+    height: 28px;
+    line-height: 28px;
+    background-color: #ededf0;
+    border-bottom: 1px solid #cacbcc;
+    border-radius: 3px;
+}
+.database>ul>li:first-child{
+    margin-left: 0;
+}
+.database>ul>li:hover{
+    background-color: #ffffff;
+    border: 1px solid #cacbcc;
+    border-bottom: #fff;
+}
+.database>div{
+    border: 1px solid #cacbcc;
+    border-radius: 2px;
+}
+.database table{
+    margin: 35px 2.5%;
+    width: 95%;
+    border-collapse: collapse;
+    text-align: center;
+}
+.database table td{
+    height: 30px;
+    border: 1px solid #cacbcc;
+}
+
+/*第五部分*/
+.contentRe{
+    background-color: transparent !important;
+}
+.edate>div>div{     /*使用类unit_100！！！*/
+    width: 100%;
+    margin: 10px auto;
+}
+.datebutton{
+    padding-left: 3px;
+}
+.datebutton input{
+    cursor: pointer;
+    padding: 2px 5px;
+    border: 1px solid #a9cfec;
+    background-color: white;
+}
+.datebutton input:active{
+    background-color:#388bc2
+}
+
+.edate table{
+    margin: 10px 0;
+    width: 100%;
+    height: 280px;
+    text-align: center;
+
+    /*设置字体*/
+    font-size: 12px;
+    font-family: "SimHei","sans-serif";
+    color: #323333;
+}
+.edate table th{
+    border-top: 1px solid #a9cfec;
+    border-bottom: 1px solid #e1e1e2;
+    height: 30px;
+}
+.edate table td{
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+.edate table td:active{
+    border: 1px solid #f4c21d;
+}
+.not_today{
+    color: #a9cfec;
+}
+
+.erank table{
+    margin: 20px auto;
+    text-align: center;
+    border-collapse: collapse;
+}
+.erank table td,.erank table th{
+    height: 25px;
+    width: 65px;
+    border: 1px solid #cbcbcb;
+}
+.erank table tr td:nth-child(2){
+    width: 90px !important;
+}
+.erank table tr td:nth-child(3){
+    box-sizing: border-box;
+    width: 220px !important;
+    text-align: left;
+    padding-left: 25px;
+    padding-right: 140px;
+    position: relative;
+
+}
+.erank table tr td>span{
+    position: absolute;
+    height: 3px;
+    width: 130px;
+    top:50%;
+    margin-top: -2px;
+    margin-left: 50px;
+    background-color: #dcdcdc;
+}
+.erank table tr td>span>i{
+    position: absolute;
+    top:0;
+    left:0;
+    width: 60%;
+    height: 100%;
+    background-color: red;
+}
+
+/*左右滑动装置*/
+.cols-slide4-2{
+    width: 23.5%;
+}
+.bslideContent div:nth-child(2){
+    margin-left: 0;
+}
+.bslideContent{
+    position: relative;
+    height: 100%;
+    margin-right: 5px;
+    box-sizing: border-box;
+    background-color: transparent !important;
+    overflow: hidden;
+}
+.bslideContent>div{
+    position: absolute;
+    height: 100%;
+    background-color: #fff;
+}
+.bslideContent>div:nth-child(1){
+    left: -25.5%;
+    display: none;
+}
+.bslideContent>div:nth-child(2){
+    left: 0;
+}
+.bslideContent>div:nth-child(3){
+    left: 25.5%;
+}
+.bslideContent>div:nth-child(4){
+    left: 51%;
+}
+.bslideContent>div:nth-child(5){
+    left: 76.5%;
+}
+.bslideContent>div:nth-child(6){
+    display: none;
+    left: 102%;
+}

@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>排序算法动画</title>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.js"></script>
+
+
+    <script>
+        $(document).ready(function ($) {
+            $("#control").click(queueButton);
+
+            var sortAnimation=new QueueAnimation("#queueBlock");
+            var sortFunc=null;
+            function queueButton(event) {
+                /*获取选取的方法*/
+                getFunc();
+                /*正式程序*/
+                switch (event.target.name){
+                    case "generate":
+                        if(/[\d]+/.test($("input[type='text']").val()))
+                            sortAnimation.autoInit($("input[type='text']").val());
+                        break;
+                    case "sort":
+                        var stime=new Date();
+                        sortFunc();
+                        $("output").val(new Date()-stime);
+                        break;
+                }
+            }
+
+            function getFunc() {
+                /*获取单选框值,选择对应排序函数*/
+                var sort=$("input[name='sortfunc']:checked").val();
+                switch (sort){
+                    case "quickSort":
+                        sortFunc=sortAnimation.quickSort;
+                        break;
+                    case "maopaoSort":
+                        sortFunc=sortAnimation.maopaoSort;
+                        break;
+                    case "insertSort":
+                        sortFunc=sortAnimation.insertionsort;
+                        break;
+                    case "selectionsort":
+                        sortFunc=sortAnimation.selectionSort;
+                        break;
+                    case "bubbleSort":
+                        sortFunc=sortAnimation.bubbleSort;
+                        break;
+                    case "stupidSelectionSort":
+                        sortFunc=sortAnimation.stupidSelectionSort;
+                        break;
+                    case "mergeSort":
+                        sortFunc=sortAnimation.mergeSort;
+                }
+            }
+        });
+    </script>
+    <script>
+        /*排序算法动画*/
+        function QueueAnimation(selector) {
+            /*选择器*/
+            var selector=selector;
+            /*储存每一步改变，接着调用动画*/
+            var step=[];
+            /*读取元素的值，以便排序算法计算*/
+            var obj={
+                len:0,
+                arrayList:null
+            };
+
+            /*初始化对象，获取队列中的元素值！*/
+            var init=function () {
+                var queueArray=$(selector).children().map(function (index) {
+                    return parseInt($(this).text());
+                });
+                obj.arrayList=queueArray;
+                obj.len=queueArray.length;
+            };
+            /*相对列中添加元素*/
+            var addDiv=function (direction,value) {
+                var d=$("<div>"+value+"</div>");
+                $(d).css("height",value*5+"px");
+                if(direction==="left")
+                    $(selector).prepend(d);
+                else{
+                    $(selector).append(d);
+                }
+            };
+            /*自动给队列添加元素，范围为0-99*/
+            this.autoInit=function (count) {
+                /*自动生成前，先清空队列元素*/
+                if(typeof count ==="undefined")
+                    var count=15;
+
+                $(selector).empty();
+                var i,
+                    tmp;
+                for(i=0;i<count;++i){
+                    tmp=Math.floor(Math.random()*99+1);
+                    addDiv("left",tmp);
+                }
+                return this;
+            };
+            /*延时函数，每次改变队列后，延时一段时间再改变*/
+            var delay=function(func,args,duration,cb) {
+                /*排序前必须先获取队列中的元素，更新一次*/
+                init();
+                /*正式程序*/
+                setTimeout(function () {
+                    /*动画运行事件始终小于排序函数等待时间！*/
+                    var flag=func(args,duration-200);
+                    if(flag){
+                        setTimeout(arguments.callee,duration-200);
+                    }else{
+                            $("input[type='text']").val("排序完成!");
+                    }
+                },0);
+            };
+            /*接受排序函数传递来的2个参数，用于动态改变队列*/
+            var exchange=function (left,right,dtime) {
+                var result=$(">div",selector).filter(function (index) {
+                    if(index===left || index===right){
+                        return true;
+                    }
+                });
+                var tmp1=result.first().text();
+                var tmp2=result.last().text();
+
+                result.css("backgroundColor","red");
+                result.first().text(tmp2).animate({height:tmp2*5+"px"},{duration:dtime,queue:true,easing:"swing"});
+                result.last().text(tmp1).animate({height:tmp1*5+"px"},{duration:dtime,queue:true,easing:"swing",complete:function(){result.css("backgroundColor","yellowgreen");}});
+                return this;
+            };
+            /*执行动画函数*/
+            function showFuncStep(arrayStep,dtime) {
+                var tmp=arrayStep.shift();
+                exchange(tmp[0],tmp[1],dtime);
+                if(arrayStep.length>0)
+                    return true;
+                else
+                    return false;
+            }
+
+            /*各种算法集合*/
+            /*插入排序，时间复杂O(n^2）*/
+            this.insertionsort=function() {
+                /*定义数组储存每一次的变化*/
+                init();
+                var step=[];
+                /*修改起始项*/
+                var i,
+                    j,
+                    len=obj.len,
+                    data=obj.arrayList;
+
+                /*从第二项开始循环，与之前数据进行比较，当前项与极值进行比较*/
+                for(i=1;i<len;++i){
+                    var tmp=data[i];
+                    for(j=i;j>0 && tmp<data[j-1];j--){
+                        data[j]=data[j-1];
+                        /*储存每一次交换*/
+                        step.push([j,j-1]);
+                    }
+                    data[j]=tmp;
+                }
+                delay(showFuncStep,step,1000);
+            };
+
+            /*笨蛋的选择排序算法，不用每次交换数据*/
+            this.stupidSelectionSort=function () {
+                init();
+                var step=[];
+                var i,
+                    j,
+                    len=obj.len,
+                    data=obj.arrayList;
+
+                for(i=0;i<len;i++){
+                    for(j=i+1;j<len;j++)
+                    if(data[i]<data[j]){
+                        step.push([i,j]);
+                        var tmp=data[j];
+                        data[j]=data[i];
+                        data[i]=tmp;
+                    }
+                }
+                delay(showFuncStep,step,1000);
+            };
+
+            /*冒泡排序算法,比较和赋值次数太多！插入排序是冒泡排序快2倍！*/
+            this.maopaoSort=function () {
+                init();
+                var step=[];
+                var i,
+                    j,
+                    len=obj.len,
+                    data=obj.arrayList;
+
+                for(i=0;i<len;i++){
+                    for(j=0;j<len-i-1;j++){
+                        if(data[j]<data[j+1]){
+                            step.push([j,j+1]);
+                            var tmp=data[j+1];
+                            data[j+1]=data[j];
+                            data[j]=tmp;
+                        }
+                    }
+                }
+                delay(showFuncStep,step,1000);
+            };
+
+            /*冒泡排序的提升版本*/
+            this.bubbleSort=function () {
+                init();
+                var step=[];
+                var i,
+                    j,
+                    len=obj.len,
+                    data=obj.arrayList;
+                var flag=true;
+                for(i=0;i<len && flag===true;i++){
+                    flag=false;
+                    for (j=len-1;i<j;j--){
+                        if(data[j]>data[j-1]){
+                            step.push([j,j-1]);
+                            var tmp=data[j-1];
+                            data[j-1]=data[j];
+                            data[j]=tmp;
+                            flag=true;/*当进行交互时，则说明还需要进行循环检测！*/
+                        }
+                    }
+                }
+                delay(showFuncStep,step,1000);
+            };
+
+            /*选择排序，比较次数恒定，但是赋值次数最少！（这是其他算法无法比拟的！）*/
+            this.selectionSort=function () {
+                init();
+                var i,
+                    j,
+                    least,
+                    len=obj.len,
+                    data=obj.arrayList;
+
+                for(i=0;i<len;i++){
+                    for (j=i+1,least=i;j<len;j++){
+                        if(data[j]>data[least]){
+                            least=j;
+                        }
+                    }
+                    if(i!=least){
+                        step.push([i,least]);
+                        var tmp=data[least];
+                        data[least]=data[i];
+                        data[i]=tmp;
+                    }
+                }
+                delay(showFuncStep,step,1000);
+            };
+
+            /*快速排序，适用于30个以上数据。30个以下插入排序的效率更高！*/
+            this.quickSort=function () {
+                init();
+
+                var first=0,
+                    last=obj.len,
+                    len=obj.len,
+                    data=obj.arrayList;
+
+                /*避免lower越界*/
+                var i,max;
+                if(len<2){
+                    throw new Error("数组太短了！");
+                    return;
+                }
+                for(i=1,max=0;i<len;++i){
+                    if(data[max]<data[i]){
+                        max=i;
+                    }
+                }
+                __swap(data,len-1,max);/*将最大值转到尾部，避免lower++越界！*/
+                /*将步骤添加至数组*/
+                var steptmp=[];
+                step.push([len-1,max]);
+                /*将步骤添加至数组*/
+
+                __quickSortFunc(data,first,last-2);
+                delay(showFuncStep,step,1000);
+            };
+
+            var __quickSortFunc=function (data,first,last) {
+                var lower=first+1,
+                    upper=last,
+                    middle=Math.floor((first+last)/2);
+                __swap(data,first,middle);
+                /*将步骤添加至数组*/
+                step.push([first,middle]);
+                /*将步骤添加至数组*/
+                var bound=data[first];
+                while (lower<=upper){
+                    while (data[lower]<=bound){
+                        lower++;
+                    }
+                    while (data[upper]>bound){/*lower和upper终止条件不同！*/
+                        upper--;
+                    }
+                    if(lower<upper){
+                        __swap(data,lower,upper);
+                        /*将步骤添加至数组*/
+                        step.push([lower,upper]);
+                        /*将步骤添加至数组*/
+                    }else{
+                        lower++;/*形成退出循环的条件*/
+                    }
+                }
+                __swap(data,first,upper);
+                /*将步骤添加至数组*/
+                step.push([first,upper]);
+                /*将步骤添加至数组*/
+                if(first<(upper-1)){
+                    __quickSortFunc(data,first,upper-1);
+                }
+                if(last>(upper+1)){
+                    __quickSortFunc(data,upper+1,last);
+                }
+            };
+            var __swap=function(data,left,right){
+                var tmp=data[left];
+                data[left]=data[right];
+                data[right]=tmp;
+            };
+
+            /*归并排序,tmp需要消耗大量内存，引用解决内存消耗？*/
+
+            var _merge=function (data,first,last) {
+                var i1,
+                    i2=first,
+                    middle=Math.floor((first+last)/2),
+                    i3=middle+1;
+                var tmp=[];
+                while (i2<=middle && i3<=last){
+                    if(data[i2]<data[i3]){
+                        tmp.push(data[i2++]);
+                    }else{
+                        tmp.push(data[i3++]);
+                    }
+                }
+                while (i2<=middle){
+                    tmp.push(data[i2++]);
+                }
+                while(i3<=last){
+                    tmp.push(data[i3++]);
+                }
+                /*储存动画步骤，临时steptmp*/
+                var steptmp=[];
+                for(i1=first;i1<=last;i1++){
+                    var t=tmp.shift();
+                    if(t!==data[i1])
+                        steptmp.push({index:i1,value:t});
+                    data[i1]=t;
+                }
+                step.push(steptmp);
+            };
+            var _mergeSort=function (data,first,last) {
+                if(first<last){
+                    var middle=Math.floor((first+last)/2);
+                    _mergeSort(data,first,middle);
+                    _mergeSort(data,middle+1,last);
+                    _merge(data,first,last);
+                }
+            };
+            this.mergeSort=function () {
+                init();
+                var data=obj.arrayList;
+                var first=0;
+                var last=data.length-1;
+                _mergeSort(data,first,last);
+
+                delay(showFuncStep2,step,1000);
+            };
+
+            /*动画函数2，根据【index：value】绑定动画*/
+            var indexValue=function (changeData,dtime) {
+                $(">div",selector).each(function (index) {
+                    var flag=false;
+                    var heightvalue=0;
+                    for(var i in changeData){
+                        if(changeData[i].index===index){
+                            flag=true;
+                            heightvalue=changeData[i].value;
+                        }
+                    }
+                    if(flag){
+                        $(this).css("backgroundColor","red").text(heightvalue);
+                        $(this).animate({height:heightvalue*5+"px"},{duration:dtime,queue:false,complete:function(){$(this).css("backgroundColor","yellowgreen");}});
+                    }
+                })
+            };
+            function showFuncStep2(arrayStep,dtime) {
+                var tmp=arrayStep.shift();
+                indexValue(tmp,dtime);
+                if(arrayStep.length>0)
+                    return true;
+                else
+                    return false;
+            }
+
+
+
+
+        }
+
+    </script>
+
+    <style>
+        .wrapper{
+            width: 800px;
+            margin: 50px auto;
+        }
+        #control{
+            text-align: right;
+        }
+        input[type="text"]{
+            width: 200px;
+        }
+        #choicefunc{
+            overflow: hidden;
+        }
+        #choicefunc p{
+            float: left;
+            padding: 3px 5px;
+            border-left: 1px solid black;
+        }
+        #choicefunc p:first-child{
+            border: none;
+        }
+        #queueBlock{
+            height: 500px;
+            min-height: 30px;
+            padding: 10px;
+            border: 1px solid black;
+            display: flex;
+            align-items: flex-end;
+        }
+        #queueBlock div{
+            display: inline-block;
+            margin: 2px;
+            width: 15px;
+            text-align: center;
+            background-color: yellowgreen;
+            top:0;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <div id="control">
+        <form action="">
+            <span>运行时间：<output></output></span>
+            <input type="text" value="40" placeholder="可以将输入数字加入队列！" pattern="[\d]" required="required">
+            <input type="button" value="生成" name="generate">
+            <input type="button" value="排序" name="sort">
+        </form>
+    </div>
+    <div id="choicefunc">
+        <form action="">
+            <p><input type="radio" name="sortfunc" value="quickSort" checked="checked"><label for="">快速排序</label></p>
+            <p><input type="radio" name="sortfunc" value="maopaoSort"><label for="">冒泡排序</label></p>
+            <p><input type="radio" name="sortfunc" value="insertSort"><label for="">插入排序</label></p>
+            <p><input type="radio" name="sortfunc" value="selectionsort"><label for="">选择排序</label></p>
+            <p><input type="radio" name="sortfunc" value="bubbleSort"><label for="">冒泡升级版排序</label></p>
+            <p><input type="radio" name="sortfunc" value="stupidSelectionSort"><label for="">愚蠢版选择排序</label></p>
+            <p><input type="radio" name="sortfunc" value="mergeSort"><label for="">归并排序</label></p>
+
+        </form>
+    </div>
+    <div id="queueBlock">
+
+    </div>
+</div>
+
+<script>
+
+</script>
+</body>
+</html>

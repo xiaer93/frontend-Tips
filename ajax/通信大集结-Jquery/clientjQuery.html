@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-3.js" type="text/javascript"></script>
+
+    <title>jQuery的Ajax！</title>
+    <script>
+        function callback(value,i) {
+            jQuery(jQuery("span")[i]).text(value);
+        }
+
+        jQuery(document).ready(function ($) {
+            $("body>p:nth-child(1)>span").load(
+                "http://localhost/serverForjQueryGet.asp",
+                "name=123",
+                function (responseText,status,xhr){
+                console.log(responseText,status,xhr); }
+                );
+            $("body>p:nth-child(2)>span").load(
+                "http://localhost/serverForjQueryPost.asp",
+                {name:"123"},
+                function (responseText,status,xhr){
+                    console.log(responseText,status,xhr); }
+            );
+            $.getScript("http://localhost/serverForjQueryScript.js");
+
+            $.getJSON("serverForjQueryJson.json",
+                function (data,status) {
+                callback(data.name,3);
+            });
+            //getJson的get跨源方法
+            $.getJSON("http://localhost/serverForjQueryJson.asp",
+                {name:"嘉炜"},
+                function (data) {
+                    callback(data.info+data.name,4);
+                }
+            );
+            //jsonp
+            /*$.getJSON("http://localhost/serverForjQueryJsonp.asp&jsonp=?",callbackjp);*/
+            $.ajax({
+                type:"GET",
+                url:"http://localhost/serverForjQueryJsonp.asp",
+                data:'name=程嘉炜',
+                dataType:"jsonp",
+                jsonp: "jsonp",
+                success:function(json){//jsonp只返回json数据，其他参数忽略。如果没有设置jsoncallback，将默认执行success！
+                    callbackjp(json,5);
+                },
+                error:function () {
+                    console.log("error");
+                }
+            });
+
+        });
+
+        function callbackjp(json,i) {
+            jQuery(jQuery("span")[i]).text(json.info+json.name);
+        }
+
+    </script>
+
+</head>
+<body>
+<p>这里是客户端，交互通过load实现，收到的消息为：<span></span></p>
+<p>这里是客户端，交互通过load实现，收到的消息为：<span></span></p>
+<p>这里是客户端，交互通过getScript实现，收到的消息为：<span></span></p>
+<p>这里是客户端，交互通过getJSON加载本地json文件实现，收到的消息为：<span></span></p>
+<p>这里是客户端，交互通过getJSON跨源获取json文件（asp回复），收到的消息为：<span></span></p>
+<p>这里是客户端，交互通过Jsonp实现，收到的消息为：<span></span></p>
+<script>
+
+</script>
+</body>
+</html>

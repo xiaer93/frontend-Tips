@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>基于hash的双向通信</title>
+    <style>
+        body{
+            margin: 0;
+        }
+        iframe{
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div>我是a页面。收到来自于b页面的消息：<span></span></div>
+    <iframe src="http://localhost:80/hashB.html" frameborder="0"></iframe>
+
+    <script>
+        var data={
+            "name":"a页面的信使",
+            "info":"hello B"
+        };
+        document.body.onclick=function () {
+            var ifr=document.getElementsByTagName("iframe")[0];
+            var url=ifr.src;
+            var end=url.indexOf("#")>0?url.indexOf("#"):url.length;
+            url=url.substring(0,end);
+            ifr.src=url+"#"+encodeURIComponent(JSON.stringify(data));
+        };
+        window.onhashchange=function () {
+            var s=document.getElementsByTagName("span")[0];
+            var tmp=JSON.parse(decodeURIComponent(window.location.hash.substring(1)));
+            s.innerText=tmp.name+","+tmp.info;
+        }
+    </script>
+</body>
+</html>

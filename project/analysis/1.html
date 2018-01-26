@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>子父元素尺寸居中分析</title>
+    <style>
+        ul{
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        li{
+            box-sizing: border-box;
+            width: 100%;
+            border: 1px solid black;
+            margin: 5px 0;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+<ul>
+    <li>
+        <!--父元素宽高未知，子元素宽高已知，可以通过margin水平居中-->
+        <h4>父元素宽高未知，子元素宽高已知，可以通过margin水平居中</h4>
+        <div style="display: inline-block;border: 1px solid greenyellow">
+            <div style="width: 200px;height: 20px;display: inline-block;background-color: blue"></div>
+            <div style="margin: 0 auto;width: 50px;height: 50px;background-color: crimson;"></div>
+        </div>
+    </li>
+    <li>
+        <!--父元素宽度已知、高度未知，子元素宽度已知、高度未知，子元素高度未撑起-->
+        <h4>父元素宽度已知、高度未知，子元素宽度已知、高度未知，子元素高度未撑起</h4>
+        <div style="width: 100%;font-size: 0;border: 1px solid greenyellow;">
+            <div style="display: inline-block;width: 50%;">
+                <img src="https://gss0.baidu.com/9rkZbzqaKgQUohGko9WTAnF6hhy/mms-res/fed/ife/ife_tutor/htmlcss.ec85cad580b3bfce.jpg" alt="" style=" width:100%">
+            </div>
+            <div style="display: inline-block;width: 50%;height:100%;background-color: red; font-size: 12px">子元素高度未撑起！</div>
+
+        </div>
+    </li>
+    <li>
+        <!--父元素宽度已知、高度未知，子元素宽度已知、高度未知，子元素高度未撑起-->
+        <h4>父元素宽度已知、高度未知，子元素宽度已知、高度未知，子元素高度未撑起</h4>
+        <div style="width: 100%;font-size: 0;border: 1px solid greenyellow;">
+            <img src="https://gss0.baidu.com/9rkZbzqaKgQUohGko9WTAnF6hhy/mms-res/fed/ife/ife_tutor/htmlcss.ec85cad580b3bfce.jpg" alt="" style=" width:50%">
+            <div style="display: inline-block;width: 50%;height:100%;background-color: red; font-size: 12px">子元素高度未撑起！</div>
+        </div>
+    </li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+</ul>
+
+
+</body>
+</html>

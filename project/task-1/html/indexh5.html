@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.js"></script>
+    <title>表单验证(使用html5新特性)</title>
+    <style>
+        body{
+
+        }
+        form{
+            /*不指定width，无法margin居中！！！form为块元素，默认占满全行！*/
+            width: 350px;
+            margin: 20px auto;
+        }
+        p{
+            width: 350px;
+            height: 30px;
+        }
+        label{
+            display: inline-block;
+            width: 100px;
+            height: 30px;
+            line-height: 30px;
+            margin-right: 10px;
+            text-align: right;
+        }
+        input[type="submit"]{
+            box-sizing: border-box;
+            width: 240px;
+            height: 30px;
+        }
+        input[type="submit"]{
+            width: 100%;
+        }
+        /*:valid伪类*/
+        input:invalid { border-color: red; }
+        input, input:valid { border-color: #ccc; }
+
+    </style>
+</head>
+<body>
+<form action=""><!--novalidate="novalidate"，当提交表单时不对其进行验证！！！-->
+    <!--默认情况下，没有设置required，对于空值不进行判断。所以可以设置required强制要求输入数据！-->
+    <p><label for="">邮箱</label><input type="email"></p>
+    <p><label for="">网址</label><input type="url"></p>
+    <!--使用javascript实现完美的提示消息-->
+    <!--可以直接在标签中设置无效提示，oninvalid="setCustomValidity('密码只能为数字！');"  -->
+    <p><label for="">密码</label><input type="password" id="pwd" pattern="[\d]+"></p>
+    <!--title设置的提示消息，带有“请匹配要求的格式：”-->
+    <p><label for="">电话号码</label><input type="tel" pattern="[\d]{11}" title="11位手机号"></p>
+    <p><input type="submit" value="提交"></p>
+
+</form>
+
+<script>
+    $(document).ready(function ($) {
+
+    });
+
+    /*此无效函数为什么不能在$(document)中运行，函数运行环境！*/
+    var input=document.getElementById("pwd");
+    input.oninvalid=function (event) {
+        event.target.setCustomValidity('密码只能为数字！');
+    };
+
+    /*表单控件事件*/
+    /*
+    * oninput，在对象value值发生发生改变时奏效
+    * onchange，失去焦点，对于input时，只有当文本内容改变时才触发！
+    *
+    * 表单控件的方法
+    * input.checkValidity()，用于检测表单控件的值是否有效！
+    * */
+</script>
+</body>
+</html>

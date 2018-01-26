@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>二叉树</title>
+    <script type="text/javascript" src="../js/jquery.js"></script>
+
+    <script>
+        /*二叉树*/
+        function TreeNode(data) {
+            if(typeof data === "undefined"){
+                throw new Error("创建节点必须传入数据");
+                return;
+            }else{
+                this.data=data;
+            }
+            this.left=null;
+            this.right=null;
+        }
+        function Tree() {
+            var root=null;
+            /*记录步骤，遍历步骤和查询步骤*/
+            var step=[];
+
+            /*返回根节点*/
+            this.getRoot=function () {
+              return root;
+            };
+            /*清空树*//*javascript的树需要清理吗？直接使用tree=null，是不是更有效？*/
+            var __clear=function (node) {
+                if (node!==null){
+                    __clear(node.left);
+                    __clear(node.right);
+                    node.left=null;
+                    node.right=null;
+                }
+            };
+            this.clear=function () {
+                __clear(root);
+            };
+            /*访问节点*/
+            var visit=function (node) {
+                if(node !== null){
+                    return node.data;
+                }else{
+                    return undefined;
+                }
+            };
+            /*插入节点*/
+            this.insert=function (data) {
+
+                if(root===null){/*root可以这么判断吗？*/
+                    root=new TreeNode(data);
+                }else{
+                    var tmp=root;
+                    var previous=tmp;
+                    while (tmp !== null){
+                        previous=tmp;
+                        /*插入和搜索时，if的判断条件要相同，如二叉树86-》39-》83形式，不相同将可能无法搜索到83！？？*/
+                        if(tmp.data<data){
+                            tmp=tmp.right;
+                        }else{
+                            tmp=tmp.left;
+                        }
+                    }
+                    if(previous.data<data){
+                        previous.right=new TreeNode(data);
+                    }else{
+                        previous.left=new TreeNode(data);
+                    }
+                }
+            };
+            /*查找节点*/
+            var __search=function (data,flag) {
+
+                var previous=undefined;
+
+                var tmp=root;
+                if(tmp.data===data){
+                    return flag?[previous,tmp]:tmp;
+                }
+                while (tmp!==null){
+                    if(tmp.data<data){
+                        previous=tmp;
+                        tmp=tmp.right;
+                    }else if(tmp.data>data){
+                        previous=tmp;
+                        tmp=tmp.left;
+                    }else{
+                        return flag?[previous,tmp]:tmp;
+                    }
+                }
+                return undefined;
+            };
+            this.search=function (data) {
+                /*返回undefined则表示没有找到元素*/
+                return __search(data,false);
+            };
+            /*删除节点*/
+            var __removeNode=function (previous,node) {
+
+                if(typeof previous === "undefined"){
+                    root=null;
+                }
+                /*没有子节点*/
+                var tmp=null;
+                if(node.left===null && node.right===null){
+                    if(previous.left===node)
+                        previous.left=null;
+                    else
+                        previous.right=null;
+                }else if(node.left===null || node.right===null){
+                    tmp=(node.left!==null)? node.left:node.right;
+
+                    if(previous.left===node)
+                        previous.left=tmp;
+                    else
+                        previous.right=tmp;
+                }else{
+
+                    var tmpParent=node;
+                    tmp=node.left;
+                    /*被删除节点左子节点没有右节点*/
+                    if(tmp.right===null){
+                        if(previous.left===node){
+                            previous.left=tmp;
+                            tmp.right=node.right;
+                        }else{
+                            previous.right=tmp;
+                            tmp.right=node.right;
+                        }
+                    }else{
+                        /*被删除节点左子节点有右节点*/
+                        while (tmp.right!==null){
+                            tmpParent=tmp;
+                            tmp=tmp.right;
+                        }
+                        tmpParent.right=null;
+
+                        if(previous.left===node){
+                            previous.left=tmp;
+                        }else{
+                            previous.right=tmp;
+                        }
+                        tmp.left=node.left;
+                        tmp.right=node.right;
+                    }
+                }
+            };
+            this.removeNode=function (data) {
+                /*第二参数设置为true，则返回数组，第一个元素为父节点，第二个元素为子节点*/
+                var tmp=__search(data,true);
+                if (typeof tmp !== "undefined"){
+                    __removeNode(tmp[0],tmp[1]);
+                }
+            };
+
+            /*遍历算法,visit（node）改为调用callback处理遍历得到的节点！*/
+            /*前序遍历*/
+            var __preorder=function (node) {
+                if(node!==null){
+                    step.push(visit(node));
+                    __preorder(node.left);
+                    __preorder(node.right);
+                }
+            };
+            this.preorder=function () {
+                step=[];
+                __preorder(root);
+                return step.slice();
+            };
+            /*中序遍历*/
+            var __inorder=function (node) {
+                if(node!==null){
+                    __inorder(node.left);
+                    step.push(visit(node));
+                    __inorder(node.right);
+                }
+            };
+            this.inorder=function () {
+                step=[];
+                __inorder(root);
+                return step.slice();
+            };
+            /*后序遍历*/
+            var __postorder=function (node) {
+                if(node!==null){
+                    __postorder(node.left);
+                    __postorder(node.right);
+                    step.push(visit(node));
+                }
+            };
+            this.postorder=function () {
+                step=[];
+                __postorder(root);
+                return step.slice();
+            };
+            /*广度遍历*/
+            this.breadfirst=function () {
+                step=[];
+
+                var queue=[];
+                var tmp=null;
+                if(root!==null){
+                    queue.push(root);
+                    while (queue.length>0){
+                        tmp=queue.shift();/*队列*/
+                        step.push(visit(tmp));
+                        if(tmp.left!==null){
+                            queue.push(tmp.left);
+                        }
+                        if(tmp.right!==null){
+                            queue.push(tmp.right);
+                        }
+                    }
+                }
+
+                return step.slice();
+            };
+            /*迭代前序遍历*/
+            this.iterativePreorder=function () {
+                var stack=[];
+                var tmp=null;
+                if(root!==null){
+                    stack.push(root);
+                    while (stack.length>0){
+                        tmp=stack.pop();/*栈*/
+                        console.log(visit(tmp));
+                        if(tmp.left!==null){
+                            stack.push(tmp.left);
+                        }
+                        if(tmp.right!==null){
+                            stack.push(tmp.right);
+                        }
+                    }
+                }
+            };
+            /*迭代中序遍历*/
+            this.iterativeInorder=function () {
+                var stack=[];
+                var tmp=root;
+                while (tmp!==null){
+                    while (tmp!==null){
+                        if(tmp.right!==null){
+                            stack.push(tmp.right);
+                        }
+                        stack.push(tmp);
+                        tmp=tmp.left;
+                    }
+                    tmp=stack.pop();
+                    if(stack.length>0){/*源c++代码，此处错误！*/
+                        console.log(visit(tmp));
+                        tmp=stack.pop();
+                    }
+                    console.log(visit(tmp));
+                    if(stack.length>0){
+                        tmp=stack.pop();
+                    }else{
+                        tmp=null;
+                    }
+                }
+            };
+
+            /*为二叉树动画定义的函数*/
+            /*构建树转dom的函数！*/
+            var __inorderDom=function (node) {
+                if(node!==null){
+                    var div=$("<div></div>").append($("<span></span>").text(visit(node)));
+                    var tmpL=__inorderDom(node.left);
+                    div.append(tmpL);
+                    var tmpR=__inorderDom(node.right);
+                    div.append(tmpR);
+                    return div;
+                }
+            };
+            this.inorderDom=function () {
+                var dom=__inorderDom(root);
+                return dom;
+            };
+            /*检查是否有相等数据，如果相等则返回true*/
+            this.checkEquie=function (data) {
+                var array=this.preorder();
+                var len=array.length;
+                for(var i=0;i<len;++i){
+                    if(array[i]===data)
+                        return true;
+                }
+                return false;
+            }
+            /*查找节点*/
+            this.searchDom=function (data) {
+                step=[];
+                step.push(root.data);
+
+                var previous=undefined;
+                var tmp=root;
+                if(tmp.data===data){
+                    return step.slice();
+                }
+                step=[];/*清除root数据，避免记录了2次*/
+                while (tmp!==null){
+                    step.push(tmp.data);
+                    if(tmp.data<data){
+                        previous=tmp;
+                        tmp=tmp.right;
+                    }else if(tmp.data>data){
+                        previous=tmp;
+                        tmp=tmp.left;
+                    }else{
+                        return step.slice();
+                    }
+                }
+                return undefined;
+            };
+        }
+
+        /*二叉树的动画演示*/
+        function TreeAnimation(selector) {
+            var treeDom=new Tree();
+
+            /*获取dom的树*/
+            this.getTree=function () {
+                return treeDom;
+            };
+
+            /*从dom中获取模型，构件二叉树*/
+            var domToTree=function () {
+                var tmp=$(".container").contents().filter(function (index) {
+                    if(this.tagName.toLowerCase()==="span"){
+                        return true;
+                    }
+                }).text();
+
+                treeDom=new Tree();/*清除原有数据*/
+                for(var i=0;i<tmp.length;++i){
+                    treeDom.insert(Number(tmp[i]));
+                }
+            };
+            var treeToDom=function () {
+                var dom=treeDom.inorderDom();
+                $(".container").html(dom);
+            };
+            /*插入数值范围为0~50*/
+            var getValue=function () {
+              if($("input[type='text']")[0].checkValidity())
+                  return $("input[type='text']").val();
+              else
+                  return;
+            };
+            this.insert=function (data) {
+                if(typeof data !=="number")
+                    var data=getValue();
+                if(typeof data !== "undefined" && treeDom.checkEquie(Number(data))===false){
+                    /*此二叉树进行严格比较，字符不会转换为数字，因此需要进行类型转换！*/
+                    treeDom.insert(Number(data));
+                    treeToDom();
+                    return true;
+                }else{
+                    return false;
+                }
+            };
+            /*删除节点*/
+            this.del=function (data) {
+                if(typeof data !=="number")
+                    var data=getValue();/*如果传入值不是数字，则从输入框中获取*/
+                if(typeof data !== "undefined"){
+                    /*此二叉树进行严格比较，字符不会转换为数字，因此需要进行类型转换！*/
+                    treeDom.removeNode(Number(data));
+                    treeToDom();
+                }
+            };
+            /*查找节点动画*/
+            this.find=function () {
+                var data=getValue();
+                if(typeof data !== "undefined"){
+                    /*此二叉树进行严格比较，字符不会转换为数字，因此需要进行类型转换！*/
+                    var step=treeDom.searchDom(Number(data));
+                    delay(startOrder,step,500);
+                }
+            };
+            /*自动创建二叉树*/
+            this.autoFill=function () {
+                /*清空现有二叉树*/
+                treeDom.clear();
+                treeToDom();
+                /*创建二叉树*/
+                var count=Number(getValue());
+                if(Number(count)>25)/*自动创建最多25个！*/
+                    count=25;
+                for(var i=0;i<count;){
+                    var tmp=Math.floor(Math.random()*50)+1;
+                    if(this.insert(tmp)===true){
+                        ++i;
+                    }
+                }
+            };
+            /*延时程序*/
+            var delay=function (func,array,duration) {
+                window.setTimeout(function () {
+                    var flag=func(array,duration-50);
+                    if(flag===true){
+                        setTimeout(arguments.callee,duration);
+                    }
+                },0)
+            };
+            var startOrder=function (array,dtime) {
+                var tmp=array.shift();
+                $("div",".container").css("backgroundColor","white");
+                $("div",".container").filter(function (index) {
+                    if($(this).children("span").text()==tmp){
+                        $(this).css("backgroundColor","yellow");
+                    }
+                });
+                if(array.length>0)
+                    return true;
+                else
+                    return false;
+            };
+            /*开始执行动画*/
+            this.start=function () {
+                var sortFunc=null;
+                switch ($(".sortFunc input[name='order']:checked").val()){
+                    case "preorder":
+                        sortFunc=treeDom.preorder;
+                        break;
+                    case "inorder":
+                        sortFunc=treeDom.inorder;
+                        break;
+                    case "postorder":
+                        sortFunc=treeDom.postorder;
+                        break;
+                    case "breadfirst":
+                        sortFunc=treeDom.breadfirst;
+                        break;
+                }
+
+
+                var step=sortFunc();
+                console.log(step);
+                delay(startOrder,step,500);
+            }
+
+
+        }
+        /*继承tree类
+        var prototype=Object.create(Tree);
+        prototype.constructor=TreeAnimation;
+        TreeAnimation.prototype=prototype;*/
+
+        $(document).ready(function ($) {
+            var ta=new TreeAnimation();
+            ta.autoFill();/*页面加在完后创建一个二叉树*/
+
+            $(".addNodes").click(function (event) {
+
+                switch (event.target.name){
+                    case "insert":
+                        ta.insert();
+                        break;
+                    case "autoFill":
+                        ta.autoFill();
+                        break;
+                    case "start":
+                        ta.start();
+                        break;
+                    case "delete":
+                        ta.del(Number(bedeleted));/*传入选中的值*/
+                        break;
+                    case "find":
+                        ta.find();
+
+                }
+            });
+
+            var bedeleted=undefined;/*记录选中元素的值*/
+            $(".container").click(function (event) {
+                var target=event.target;
+                $(".container div").css("backgroundColor","white");
+                if(target.tagName.toLowerCase()==="span")
+                    target=$(target).parent("div")[0];
+                bedeleted=$(target).css("backgroundColor","yellow").children("span").text();
+            })
+        })
+
+    </script>
+
+    <script>
+        /*多叉树*/
+        function MulitTreeNode(data) {
+            this.data=data;
+            this.childTree=[];
+        }
+        function MulitTree() {
+            var root=null;
+
+            this.insert=function (refData,data){
+                if(root===null){
+                    root=new MulitTreeNode(data);
+                }else{
+                    var ref=__search(refData);
+                    ref.childTree.push(new MulitTreeNode(data));
+                }
+
+
+            };
+            /*深度遍历,递归形式*/
+            var __DFS=function (node) {
+                if(node!==null){
+                    console.log(node.data);
+                }
+                if(node.childTree.length>0){
+                    for(var i=0,len=node.childTree.length;i<len;i++){
+                        __BFS(node.childTree[i]);
+                    }
+                }
+            };
+            this.DFS=function () {
+              __DFS(root);
+            };
+
+            /*广度遍历*/
+            var BFS=function () {
+                var stack=[];
+                stack.push(root);
+                while (stack.length>0){
+                    var tmp=stack.pop();
+                    console.log(tmp.data);
+                    if(tmp.childTree.length>0){
+                        for(var i=0;i<tmp.childTree.length;i++){
+                            stack.push(tmp[i]);
+                        }
+                    }
+                }
+            };
+
+            /*搜索*/
+            var __search=function (data) {
+                var stack=[];
+                stack.push(root);
+                while (stack.length>0){
+                    var tmp=stack.pop();
+                    if(data===tmp.data){
+                        return tmp;
+                    }
+
+                    for(var i=0;i<tmp.childTree.length;i++){
+                        stack.push(tmp[i]);
+                    }
+                }
+            }
+
+        }
+    </script>
+
+    <style>
+        html{
+            width:100%;
+            height: 100%;
+        }
+        body{
+            width: 100%;
+            height: 100%;
+        }
+        .wrapper{
+            display: flex;
+            width: 95%;
+            height: 95%;
+            margin: auto;
+            flex-direction: column;
+        }
+        .control{
+
+        }
+        .container{
+            flex: 1;
+        }
+        .container div{
+            display: flex;
+            align-items: stretch;
+            position: relative;
+            box-sizing: border-box;
+            width: 100%;
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid black;
+            cursor: pointer;
+        }
+        .container span{
+            position: absolute;
+            background-color: red;
+            left: 0;
+            top: 0;
+        }
+
+        .sortFunc p{
+            display: inline-block;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="control">
+            <form class="addNodes">
+                <div>
+                    <input type="text" pattern="[\d]+" value="20" placeholder="请输入0-99之间数字">
+                    <input type="button" value="插入" name="insert">
+                    <input type="button" value="删除" name="delete">
+                    <input type="button" value="查找" name="find">
+                    <input type="button" value="动画" name="start">
+                    <input type="button" value="自动创建" name="autoFill">
+                </div>
+
+                <div class="sortFunc">
+                    <p><input type="radio" value="preorder" name="order" checked="checked"><label for="">前序遍历</label></p>
+                    <p><input type="radio" value="inorder" name="order"><label for="">中序遍历</label></p>
+                    <p><input type="radio" value="postorder" name="order"><label for="">后序遍历</label></p>
+                    <p><input type="radio" value="breadfirst" name="order"><label for="">广度遍历</label></p>
+                </div>
+            </form>
+        </div>
+        <div class="container">
+            <div>
+                <span>50</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

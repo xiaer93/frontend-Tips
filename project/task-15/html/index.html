@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>css动画效果</title>
+</head>
+
+<style>
+    .container>div{
+        margin: 20px;
+        border: 1px solid crimson;
+        text-align: center;
+    }
+
+    /*流光动画*/
+    .welcome{
+        position: relative;
+        display: inline-block;
+        width: 500px;
+    }
+    .welcome img{
+        width: 100%;
+    }
+    .welcomeInfo{
+        position: absolute;
+        width: 70%;
+        height: 70%;
+        left:50%;
+        top: 50%;
+        transform: translate(-50%,-50%);
+    }
+
+    /*背景虚化动画 -webkit-filter私有属性 Filter函数*/
+    .welcome:hover img{
+        -webkit-filter: blur(2px);
+        filter: blur(2px);
+    }
+
+    /*线条动画*/
+    .welcomeInfo:after{
+        box-sizing: border-box;
+        content: "";
+        width: 0;
+        height: 100%;
+        border-width: 2px 0;
+        border-style: solid;
+        border-color: #f0f0f0;
+        position: absolute;
+        left: 50%;
+        top:0;
+    }
+    .welcomeInfo:before{
+        box-sizing: border-box;
+        display: inline-block;
+        content: "";
+        width: 100%;
+        height: 0;
+
+        border-width: 0 2px;
+        border-style: solid;
+        border-color: #f0f0f0;
+        position: absolute;
+        left: 0;
+        top: 50%;
+    }
+    .welcome:hover>div:after{
+        left: 0;
+        width: 100%;
+
+        transition: all 3s;
+    }
+    .welcome:hover>div:before{
+        top:0;
+        height: 100%;
+
+        transition: all 3s;
+    }
+
+    /*文字动画*/
+    .welcomeInfo h3{
+        background: linear-gradient(to left, blue 0,yellow 16.66%, red 33.33%, blue 50%,yellow 66.66%, red 83.33%, blue 100%);
+        -webkit-background-clip: text;
+        animation: textAnimation 3s infinite linear;
+        color: transparent;
+        background-size: 200% 100%;
+
+        font-size: 30px;
+        font-family: "Microsoft Tai Le", "sans-serif";
+
+    }
+    @keyframes textAnimation {
+        0%{
+            background-position: left;
+        }
+        100%{
+            background-position: right;
+        }
+    }
+
+    /*按钮样式*/
+    .welcomeInfo a{
+        position: relative;
+        text-decoration: none;
+        font-size: 15px;
+        cursor: pointer;
+        z-index: 999;
+    }
+    .welcomeInfo a:hover{
+        font-size: 18px;
+    }
+
+    /*动画可见性welcomeInfo可见性控制*/
+    .welcomeInfo{
+        visibility: hidden;
+    }
+    .welcome:hover .welcomeInfo{
+        visibility: visible;
+    }
+
+
+    /*加载的圈圈动画*/
+    .loading{
+        position: relative;
+        display: inline-block;
+        margin: 20px 0;
+        height: 120px;
+        width: 120px;
+    }
+    .loading div{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-top: -40px;
+        margin-left: -40px;
+    }
+    .outer{
+        box-sizing: border-box;
+        width: 112px;
+        height: 112px;
+        border: 2px solid crimson;
+        border-radius: 56px;
+        margin-top: -55px !important;
+        margin-left: -55px !important;
+        border-top-color: transparent;
+    }
+    .circle{
+        border: 40px solid rgb(153, 153, 153);
+        border-radius: 40px;
+        height: 0;
+        width: 0;
+    }
+    .left,.right{
+        transform-origin: 40px 40px;
+    }
+    .left{
+        width: 80px;
+        height: 40px;
+        border-radius: 80px 80px 0 0;
+        background-color: #DC143C;
+        transform: rotate(90deg);
+        z-index: 1;
+    }
+    .right{
+        width: 80px;
+        height: 40px;
+        border-radius: 80px 80px 0 0;
+        background-color: #999;
+        transform: rotate(90deg);
+        z-index: 2;
+    }
+    
+    .outer{
+        animation: outer 0.5s infinite linear;
+    }
+    @keyframes outer {
+        0%{
+           transform: rotate(0deg); 
+        }
+        100%{
+            transform: rotate(360deg);
+        }
+    }
+    /*rotate的值可以超过360deg！*/
+    .left{
+        animation: left 1s infinite linear;
+    }
+    @keyframes left {
+        0%{
+            z-index: 1;
+            transform: rotate(90deg);
+        }
+        25%{
+            z-index: 1;
+            transform: rotate(270deg);
+        }
+        25.1%{
+            z-index: 2;
+        }
+        50%{
+            transform: rotate(270deg);
+        }
+        75%{
+            z-index: 2;
+            transform: rotate(450deg);
+        }
+        75.1%{
+            z-index: 1;
+        }
+        100%{
+            z-index: 1;
+            transform: rotate(450deg);
+        }
+
+    }
+    .right{
+        animation: right 1s infinite linear;
+    }
+    @keyframes right {
+        0%{
+            z-index: 2;
+            transform: rotate(90deg);
+        }
+        25%{
+            z-index: 2;
+            transform: rotate(90deg);
+        }
+        25.1%{
+            z-index: 1;
+        }
+        50%{
+            transform: rotate(270deg);
+        }
+
+        75%{
+            z-index: 1;
+            transform: rotate(270deg);
+        }
+        75.1%{
+            z-index: 2;
+        }
+        100%{
+            z-index: 2;
+            transform: rotate(450deg);
+        }
+    }
+    .circle{
+        animation: circle 1s infinite linear;
+    }
+    @keyframes circle {
+        0%{
+            border-color: #999;
+        }
+        25%{
+            border-color: #999;
+        }
+        25.1%{
+            border-color: #DC143C;
+        }
+        75%{
+            border-color: #DC143C;
+        }
+        75.1%{
+            border-color: #999;
+        }
+        100%{
+            border-color: #999;
+        }
+    }
+
+/*制作圆的2种方式，1.border-width   2.width和height配合border-radius*/
+/*此方式会产生1px的小边
+border: 40px solid rgb(153, 153, 153);
+border-radius: 40px/40px;
+height: 0;
+width: 0;
+border-bottom-color: transparent;
+border-right-color: transparent;
+transform: rotate(-45deg);
+*/
+
+    /*3D轮播*/
+    .stage{
+        width: 100%;
+        height: 400px;
+        perspective: 1200px;
+    }
+    .imgStage{
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform-style:preserve-3d;
+
+        animation: rotate 10s linear infinite;
+    }
+    @keyframes rotate {
+        0%{
+            transform: rotateX(2deg) rotateY(0deg);
+        }
+        100%{
+            transform: rotateX(2deg) rotateY(360deg);
+        }
+    }
+    /*img通过这样设置还是可以的 transform: rotateY(120deg) translateZ(300px);*/
+    .imgStage img{
+        position: absolute;
+        width: 200px;
+        margin-top: 150px;
+        margin-left: -80px;
+    }
+    .imgStage img:nth-child(1){
+        transform: translateZ(-242px);
+    }
+    .imgStage img:nth-child(2){
+        transform: translate3d(172px,0,-172px) rotateY(-45deg);
+    }
+    .imgStage img:nth-child(3){
+        transform: translateX(242px) rotateY(90deg);
+    }
+    .imgStage img:nth-child(4){
+        transform: translate3d(172px,0,172px) rotateY(-135deg);
+    }
+    .imgStage img:nth-child(5){
+        transform: translateZ(242px) rotateY(180deg);
+    }
+    .imgStage img:nth-child(6){
+        transform: translate3d(-172px,0,172px) rotateY(-225deg);
+    }
+    .imgStage img:nth-child(7){
+        transform: translateX(-242px) rotateY(-270deg);
+    }
+    .imgStage img:nth-child(8){
+        transform: translate3d(-172px,0,-172px) rotateY(-315deg);
+    }
+
+
+</style>
+
+<body>
+
+<div class="wrapper">
+    <div class="container">
+        <div class="one">
+            <figure class="welcome">
+                <img src="../rec/bg.jpg" alt="bg">
+                <div class="welcomeInfo">
+                    <h3>欢迎浏览 共同学习</h3>
+                    <a href="#">点击进入</a>
+                </div>
+            </figure>
+        </div>
+        <div class="two">
+            <div class="loading">
+                <div class="circle"></div>
+                <div class="left"></div>
+                <div class="right"></div>
+                <div class="outer"></div>
+            </div>
+        </div>
+        <div class="three">
+
+            <div class="stage">
+                <div class="imgStage">
+                    <img src="../rec/bg.jpg" alt="">
+                    <img src="../rec/bg.jpg" alt="">
+                    <img src="../rec/bg.jpg" alt="">
+                    <img src="../rec/bg.jpg" alt="">
+                    <img src="../rec/bg.jpg" alt="">
+                    <img src="../rec/bg.jpg" alt="">
+                    <img src="../rec/bg.jpg" alt="">
+                    <img src="../rec/bg.jpg" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

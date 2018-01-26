@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>排序表格</title>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.js"></script>
+
+
+    <style>
+
+    </style>
+
+    <script>
+        /*定义排序表格类*/
+        var TableSort=function (data,selectorText) {
+            this.datas=data;
+            this.selectorText=selectorText;
+        };
+
+        TableSort.prototype={
+            constructor:TableSort,
+            flag:{name:"",direction:true},/*direction指示正反，true为降序*/
+
+            init:function () {
+                /*创建表格*/
+                var table=$("<table></table>");
+                var lenHead=this.datas.thead.length,
+                    lenBody=this.datas.tbody.length,
+                    i;
+                var thead=$("<thead></thead>"),
+                    tbody=$("<tbody></tbody>");
+
+                /*创建表格头部*/
+                for (i=0;i<lenHead;++i){
+                    var tmp=this.datas.thead[i];
+                    var th=$("<th></th>");
+
+                    th.text(tmp.label).data("name",tmp.name);
+                    /*如果表头有排序方法，则增加类sortButton,并添加子元素span*/
+                    if(tmp.sortable){
+                        th.addClass("sortButton");
+                        /*向flag标志指示的按钮增加选中样式，被选中的排序方式为红色填充！*/
+                        if(tmp.name===this.flag.name){
+                            if (this.flag.direction===true){
+                                th.append($("<span></span>").addClass("sortTop").addClass("select")).append($("<span></span>").addClass("sortBottom"));
+                            }else{
+                                th.append($("<span></span>").addClass("sortTop")).append($("<span></span>").addClass("sortBottom").addClass("select"));
+                            }
+                        }else{
+                            th.append($("<span></span>").addClass("sortTop")).append($("<span></span>").addClass("sortBottom"));
+                        }
+                    }
+                    thead.append(th);
+                }
+                /*创建表格主体内容*/
+                for(i=0;i<lenBody;++i){
+                    var tmp=this.datas.tbody[i];
+                    var tr=$("<tr></tr>");
+                    /*创建td，并添加至tr中*/
+                    for(var j in tmp){
+                        tr.append($("<td>"+tmp[j]+"</td>"));
+                    }
+                    tbody.append(tr);
+                }
+                /*将表填添加至页面，显示*/
+                $(this.selectorText).empty().append(table.append(thead).append(tbody));
+            },
+            sort:function (sortFunc,valueType,direction) {
+                /*排序，默认为降序*/
+                sortFunc(this.datas.tbody,valueType);
+                this.flag.name=valueType;
+                /*如果传入false，则数组取反，升序！*/
+                if(direction===false){
+                    this.datas.tbody=this.datas.tbody.reverse();
+                    this.flag.name=valueType;
+                }
+                this.init();
+            }
+
+        };
+
+        /*选择排序,数组成员为对象，通过valueType可以更改对象参与比较的数据！*/
+        var selectionSort=function (data,valueType) {
+            if(data instanceof Array){
+                var i,
+                    j,
+                    max,
+                    len=data.length;
+
+                for(i=0;i<len;++i){
+                    for(j=i+1,max=i;j<len;++j){
+                        if(data[j][valueType]>data[max][valueType]){
+                            max=j;
+                        }
+                    }
+                    if(i!==max)
+                        swap(data,i,max);
+                }
+            }else{
+                throw new Error("比较对象不为数组！");
+            }
+        };
+        /*冒泡排序*/
+        var bubbleSort=function (data,valueType) {
+            if(data instanceof Array){
+                var i,
+                    j,
+                    len=data.length,
+                    flag=true;
+                for (i=0;i<len && flag===true;++i){
+                    flag=false;
+                    for(j=len-1;j>i;j--){
+                        if(data[j][valueType]>data[j-1][valueType]){
+                            swap(data,j,j-1);
+                            flag=true;
+                        }
+                    }
+                }
+            }else {
+                throw new Error("data不是数组！");
+            }
+        };
+
+
+        var swap=function(data,left,right){
+            var tmp=data[left];
+            data[left]=data[right];
+            data[right]=tmp;
+        }
+    </script>
+
+    <script>
+        /*数据结构*/
+        var students={"thead":[{
+            "name": 'name',
+            "label": '姓名',
+            "sortable": false
+        },{
+            "name": "chinese",
+            "label": "语文",
+            "sortable": true
+        },{
+            "name": 'math',
+            "label": '数学',
+            "sortable": true
+        },{
+            "name": 'english',
+            "label": '英语',
+            "sortable": true
+        },{
+            "name": 'total',
+            "label": '总分',
+            "sortable": true
+        }],"tbody":[{
+            "name": '小明',
+            "chinese": 90,
+            "math": 100,
+            "english": 70,
+            "total": 260
+        },{
+            "name": '小花',
+            "chinese": 90,
+            "math": 70,
+            "english": 80,
+            "total": 240
+        }, {
+            "name": '小红',
+            "chinese": 70,
+            "math": 90,
+            "english": 70,
+            "total": 230
+        },{
+            "name": '小桃',
+            "chinese": 60,
+            "math": 100,
+            "english": 90,
+            "total": 250
+        },{
+            "name": '小张',
+            "chinese": 80,
+            "math": 80,
+            "english": 70,
+            "total": 230
+        }]};
+
+        $(document).ready(function ($) {
+            var tb=new TableSort(students,"#studentRank");
+            tb.init();
+            /*升序*/
+            $("#studentRank").click(function (event) {
+
+                if(event.target.tagName.toLowerCase()==="span"){
+                    if($(event.target).hasClass("sortTop")){
+                        /*flag记录表格当前排序的比较项目和正反序*/
+                        tb.flag.name=$(event.target).parent("th").data("name");
+                        /*direction为true时表示降序*/
+                        tb.flag.direction=true;
+                        tb.sort(selectionSort,tb.flag.name,true);
+                    }
+                    if($(event.target).hasClass("sortBottom")){
+                        tb.flag.name=$(event.target).parent("th").data("name");
+                        /*direction为true时表示升序*/
+                        tb.flag.direction=false;
+                        tb.sort(bubbleSort,tb.flag.name,false);
+                    }
+                }
+            });
+        });
+    </script>
+
+    <style>
+        .container{
+
+        }
+        #studentRank{
+            margin: 0 auto;
+            width: 500px;
+            height: 300px;
+        }
+        #studentRank table{
+            border-collapse: collapse;
+            overflow: auto;
+        }
+        #studentRank thead{
+            background-color: #3C3C3C;
+        }
+        #studentRank td,#studentRank th{
+            width: 90px;
+            line-height: 40px;
+            text-align: center;
+            border: 1px solid #d45d5c;
+        }
+        /*排序按钮样式*/
+        .sortButton{
+            position: relative;
+        }
+        .sortTop,.sortBottom{
+            display: inline-block;
+            position: absolute;
+            content: "";
+            width: 0;
+            height: 0;
+            right: 7px;
+            border: 6px solid transparent;
+            border-bottom-color: #fff;
+            cursor: pointer;
+        }
+        /*降序*/
+        .sortTop{
+            bottom: 5px;
+            /*统一使用下边的三角形，因此旋转180度对称！*/
+            transform: rotate(180deg);
+        }
+        /*升序*/
+        .sortBottom{
+            top: 5px;
+        }
+        /*正反序标志*/
+        .select{
+            border-bottom-color: red;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <div class="container">
+        <div id="studentRank">
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

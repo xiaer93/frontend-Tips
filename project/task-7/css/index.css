@@ -1,0 +1,611 @@
+/*清除样式*/
+html,body,h1,h2,h3,h4,h5,table,ul,p,figure{
+    margin:0;
+    padding:0;
+}
+h1,h2,h3,h4,h5{
+    font-weight: normal;
+}
+body{
+
+    background-color: #2f2f2f;
+}
+a{
+    text-decoration: none;
+    cursor: pointer;
+}
+.clearFloat:after,.clearFloat:before{
+    content: "";
+    display: table;
+}
+.clearFloat:after{
+    clear: both;
+}
+/*wrapper*/
+.wrapper{
+    width: 100%;
+    min-width: 1080px;
+    overflow: auto;
+    margin: 0 auto;
+
+}
+.container{
+    width: 100%;
+    background-color: #fff;
+}
+/*header*/
+.header{
+    position: relative;
+    height: 51px;
+    width: 100%;
+    font-size: 21px;
+    font-family: "SimHei","serif";
+    color: rgb(57,58,58);
+}
+.logo{
+    position: absolute;
+    top:0;
+    left: 0;
+    margin-left: 60px;
+    margin-top: 11px;
+    height: 30px;
+    width: 103px;
+}
+.logo h1{
+    float: left;
+    width: 30px;
+    height: 30px;
+    text-indent: -9999px;
+    background-repeat: no-repeat;
+    background-position: -1px -46px;
+    background-image: url("../rec/mission7_sprit.png");
+}
+.logo span{
+    float: left;
+    margin-left: 10px;
+    line-height: 30px;
+}
+.menu{
+    float: right;
+    height:100%;
+    width: 100%;
+    text-align: right;
+    font-size: 14px;
+    font-family: "Microsoft YaHei","serif";
+}
+.menu ul{
+    list-style: none;
+}
+.menu li{
+    box-sizing: border-box;
+    padding: 0 10px;
+    display: inline-block;
+    height: 50px;
+    line-height: 50px;
+    width: 81px;
+    border-bottom: 2px solid transparent;
+    text-align: center;
+}
+.menu li:hover{
+    border-bottom-color: red;
+}
+#login{
+
+}
+#login:before{
+    content: "";
+    float: left;
+    width: 15px;
+    height: 15px;
+    background-image: url("../rec/mission7_sprit.png");
+    background-position: -39px -60px;
+    margin-top: 17px;
+}
+
+/*main*/
+/*banner*/
+.banner{
+    position: relative;
+    width: 100%;
+}
+.bannerBg img{
+    width: 100%;
+}
+.bannerBg div{
+    position: absolute;
+    top: 40%;
+    left: 10%;
+    width: 330px;
+    height: 63px;
+    background-color: rgb(212,93,92);
+    font-size: 30px;
+    font-family: "Microsoft YaHei","sans-serif";
+    color: #fff;
+    text-align: center;
+}
+.bannerBg div a{
+    color: #fff;
+    line-height: 63px;
+}
+/*bannerIdea*/
+.bannerIdea{
+    height: 245px;
+    width: 100%;
+}
+.bannerIdea figure{
+    box-sizing: border-box;
+    float: left;
+    width: 25%;
+    height: 100%;
+    text-align: center;
+}
+.bannerIdea figure>div{
+    display: inline-block;
+    margin: 45px;
+    width: 43px;
+    height: 43px;
+    background: url("../rec/mission7_sprit.png") no-repeat;
+}
+#one div{
+
+}
+#two div{
+    background-position: -43px 0;
+}
+#Three div{
+    background-position: -86px 0;
+}
+#four div{
+    background-position: -129px 0;
+}
+.bannerIdea figure>figcaption{
+    padding: 0 50px;
+    height: 50px;
+    border-left: 2px solid gray;
+}
+.bannerIdea figure:first-child figcaption{
+    border-left: none;
+}
+
+/*aboutus*/
+.aboutus{
+    width: 100%;
+}
+.title{
+    height: 360px;
+    text-align: center;
+    background-color: rgb(237,237,237);
+}
+.title div{
+    display: inline-block;
+    width: 95px;
+    height: 95px;
+    margin-top: 80px;
+    background: url("../rec/mission7_sprit.png") no-repeat 0 -85px;
+}
+.title h2{
+    margin-top: 40px;
+    font-size: 55px;
+    color: rgb(50,50,50);
+    font-family: "SimHei","serif";
+    opacity: 0.5;
+}
+/*findcity*/
+.findcity{
+    position: relative;
+    overflow: hidden;
+    height: 340px;
+    background: url("../rec/mission7_city.jpg") no-repeat;
+    -webkit-background-size: cover;
+    background-size: cover;
+}
+.citySearch{
+    position: absolute;
+    width: 100%;
+    top:55%;
+    text-align: center;
+
+}
+.citySearch form{
+}
+.citySearch div{
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+}
+.citySearch select{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    <!--padding-right: 35px;-->
+}
+.citySearch select,.citySearch input{
+    box-sizing: border-box;
+    width: 240px;
+    height: 35px;
+    padding-left: 10px;
+    margin-right: 30px;
+    border: none;
+}
+.citySearch input{
+    margin-right: 0;
+}
+.citySearch .icon{
+    position: absolute;
+    content: "1";
+    width: 18px;
+    height: 18px;
+    margin: 10px;
+    right: 35px;
+    bottom: 0;
+    background-image: url("../rec/mission7_sprit.png");
+    background-repeat: no-repeat;
+    background-position: -146px -157px;
+}
+.citySearch input{
+    text-align: center;
+    color: #fff;
+    background-color: rgb(191,79,72);
+}
+.citySearch option{
+    padding-left: 25px;
+    background-color: rgb(227,227,227);
+}
+/*option的颜色由浏览器决定，只能使用ul+li制作模仿！才能修改颜色
+.citySearch option:focus{
+    background-color: rgb(191,79,72);
+}*/
+
+/*instroduction*/
+/*intrFirst*/
+.intrFirst{
+    padding: 100px 0;
+    width: 100%;
+    text-align: center;
+    background-color: rgb(237,237,237);
+}
+.intrFirst figure{
+    display: inline-block;
+    overflow: hidden;
+    width: 222px;
+    padding: 0 20px;
+}
+.figureIcon{
+    display: inline-block;
+    box-sizing: border-box;
+    width: 220px;
+    height: 320px;
+    padding: 3px 5px;
+    border: 1px solid rgb(210,210,210);
+    background-image: url("../rec/mission7_avtivity.png");
+}
+.intrFirst figcaption{
+    font-size: 16px;
+    font-family: "Microsoft YaHei","serif";
+    padding: 20px 0;
+}
+.intrFirst figcaption span{
+    font-size: 14px;
+    color: #938e8c;
+}
+/*intrSecond*/
+/*introduction one 简称introne*/
+.introne{
+    width: 100%;
+    font-size: 0;
+}
+.introneL{
+    display: inline-block;
+    width: 65%;
+}
+.introneL img{
+    width:100%;
+}
+.introneR img{
+    width: 185%;
+}
+.introneR{
+    display: inline-block;
+    overflow: hidden;
+    width: 35%;
+    height: 100%;
+    position: relative;
+}
+.intrNewWorld{
+    position: absolute;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    text-align: center;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0 30px;
+}
+.intrNewWorld h4{
+    font-size: 18px;
+
+}
+.intrNewWorld p{
+    font-size: 12px;
+    letter-spacing: 5px;
+    line-height: 2.5em;
+    text-align: left;
+    color: rgb(170,170,170);
+}
+.intrNewWorld a{
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 12px;
+    padding: 3% 10%;
+    background-color: white;
+    border: solid 1px gray;
+    cursor: pointer;
+}
+/*红色新时代的修改*/
+.noBorder{
+    border: none !important;
+}
+.pWhite{
+    color: #fff !important;
+}
+.pPink{
+    color: rgb(191,79,72) !important;
+}
+
+.intrtwo{
+    width: 100%;
+}
+
+.intrTwoL{
+    float: left;
+    position: relative;
+    width: 32.5%;
+    height: 100%;
+    background-color: rgb(191,79,72);
+}
+.intrTwoM{
+    float: left;
+    position: relative;
+    width: 32.5%;
+    height: 100%;
+}
+.intrTwoR{
+    float: left;
+    width: 35%;
+}
+.intrtwo img{
+    width: 107%;
+}
+.intrTwoR img{
+    width: 100%;
+}
+.changep{
+    font-size: 21px !important;
+    text-align: center !important;
+    color: #fff;
+}
+
+/*joinus*/
+.joinus{
+    width: 100%;
+    font-family: "SimHei","serif";
+    font-size: 21px;
+    color: rgb(50,50,50);
+}
+.joinusHeader{
+    margin-top: 120px;
+    text-align: center;
+}
+.joinusHeader h2{
+}
+.joinusHeader p{
+    margin-top: 10px;
+    font-family: "Microsoft YaHei","sans-serif";
+    font-size: 12px;
+    color: rgb(170,170,170);
+    line-height: 18px;
+}
+.joinusBody{
+    margin: 120px auto;
+    width: 80%;
+}
+.agreements,.writeform{
+    float: left;
+}
+.agreements{
+    width: 35%;
+    font-family: "Microsoft Tai Le","sans-serif";
+    color: rgb(35,24,21);
+}
+.writeform{
+    width: 58%;
+    margin-left: 7%;
+}
+.agree p:nth-child(1){
+    opacity: 0.8;
+    font-size: 14px;
+    font-family: "SimHei","serif";
+}
+.agree p:nth-child(2){
+    padding-top: 20px;
+    opacity: 0.6;
+    font-size: 12px;
+    line-height: 21px;
+}
+.agree p:nth-child(3){
+    padding-bottom: 20px;
+    opacity: 0.6;
+    text-align: right;
+    font-size: 12px;
+}
+.agree p:nth-child(3) span{
+    position: relative;
+    cursor: pointer;
+}
+.agree p:nth-child(3) span:before{
+    position: absolute;
+    content: "";
+    opacity: 1;
+    width: 10px;
+    height: 10px;
+    top: 6px;
+    left: -12px;
+    background: url("../rec/mission7_sprit.png") no-repeat -128px -167px;
+}
+/*writeform*/
+.formWorld p{
+    float: left;
+    margin: 0 20px 20px 0;
+    width: 280px;
+    height: 40px;
+    background-color: rgb(237,237,237);
+}
+.formWorld label{
+    width: 50px;
+    height: 40px;
+    line-height: 40px;
+    float: left;
+    margin-right: 5px;
+    padding-left: 5px;
+    font-size: 12px;
+    color: rgb(35,24,21);
+    opacity: 0.8;
+}
+.formWorld p input{
+    box-sizing: border-box;
+    height: 40px;
+    width: 215px;
+    padding: 5px 5px 5px 0;
+    border: none;
+    background-color: rgb(237,237,237);
+}
+/*去除input为number的标签箭头*/
+.formWorld p input::-webkit-outer-spin-button,.formWorld p input::-webkit-inner-spin-button{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+input[type="number"]{
+    -moz-appearance: textfield;
+}
+
+.formSumit>p{
+    background-color: rgb(237,237,237);
+    margin: 20px 0 0 0;
+    /*最大化时，多文本框与input单行文本框同宽*/
+    max-width: 577px;
+}
+.formSumit>p:first-child{
+    margin-top: 0;
+}
+
+.formSumit span{
+    font-size: 12px;
+    color: rgb(35,24,21);
+    opacity: 0.8;
+}
+.formSumit p:first-child{
+    padding: 5px 0 0 5px;
+}
+.formSumit .textarea{
+    display: block;
+    box-sizing: border-box;
+    overflow: auto;
+    width: 100%;
+    height: 100px;
+    background-color: rgb(237,237,237);
+    font-size: 14px;
+    color: rgb(50,50,50);
+
+    /*最大化时，多文本框与input单行文本框同宽*/
+    max-width: 577px;
+}
+.formSumit input[type="submit"]{
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    background-color: rgb(237,237,237);
+    border: none;
+    outline:none;
+    font-size: 14px;
+    color: rgb(50,50,50);
+
+}
+/*contactus*/
+.contactus{
+    overflow: hidden;
+    height: 350px;
+    width: 100%;
+    background-color: rgb(50,54,62);
+    text-align: center;
+}
+.contactusHeader{
+
+    margin-top: 80px;
+
+}
+.contactusHeader h2{
+    font-size: 21px;
+    font-family: "SimHei","serif";
+    color: #fff;
+}
+.contactusHeader p{
+    font-family: "Microsoft Tai Le","sans-serif";
+    padding: 8px;
+    font-size: 12px;
+    line-height: 18px;
+    color: #fff;
+}
+.contactus form{
+    display: inline-block;
+    margin-top: 30px;
+    background-color: #fff;
+    height: 40px;
+    width: 510px;
+}
+.contactus input{
+    border: none;
+    box-sizing: border-box;
+    height: 40px;
+}
+.contactus input[type="submit"]{
+    width: 80px;
+    margin-left: -4px;
+    color: #fff;
+    background-color: rgb(111,113,120);
+}
+.contactus input[type="email"]{
+    padding-left: 8px;
+    width: 430px;
+}
+
+/*footer*/
+.footer{
+    height:60px;
+    width: 100%;
+    background-color: rgb(47,48,57);
+    line-height: 60px;
+    font-size: 12px;
+    color: #fff;
+    font-family: "Microsoft YaHei","sans-serif";
+}
+.footer div{
+    display: inline-block;
+}
+.copyright{
+    margin-left: 60px;
+}
+.backup{
+    float: right;
+    margin-right: 60px;
+    color: #fff;
+}
+.backup a:link{
+    color: #fff;
+}
+.backup a:visited{
+    color: #fff;
+}
+.backup a:hover{
+    color: #fff;
+}

@@ -1,0 +1,279 @@
+/*清除样式*/
+body,ul,div,p,li{
+    margin:0;
+    padding:0;
+}
+ul{
+    list-style: none;
+}
+
+body{
+    font-size:66.66%;
+    font-family: "Microsoft YaHei";
+}
+
+/*页面布局*/
+html,body{
+    width: 100%;
+    height: 100%;
+}
+.container{
+    position: relative;
+    min-height: 100%;
+    overflow: hidden;
+}
+.header{
+    height: 57px;
+    overflow: hidden;
+}
+.header h1{
+    margin: 0;
+    padding: 14px 0;
+    background-color: #fff;
+}
+.main{
+    margin-bottom: 40px;
+}
+.aside-banner{
+    position: fixed;
+    width:150px;
+    right:0;
+    top:0;
+    bottom:0;
+    background-color: rgba(51,51,51,1);
+}
+.footer{
+    position: absolute;
+    bottom:0;
+    width: 100%;
+    text-align: center;
+}
+/*header*/
+.header{
+    text-align: center;
+}
+/*main*/
+.margin-unit{
+    margin: 0 20px 20px;
+}
+.main-inner{
+    margin: 5px;
+}
+/*搜索框样式*/
+.resume-header{
+    position: relative;
+    height: 100px;
+    background-color: rgba(241,241,241,1);
+}
+.resume-header a{
+    position: absolute;
+    display: inline-block;
+    width: 50px;
+    height:50px;
+    top: 25px;
+}
+.resume-header>a:nth-child(1){
+    background: #fff url("../rec/Microsoft.png") no-repeat center;
+    left: 0;
+}
+.resume-header span{
+    position: absolute;
+    display: inline-block;
+    height: 50px;
+    top: 25px;
+    left: 52px;
+    right: 104px;
+    background-color: #fff;
+}
+.resume-header span a:nth-child(1){
+    position: static;
+    vertical-align: middle;
+    background: #fff url("../rec/search.png") no-repeat center;
+}
+.resume-header span a:nth-child(3){
+    position: static;
+    vertical-align: middle;
+    background: #fff url("../rec/bottom.png") no-repeat center;
+}
+.resume-header>a:nth-child(3){
+    background: #fff url("../rec/search1.png") no-repeat center;
+    right: 52px;
+}
+.resume-header>a:nth-child(4){
+    background: #fff url("../rec/search2.png") no-repeat center;
+    right:0;
+}
+
+.resume-header input{
+    box-sizing: border-box;
+    vertical-align: middle;
+    height: 50px;
+    width: calc(100% - 120px);
+    outline: none;
+    border: none;
+    font-size: 1.4em;
+}
+
+/*所有table的样式*/
+.main-inner table{
+    box-sizing: border-box;
+    padding: 5px 15px;
+    width: 100%;
+}
+.main-inner table th{
+    padding: 7px 0;
+    font-weight: bold;
+    font-size: 1.7em;
+}
+.main-inner table td{
+    padding: 5px 0;
+    font-size: 1.5em;
+}
+
+.tr-first{
+    width: 160px;
+    text-align: left;
+}
+.tr-last{
+    width: 120px;
+    text-align: right;
+}
+.tr-info{
+    text-indent: 2em;
+}
+
+.title-wrap{
+    position: relative;
+    width: 100%;
+}
+.title-background{
+    display: inline-block;
+    padding-right: 20px;
+    transform: skew(-20deg);
+    background-color: rgba(0,176,240,1);
+}
+.title-background h2{
+    display: inline-block;
+    padding: 10px 25px;
+    margin:0;
+    color: #fff;
+    background-color: rgba(89,89,89,1);
+}
+.title-wrap span{
+    position: absolute;
+    top:0;
+    left: 20px;
+    right:0;
+    height: 5px;
+    background-color: rgba(89,89,89,1);
+}
+
+/*aside*/
+.aside-banner{
+    color: #fff;
+    font-size: 1.6em;
+}
+.aside-banner h3{
+    text-align: center;
+    font-size: 25px;
+    margin: 10px 0;
+}
+.aside-img{
+    width: 150px;
+    display: block;
+    margin: 10px auto;
+}
+
+.aside-img figcaption{
+    text-align: center;
+    margin-top: 10px;
+    font-size: 20px;
+}
+.aside-img img{
+    width: 100%;
+    border-radius: 5px;
+    box-shadow: 1px 1px 8px #fff;
+}
+.aside-info{
+
+}
+.aside-info a{
+    color: #fff;
+    text-decoration: none;
+}
+.aside-info li{
+    padding: 8px 0 8px 15px;
+    cursor: pointer;
+}
+.aside-info li:hover{
+    background-color: rgba(0,176,240,1);
+}
+/*按钮*/
+.aside-btn{
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    color: #fff;
+    font-size: 20px;
+    text-align: center;
+    cursor: pointer;
+    background-color: rgba(89,89,89,1);
+}
+
+/*footer*/
+.footer{
+    background-color: #aaa;
+}
+.footer a{
+    font-size: 1.6em;
+    text-align: center;
+    line-height: 25px;
+    color: #fff;
+    text-decoration: none;
+}
+
+
+/*移动端布局*/
+@media all and (min-width: 640px) {
+    .container{
+        margin-right: 320px;
+    }
+    .aside-banner{
+        width: 320px;
+        display: block;
+    }
+    .aside-btn{
+        display: none;
+    }
+}
+@media all and (max-width: 640px){
+    .container{
+        margin-right: 0;
+    }
+    .aside-banner{
+        width: 100%;
+        display: none;
+        z-index: 9998;
+    }
+    .aside-btn{
+        display: block;
+        z-index: 9999;
+    }
+    .tr-first{
+        width: 80px;
+    }
+    .tr-last{
+        display: none;
+    }
+    .tr-info{
+
+    }
+    .header h1{
+        position: fixed;
+        width: 100%;
+        z-index: 9997;
+    }
+}

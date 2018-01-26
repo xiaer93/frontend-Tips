@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>IFC综合分析</title>
+	<meta name="viewpoart" content="width=device-width"/>
+	
+	<style>
+
+	.wrapper{
+		width:600px;
+		margin:0 auto;
+	}
+	.wrapper>article{
+		border:1px solid black;
+		margin:20px 0;
+		overflow:hidden;
+	}
+	/*1*/
+	.yellow{
+		float:left;
+		width:100px;
+		height:50px;
+		background:yellow;
+	}
+	/*2*/
+	#two span{
+		border:1px solid red;
+	}
+	#two .parent{
+		line-height:1;
+		font-size:16px;
+		vertical-align:middle;
+	}
+	#two .child{
+		font-size:35px;
+		vertical-align:middle;
+	}
+	#two div{
+		border:1px solid green;
+	}	
+	/*3*/
+	#three span{
+		margin-left:20px;
+	}
+	</style>
+</head>
+<body>
+	<div class="wrapper">
+		<!--ifc的宽度由内容、及兄弟元素是否为float元素决定-->
+		<article id="one">
+			<div class="yellow">
+				应用：图文排版！
+			</div>
+			<span>
+				我是inline元素，参与构建IFC。我的宽度由内容和兄弟float元素决定。我的高度由内容决定！</br>
+				我是inline元素，参与构建IFC。我的宽度由内容和兄弟float元素决定。我的高度由内容决定！
+			</span>
+		</article>
+		<!--每一行的行高由该行多个inline元素决定-->
+		<article id="two">
+			<span class="parent">
+				parent元素
+			</span>
+			<span class="child">
+				child元素
+			</span>
+			<div>行高由多个同行inline元素的行高决定，取他们最大值！</div>
+		</article>
+		<!--IFC拆散分布在多行-->
+		<article id="three">
+			<span>当内容足够多时，会发生跨行！。。。。。。。。。。。。。。。。。。。。。。跨行时将创建多个ifc，margin-left作用于第一个ifc！</span>
+		</article>
+		<!--inline-block可以设置宽高margin和padding，还可以同行排列-->
+		<article>
+			<span style="display:inline-block;" class="yellow">inline-block</span>
+		</article>
+		
+	
+	</div>
+</body>
+</html>

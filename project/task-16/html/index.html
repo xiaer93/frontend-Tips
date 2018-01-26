@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>下降递归解释器</title>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.js"></script>
+
+    <script>
+        /*后序构建数据，第一种方式：将圆括号放入栈中！*/
+        var ComplexCal=function () {
+
+            var basis={
+                "+":{
+                    level:1
+                },
+                "-":{
+                    level:1
+                },
+                "*":{
+                    level:2
+                },
+                "/":{
+                    level:2
+                },
+                "%":{
+                    level:2
+                },
+                "^":{
+                    level:3
+                }
+            };
+            var constVar={};
+            var additionFunc={};
+            var patternDigital=/[ ]*[\d]+[.]*[\d]*[ ]*/g;
+
+            var getLevel=function (str) {
+                if(basis.hasOwnProperty(str)){
+                    return basis[str].level;
+                }
+            };
+
+            var isDigital=function (str) {
+
+
+                var tmp=str.charCodeAt(0);
+                /*带符号正负，和小数点，46为小数点，43为加，45为减*/
+                if((48<=tmp && tmp<=57) || tmp===46)
+                    return true;
+                else
+                    return false;
+            };
+            var isbasis=function (str) {
+                return basis.hasOwnProperty(str);
+            };
+
+            var errorMsg=function (msg) {
+                throw new Error(msg);
+            };
+
+            /*字符常量和函数替换！*/
+            var processConstVar=function (str) {
+                var pattern;
+                var property=Object.getOwnPropertyNames(constVar);
+                for(var i in property){
+                    pattern=new RegExp(property[i],"gi");
+                    str.replace(pattern,constVar[property[i]]);
+                }
+            };
+            var processAdditionFunc=function (str) {
+                var pattern;
+                var property=Object.getOwnPropertyNames(additionFunc);
+                for(var i in property){
+                    var matchs,
+                        args,
+                        tmp,
+                        results=[];
+                    /*匹配并计算结果*/
+                    var patternstr=property[i]+"\\(\(\[\\S\]*\)\\)";
+                    pattern=new RegExp(patternstr,"gi");
+                    while (true){
+                        matchs=pattern.exec(str);
+                        if(matchs.length===0){
+                            break;
+                        }else{
+                            args=matchs[1];
+                            tmp=additionFunc[property[i]](args.split(","));
+                            results.push(tmp);
+                        }
+                    }
+                    /*把计算结果替换原字符串中的函数*/
+                    if(results.length>0){
+                        /*将正则表达式开始匹配位置清零*/
+                        pattern.lastIndex=0;
+                        str.replace(pattern,function () {
+                            return results.shift();
+                        })
+                    }
+
+
+                    str.replace(pattern,additionFunc[property[i]](args));
+                }
+            };
+            /*添加常量和函数*/
+            this.addConstVar=function (name,value) {
+                if(constVar.hasOwnProperty(name)===false)
+                    constVar.name=value;
+                else{
+                    errorMsg("常量已存在！");
+                }
+            };
+            this.addFunc=function (name,func) {
+                if(additionFunc.hasOwnProperty(name)===false){
+                    additionFunc.name=func;
+                }else{
+                    errorMsg("函数已经存在");
+                }
+            };
+
+            this.cal=function (str) {
+                var inputStr=str,
+                    outputStr=[],
+                    stack=[],
+                    tmp,            /*储存从输入字符串中读取的数字或者运算符号*/
+                    beg=0,
+                    end,
+                    len=str.length;
+                /*构造后序结构*/
+                while (true) {
+                    while (inputStr[beg] === " ") {
+                        beg++;
+                    }
+                    if (isDigital(inputStr[beg])) {
+                        end = beg + 1;
+                        while (end < len && isDigital(inputStr[end])) {
+                            end++;
+                        }
+                        tmp = parseFloat(inputStr.slice(beg, end));
+                        if(typeof tmp !== "number"){
+                            errorMsg("无法转为有效数字："+inputStr.slice(beg, end));
+                        }
+                        outputStr.push(tmp);
+                        beg = end;
+                    }
+                    if (isbasis(inputStr[beg])) {
+                        end = beg+1;
+                        /*循环获取数字的起始字符的index*/
+                        while (end < len && isbasis(inputStr[end])) {
+                            end++;
+                        }
+                        tmp = inputStr.slice(beg, end);
+                        if(!isbasis(tmp)){
+                            errorMsg("没有有效运算符"+tmp);
+                        }
+                        beg = end;
+
+                        /*如果栈为空，或栈顶元素为(，则直接添加！*/
+                        if (stack.length === 0 || stack[stack.length-1]==="(") {
+                            stack.push(tmp);
+                        } else {
+                            /*将等级高于被添加运算符的字符出栈添加至outputStr中*/
+                            while (getLevel(tmp) <= getLevel(stack[stack.length-1])) {
+                                outputStr.push(stack.pop());
+                                /*如果stack长度为零，则退出循环*/
+                                if (stack.length === 0)
+                                    break;
+                            }
+                            /*将tmp入栈中*/
+                            stack.push(tmp);
+                        }
+                    }
+                    /*如果为括号，则(进栈，)将中间所有运算符出栈*/
+                    if (inputStr[beg] === "(" ) {
+                        stack.push(inputStr[beg]);
+                        beg++;
+                    }
+                    if(inputStr[beg] === ")" ) {
+                        beg++;
+                        while (stack[stack.length-1]!== "(") {
+                            outputStr.push(stack.pop());
+                            /*如果stack长度为零，则还未匹配到括号，抛出错误*/
+                            if (stack.length === 0)
+                                errorMsg("括号不匹配，没有找到反括号");
+                        }
+                        stack.pop();/*将 ( 出栈！*/
+                    }
+                    /*如果beg行进到字符串最后，则退出循环*/
+                    if (end === len || beg===len){
+                        break;
+                    }
+                }
+                /*将栈中剩余运算符加入后续数组中*/
+                while (stack.length > 0) {
+                    outputStr.push(stack.pop());
+                }
+
+                /*运用后序进行四则运算*/
+                var left,right,ret;
+                stack=[];           /*存储数字*/
+                tmp=undefined;
+                while (outputStr.length>0){
+                    /*若为数字，则入栈*/
+                    tmp=outputStr.shift();
+                    while (typeof tmp === "number"){
+                        stack.push(tmp);
+                        tmp=outputStr.shift();
+                    }
+                    /*若为字符，则取出栈顶2元素参与运算*/
+                    right=stack.pop();
+                    left=stack.pop();
+                    /*当数字自带正负符号时，运算符个数多了，而运算数据个数少了，所以若运算数据不够则设置left0
+                    if(typeof left === "undefined" && (tmp==="+" || tmp==="-")){
+                        left=0;
+                    }*/
+                    switch (tmp){
+                        case "+":
+                            ret=left+right;
+                            break;
+                        case "-":
+                            ret=left-right;
+                            break;
+                        case "*":
+                            ret=left*right;
+                            break;
+                        case "/":
+                            if(right===0){
+                                errorMsg("除数不能为零，请检查表达式！");
+                            }else{
+                                ret=left/right;
+                            }
+                            break;
+                        case "%":
+                            if(right===0){
+                                errorMsg("除数不能为零，请检查表达式！");
+                            }else{
+                                ret=left%right;
+                            }
+                            break;
+                        case "^":
+                            ret=left^right;
+                            break;
+                    }
+                    if(typeof ret==="undefined"){
+                        errorMsg("在后序四则运算中，没有匹配到有效运算符！");
+                    }
+                    stack.push(ret);
+                }
+
+                return stack.pop();
+            }
+
+        };
+    </script>
+    <script>
+        /*递归解释器*/
+        var Calculator=function () {
+            var index=0;
+            var stringCalc;
+            var pattern=/[.\d]+/g;
+            function es1() {
+                var f=es2();
+                while (true){
+                    while (stringCalc[index]===" "){
+                        index++;
+                    }
+                    switch (stringCalc[index]){
+                        case "+":
+                            index+=1;
+                            f=f+es2();
+                            break;
+                        case "-":
+                            index+=1;
+                            f=f-es2();
+                            break;
+                        default:
+                            return f;
+                    }
+                }
+            }
+            function es2() {
+                var f=es3();
+                while (true){
+                    while (stringCalc[index]===" "){
+                        index++;
+                    }
+                    switch (stringCalc[index]){
+                        case "*":
+                            index+=1;
+                            f=f*es3();
+                            break;
+                        case "/":
+                            index+=1;
+                            f=f/es3();
+                            break;
+                        default:
+                            return f;
+                    }
+                }
+            }
+            function es3() {
+                var ret=0,
+                    minus=1;
+                while (stringCalc[index]===" "){
+                    index++;
+                }
+                if(stringCalc[index]=="-"){
+                    minus=-1;
+                    index++;
+                }
+                if(stringCalc[index]==="("){
+                    index+=1;
+                    var tmp=es1();
+                    while (stringCalc[index]===" "){
+                        index++;
+                    }
+                    if(stringCalc[index]===")"){
+                        index+=1;
+                        ret=tmp;
+                    }else{
+                        throw new Error("括号不匹配！");
+                    }
+                }else{
+                    pattern.lastIndex=index;
+                    var tmpStr=pattern.exec(stringCalc);
+                    index=index+tmpStr[0].length;
+                    ret=parseFloat(tmpStr);
+                }
+                return ret*minus;
+            }
+
+            this.cal=function (str) {
+                stringCalc=str;
+                index=0;
+                pattern.lastIndex=0;
+                return es1();
+            }
+
+            /*伪代码
+            * es1()
+            *调用函数es2，并取得返回值f
+            * while(true)
+            *   f=f+-es2();
+            *   当str(index)不为加减符号时返回f
+            *
+            * es2()
+            * 调用函数es3，并取得返回值f
+            * while(true)
+            *   f=/*es3()
+            *   当str(index)不为乘除符号时返回f
+            *
+            * es3()
+            * while(str[index]===" ")
+            *    index++;清除空格
+            * if(str[index]==="-")
+            *    给标记flag赋值-1；
+            * if(str[index]==="("）
+            *    调用es1()函数，取得返回值tmp
+            *    如果匹配上str[index]===")"，则另f=tmp；否则抛出错误
+            * else
+            *    取得第一位参与计算的数值，复制给f
+            * 返回f值
+            * */
+        }
+    </script>
+    <script>
+        /*不支持函数嵌套使用*/
+        /*后续构建数据，第二种方式，将圆括号内的字符串递归调用计算函数！*/
+        var Complex=function () {
+
+            /*基础运算符*/
+            var basis = {
+                "+": {
+                    level: 1
+                },
+                "-": {
+                    level: 1
+                },
+                "*": {
+                    level: 2
+                },
+                "/": {
+                    level: 2
+                },
+                "%": {
+                    level: 2
+                },
+                "^": {
+                    level: 3
+                }
+            };
+            /*储存常量的对象*/
+            var constVar = {};
+            /*存储函数的对象*/
+            var additionFunc = {};
+
+            /*获取运算符的等级*/
+            var getLevel = function (str) {
+                if (basis.hasOwnProperty(str)) {
+                    return basis[str].level;
+                }
+            };
+            /*判断是不是数字*/
+            var isDigital = function (str) {
+
+
+                var tmp = str.charCodeAt(0);
+                /*带符号正负，和小数点，46为小数点，43为加，45为减*/
+                if ((48 <= tmp && tmp <= 57) || tmp === 46)
+                    return true;
+                else
+                    return false;
+            };
+            /*判断是不是运算符*/
+            var isbasis = function (str) {
+                return basis.hasOwnProperty(str);
+            };
+            /*抛出错误消息*/
+            var errorMsg = function (msg) {
+                throw new Error(msg);
+            };
+
+            /*字符常量和函数替换！*/
+            var processConstVar = function (str) {
+                var pattern;
+                var property = Object.getOwnPropertyNames(constVar);
+                for (var i in property) {
+                    pattern = new RegExp(property[i], "gi");
+                    str=str.replace(pattern, constVar[property[i]]);/*原字符串未被操作，返回替换结果*/
+                }
+                return str;
+            };
+            var processAdditionFunc = function (str) {
+                var pattern;
+                var property = Object.getOwnPropertyNames(additionFunc);
+                for (var i in property) {
+                    var matchs,
+                        args,
+                        tmp,
+                        results = [];
+                    /*匹配并计算结果*/
+                    var patternstr = property[i] + "\\(\(\[\\S\]*\)\\)";
+                    pattern = new RegExp(patternstr, "gi");
+                    while (true) {
+                        matchs = pattern.exec(str);
+                        if (matchs===null) {
+                            break;
+                        } else {
+                            /*参数args，以数组形式传入函数中*/
+                            args = matchs[1];
+                            tmp = additionFunc[property[i]](args.split(","));
+                            results.push(tmp);
+                        }
+                    }
+                    /*把计算结果替换原字符串中的函数*/
+                    if (results.length > 0) {
+                        /*将正则表达式开始匹配位置清零*/
+                        pattern.lastIndex = 0;
+                        str=str.replace(pattern, function () {
+                            return results.shift();
+                        })
+                    }
+                }
+                return str;
+            };
+            /*添加常量和函数*/
+            var addConstVar = function (cname, value) {
+                if (constVar.hasOwnProperty(cname) === false)
+                    constVar[cname] = value;
+                else {
+                    errorMsg("常量已存在！");
+                }
+            };
+            var addFunc = function (cname, func) {
+                if (additionFunc.hasOwnProperty(cname) === false) {
+                    additionFunc[cname] = func;
+                } else {
+                    errorMsg("函数已经存在");
+                }
+            };
+
+            /*后序四则运算*/
+            var run = function (outputStr) {
+                /*运用后序进行四则运算*/
+                var left,
+                    right,
+                    ret,
+                    stack = [], /*存储数字*/
+                    tmp;
+                while (outputStr.length > 0) {
+                    /*若为数字，则入栈*/
+                    tmp = outputStr.shift();
+                    while (typeof tmp === "number") {
+                        stack.push(tmp);
+                        tmp = outputStr.shift();
+                    }
+                    /*若为字符，则取出栈顶2元素参与运算*/
+                    right = stack.pop();
+                    left = stack.pop();
+
+                    switch (tmp) {
+                        case "+":
+                            ret = left + right;
+                            break;
+                        case "-":
+                            ret = left - right;
+                            break;
+                        case "*":
+                            ret = left * right;
+                            break;
+                        case "/":
+                            if (right === 0) {
+                                errorMsg("除数不能为零，请检查表达式！");
+                            } else {
+                                ret = left / right;
+                            }
+                            break;
+                        case "%":
+                            if (right === 0) {
+                                errorMsg("除数不能为零，请检查表达式！");
+                            } else {
+                                ret = left % right;
+                            }
+                            break;
+                        case "^":
+                            ret = Math.pow(left,right);
+                            break;
+                        default:
+                            ret=right;
+                    }
+                    if (typeof ret === "undefined") {
+                        errorMsg("在后序四则运算中，没有匹配到有效运算符！");
+                    }
+                    stack.push(ret);
+
+                    console.log(left,tmp,right,"=",ret);
+                }
+                /*返回计算结果*/
+                return stack.pop();
+            };
+            /*构造四则运算*/
+            var parse = function (inputStr) {
+                var inputStr = inputStr,
+                    outputStr = [],
+                    stack = [],
+                    beg = 0,
+                    end = 0,
+                    len = inputStr.length;
+                var tmp=0;           /*储存从输入字符串中读取的数字或者运算符号*/
+                var lastbeg=beg;
+                var minus={get:false,set:false};
+                /*构造后序结构*/
+                while (true) {
+                    /*清除表达式头部空格字符*/
+                    while (inputStr[beg] === " ") {
+                        beg++;
+                    }
+                    /*首数字是否为负数，修改第一个数字的正负*/
+                    if(minus.get===false && inputStr[beg]==="-"){
+                        minus.get=true;
+                        beg=beg+1;
+                        while (inputStr[beg] === " ") {
+                            beg++;
+                        }
+                    }
+                    /*识别出数字*/
+                    if (isDigital(inputStr[beg])) {
+                        end = beg + 1;
+                        while (end < len && isDigital(inputStr[end])) {
+                            end++;
+                        }
+                        tmp = parseFloat(inputStr.slice(beg, end));
+                        if (typeof tmp !== "number") {
+                            errorMsg("无法转为有效数字：" + inputStr.slice(beg, end));
+                        }
+                        /*如果有符号，且未设置过则tmp取负！*/
+                        if(minus.get===true && minus.set===false){
+                            tmp=tmp*-1;
+                            minus.set=true;
+                        }
+                        outputStr.push(tmp);
+                        beg = end;
+                    }
+                    /*识别出运算符*/
+                    if (isbasis(inputStr[beg])) {
+                        end = beg + 1;
+                        /*循环获取数字的起始字符的index*/
+                        while (end < len && isbasis(inputStr[end])) {
+                            end++;
+                        }
+                        tmp = inputStr.slice(beg, end);
+                        if (!isbasis(tmp)) {
+                            errorMsg("没有有效运算符" + tmp);
+                        }
+                        beg = end;
+
+                        /*如果栈为空，或栈顶元素为(，则直接添加！*/
+                        if (stack.length === 0 || stack[stack.length - 1] === "(") {
+                            stack.push(tmp);
+                        } else {
+                            /*将等级高于被添加运算符的字符出栈添加至outputStr中*/
+                            while (getLevel(tmp) <= getLevel(stack[stack.length - 1])) {
+                                outputStr.push(stack.pop());
+                                /*如果stack长度为零，则退出循环*/
+                                if (stack.length === 0)
+                                    break;
+                            }
+                            /*将tmp入栈中*/
+                            stack.push(tmp);
+                        }
+                    }
+                    /*截取括号内部的字符串，调用cal计算其值，并加入outputStr中*/
+                    if(inputStr[beg]==="("){
+                        var tmpStack=[];
+                        tmpStack.push(beg);
+                        end=beg+1;
+                        while (tmpStack.length>0){
+                            while (inputStr[end]!==")"){
+                                if(inputStr[end]==="("){
+                                    tmpStack.push(end);
+                                }
+                                end=end+1;
+                                if(end===len){
+                                    errorMsg("括号不匹配！");
+                                }
+                            }
+                            /*当找到对应的最外层反括号，调用cal函数，并将反回值加入outputStr*/
+                            if(tmpStack.length===1){
+                                var ret=cal(inputStr.slice(beg+1,end));
+                                outputStr.push(ret);
+                                beg=end+1;
+                                tmpStack.pop();
+                            }else{
+                                /*内层的括号忽略，并end+=1*/
+                                end=end+1;
+                                tmpStack.pop();
+                            }
+                        }
+
+                    }
+
+
+                    /*在第二次循环，将不再处理数字自带正负号情况*/
+                    minus.get=true;
+                    minus.set=true;
+
+                    /*清除表达式尾部空格字符*/
+                    while (inputStr[beg] === " ") {
+                        beg++;
+                    }
+
+                    /*检验程序是否发生错误*/
+                    if(lastbeg===beg){
+                        errorMsg("程序错误，陷入无限循环！")
+                    }
+                    lastbeg=beg;
+
+                    /*如果beg行进到字符串最后，则退出循环*/
+                    if (end === len || beg === len) {
+                        break;
+                    }
+                }
+                /*将栈中剩余运算符加入后续数组中*/
+                while (stack.length > 0) {
+                    outputStr.push(stack.pop());
+                }
+                /*返回后序数据结构*/
+                return outputStr;
+            };
+            /*计算得出结果*/
+            var cal = function (str) {
+                return run(parse(str))
+            };
+            /*计算函数*/
+            this.sum=function (str) {
+                var str=processConstVar(str);
+                str=processAdditionFunc(str);
+                return cal(str).toFixed(2);/*取2位小数*/
+            };
+
+            /*初始化添加常量和函数*/
+            var init=function () {
+                addConstVar("π",3.14);
+                addConstVar("pi",3.14);
+                addConstVar("e",2.71828);
+                addFunc("cos",function(args){return Math.cos(args*Math.PI/180)});/*math中的三角函数输入参数为弧度，因此角度转弧度*/
+                addFunc("abs",Math.abs);
+                addFunc("sin",function(args){return Math.sin(args*Math.PI/180)});
+                addFunc("tan",function(args){return Math.tan(args*Math.PI/180)});
+                addFunc("cot",function (args) {
+                    return 1/Math.tan(args*Math.PI/180);
+                });
+                addFunc("log",Math.log10);/*10为底*/
+                addFunc("ln",Math.log);/*以e为底*/
+                addFunc("fact",function (args) {
+                    if(args instanceof Array)
+                        var args=args[0];
+                    if(typeof args === "string")
+                        args=parseInt(args);
+                    return (function (n) {
+                        if(n===1){
+                            return 1;
+                        }else{
+                            return n*arguments.callee(n-1);
+                        }
+                    })(args);
+                });/*计算阶乘的函数*/
+            };
+            init();
+        }
+    </script>
+
+    <script>
+        $(document).ready(function ($) {
+            var cal=new Complex();
+            $("input[type='button']").click(function () {
+                var txt=$("input[type='text']").val();
+                $("input[type='text']").val(cal.sum(txt));
+            });
+        })
+    </script>
+
+    <style>
+        html{
+            height: 100%;
+        }
+        body{
+            height: 100%;
+            margin: 0;
+        }
+        .wrapper{
+            height: 100%;
+            width: 100%;
+        }
+        .container{
+            width: 100%;
+            height: 100%;
+            display: flex;
+        }
+        .main{
+            margin:auto;
+            width: 250px;
+        }
+        form{
+            overflow: hidden;
+        }
+        form label{
+            display: block;
+            height: 20px;
+            line-height: 20px;
+            text-align: left;
+            font-size: 18px;
+        }
+        form input[type='text']{
+            box-sizing: border-box;
+            float: left;
+            margin: 0;
+            width: 200px;
+        }
+        form input[type='button']{
+            box-sizing: border-box;
+            float: left;
+            margin: 0;
+            width: 50px;
+        }
+        .tips{
+            height: 80px;
+            overflow: auto;
+            text-align: left;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="wrapper">
+        <div class="container">
+            <div class="main">
+                <form action="">
+                    <label for="calStr">请输入表达式</label>
+                    <input type="text" name="calStr" id="calStr" autofocus="autofocus" list="calAdditon" value="1+2*(1+2)+tan(45)">
+                    <input type="button" value="计算">
+                    <datalist id="calAdditon">
+                        <option value="pi"></option>
+                        <option value="e"></option>
+                    </datalist>
+                </form>
+                <div class="tips">
+                    +: 加法运算<br/>
+                    -: 减法运算<br/>
+                    *: 乘法运算<br/>
+                    /: 除法运算<br/>
+                    ^: 乘方运算，2 ^ 3 = 8<br/>
+                    %: 取余运算，3 % 2 = 1<br/>
+                    abs: 绝对值运算，abs(-1) = 1<br/>
+                    sin: 正弦运算，sin(30) = 0.5<br/>
+                    cos: 余弦运算，cos(60) = 0.5<br/>
+                    tan: 正切运算，tan(45) = 1<br/>
+                    cot: 余切运算，cot(45) = 1<br/>
+                    log: 取10底对数运算，log(100) = 2<br/>
+                    ln: 取自然对数运算<br/>
+                    e: 常量，自然对数<br/>
+                    π: 常量，代表圆周率<br/>
+                    fact:  计算阶乘，fact(5) = 120<br/>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

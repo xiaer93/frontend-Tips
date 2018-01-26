@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>服务器</title>
+</head>
+<body>
+    <script>
+        var serach=window.location.search.substring(1);
+        var items=serach.length>0?serach.split("="):[];
+        var name=decodeURIComponent(items[0]);
+        var value=decodeURIComponent(items[1]);
+        if(name==="name"){
+            top.callback("来自隐藏iframe的消息："+value,0);
+        }
+    </script>
+</body>
+</html>

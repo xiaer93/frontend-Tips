@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>清除表单控件样式</title>
+
+    <style>
+        ul{
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        li{
+            box-sizing: border-box;
+            width: 100%;
+            border: 1px solid black;
+            margin: 5px 0;
+            padding: 5px;
+        }
+        label{
+            /*行内元素不能设置宽度，行内块元素可以设置宽度*/
+            display: inline-block;
+            width: 200px;
+            text-align: right;
+            margin: 0 5px 0 5px;
+        }
+        input,select,button{
+            box-sizing: border-box;
+            width: 100px;
+            background-color: crimson;
+        }
+    </style>
+</head>
+<body>
+    <ul>
+        <li>
+            <label for="">输入文本框样式清除</label><input type="text" style="border: none;padding: 0;">
+        </li>
+        <li>
+            <label for="">按钮样式清除</label><input type="button" value="按钮" style="border: none;padding: 0">
+        </li>
+        <li>
+            <label for="">select样式清除</label><!--换行产生了纯文本#text节点，占据了一定的空间！-->
+            <select name="" id="" style="border: none;-webkit-appearance: none;-moz-appearance: none;appearance: none;">
+                <option style="color: white;">中国</option>
+            </select>
+            <p style="display: inline-block;margin: 0;">换行产生了纯文本#text节点，占据了一定的空间！</p>
+        </li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+</body>
+</html>

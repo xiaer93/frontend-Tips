@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>居中综合分析</title>
+	<meta name="viewpoart" content="width=device-width"/>
+	
+	<style>
+
+	.wrapper{
+		width:600px;
+		margin:0 auto;
+	}
+	.wrapper>article{
+		border:1px solid #eee;
+		margin:20px 0;
+		height:100px;
+		width:100%;
+		background:yellow;
+		box-shadow:1px 1px 6px;
+	}
+	/*1*/
+	#one{
+		text-align:center;
+	}
+	#one span{
+		line-height:80px;
+	}
+	/*2,多行文本居中，本案例使用ghost技术*/
+	#two{
+		position:relative;
+		text-align:center;
+	}
+	#two:before{
+		content:"";
+		display:inline-block;
+		height:100%;
+		width:1%;
+		vertical-align:middle;/*ghost技术实际是利用vertical-align居中原理！*/
+	}
+	#two span{
+		vertical-align:middle;
+		display:inline-block;
+		width:400px;/*必须指定宽度，否则宽度随内容增加直至父元素宽度，若空间不够则发生换行！*/
+	}
+	
+	/*3*/
+	#three{
+		text-align:center;
+	}
+	#three span{
+		vertical-align:middle;
+	}
+	/*4*/
+	#four{
+		display:table;
+		text-align:center;
+	}
+	#four span{
+		display:table-cell;
+		vertical-align:middle;
+	}
+	/*5*/
+	#five{
+		position:relative;
+	}
+	#five span{
+		display:block;
+		position:absolute;
+		top:50%;
+		left:50%;
+		width:400px;
+		height:26px;
+		border:1px solid red;
+		
+		margin-left:-200px;
+		margin-top:-13px;
+	}
+	/*6*/
+	#six{
+		position:relative;
+	}
+	#six span{
+		display:block;
+		position:absolute;
+		top:50%;
+		left:50%;
+		width:400px;
+		border:1px solid red;
+		
+		transform:translate(-50%,-50%);
+	}
+	/*7*/
+	#seven{
+	
+	}
+	#seven span{
+		display:block;
+		width:400px;
+		border:1px solid red;
+		margin:0 auto;
+	}
+	/*8*/
+	#eight{
+		display:flex;
+	}
+	#eight span{
+		display:block;
+		border:1px solid red;
+		margin:auto;
+	}
+	/*9*/
+	#nine{
+		display:flex;
+		flex-wrap:wrap;
+		justify-content: center;
+		align-items: center;
+	}
+	#nine span{
+		display:block;
+		width:150px;
+		border:1px solid red;
+	}
+	/*10*/
+	#ten{
+		text-align:center;
+	}
+	#ten span{
+		width:150px;
+		display:inline-block;
+		border:1px solid red;
+		vertical-align:middle;
+	}
+	/*11*/
+	#eleven{
+		height:auto;
+	}
+	#eleven span{
+		display:block;
+		border:1px solid red;
+		margin:5px auto;
+	}
+	#eleven span:nth-child(1){
+		width:100px;
+	}
+	#eleven span:nth-child(2){
+		width:200px;
+	}
+	#eleven span:nth-child(3){
+		width:400px;
+	}
+	/*12*/
+	#twelev{
+		display:grid;
+	}
+	#twelev span{
+		margin:auto;
+	}
+	
+	</style>
+</head>
+<body>
+	<div class="wrapper">
+		<!--行内元素居中，单行文字-->
+		<article id="one">
+			<span>行内元素居中，水平通过text-align，竖直通过line-height</span>
+		</article>
+		<!--行内元素居中，多行文字-->
+		<article id="two">
+			<span>这是第一行文字这是第二行文字[tips:多行文本可以使用table、flex、ghost技术居中!]【如果使用br换行，则会强制产生多个IFC】</span>
+		</article>
+		<!--行内元素居中，借助vertical-->
+		<article id="three">
+			<span>行内元素居中，借助vertical-align[tips:vertical-align以IFC为基准！，因此必须再添加ghost技术实现！]</span>
+		</article>
+		<!--行内元素居中，借助vertical-->
+		<article id="four">
+			<span>行内元素居中，借助tabel[tips:父元素为tabel、子元素为tabel-cell]</span>
+		</article>
+		
+		<!--块级元素居中，借助position：absolute-->
+		<article id="five">
+			<span>块级元素居中，借助position：absolute和负margin技术</span>
+		</article>
+		<!--块级元素居中，借助position：absolute-->
+		<article id="six">
+			<span>块级元素居中，借助position：absolute和transform技术</span>
+		</article>
+		<!--块级元素居中，借助margin:auto-->
+		<article id="seven">
+			<span>块级元素居中，借助margin:auto技术[tips:只能实现左右居中]</span>
+		</article>
+		<!--块级元素居中，借助flex-->
+		<article id="eight">
+			<span>块级元素居中，借助flex和margin:auto技术[tips:只能适用于一个子伸缩项目]</span>
+		</article>
+		
+		
+		<!--综合应用，flex多个块级元素居中-->
+		<article id="nine">
+			<span>我是1号块元素</span>
+			<span>我是2号块元素我是2号块元素我是2号块元素</span>
+			<span>我是3号块元素我是3号块元素我是3号块元素我是3号块元素我是3号块元素</span>
+		</article>
+		
+		<!--综合应用，inline-block多个块级元素水平居中-->
+		<article id="ten">
+			<span>我是1号块元素</span>
+			<span>我是2号块元素我是2号块元素我是2号块元素</span>
+			<span>我是3号块元素我是3号块元素我是3号块元素我是3号块元素我是3号块元素</span>
+		</article>
+		<!--综合应用，margin:0 auto多个块级元素水平居中-->
+		<article id="eleven">
+			<span>我是1号块元素</span>
+			<span>我是2号块元素我是2号块元素我是2号块元素</span>
+			<span>我是3号块元素我是3号块元素我是3号块元素我是3号块元素我是3号块元素</span>
+		</article>
+		<!--综合应用，grid实现居中-->
+		<article id="twelev">
+			<span>grid实现居中!</span>
+		</article>
+		
+		<article id="thirteen">
+			<style>
+				#thirteen{
+					position:relative;
+					height:100%;
+				}
+				#thirteen p{
+					display:inline-block;
+					word-break:break-all;
+				}
+				#thirteen p:nth-child(2){
+					width:100px;
+					vertical-align:middle;
+				}
+				#thirteen p:nth-child(3){
+					width:40px;
+				}
+				#thirteen span{
+					position:absolute;
+					bottom:100px;
+					left:0;
+					width:100%;
+					background:rgba(255,0,0,0.2);
+					text-align:center;
+				}
+			</style>
+			<p>vertical-align对齐方式大部分取值是相对于父元素来说的！如baseline相对于父元素基线对齐；middle元素中线相对于父元素基线对齐！</p>
+			<p>如果元素没有基线baseline，则以它的外边距的下边缘为基线。</p>
+			
+			<span>父元素的基线，第2个元素默认为baseline对齐，所以出现如此效果！</span>
+		</article>
+	</div>
+	<footer>
+		<a href="https://css-tricks.com/centering-css-complete-guide/">Centering in CSS: A Complete Guide</a>
+		<a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/vertical-align">vertical-align分析</a>
+	</footer>
+</body>
+</html>

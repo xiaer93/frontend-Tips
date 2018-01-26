@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript"></script>
+    <title>Title</title>
+</head>
+<body>
+<p>这里是客户端，交互通过隐藏iframe实现，收到的消息为：<span></span></p>
+<p>这里是客户端，交互通过动态script实现，收到的消息为：<span></span></p>
+<p>这里是客户端，交互通过Asp编程语言实现，收到的消息为：<span></span></p>
+<p>这里是客户端，交互通过img的src实现，收到的消息为：<span></span></p>
+<p>这里是客户端，交互通过Jsonp实现，收到的消息为：<span></span></p>
+<p>这里是客户端，交互通过Ajax实现，收到的消息为：<span></span></p>
+<p>这里是客户端，交互通过comet实现，收到的消息为：<span></span></p>
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=0 height=0 src="//music.163.com/outchain/player?type=2&id=436514312&auto=1&height=66"></iframe>
+<script>
+    //通过iframe框架实现远程交互
+    function callback(msg,i) {
+        var tip=document.getElementsByTagName("span")[i];
+        tip.innerHTML=msg;
+    }
+    document.onclick=function () {
+        loadByIframe("serverForhtml.html","name","嘉炜");
+        loadScriptFile("serverForscript.js","name","嘉炜");
+        loadAspFileByScript("serverForscript.asp","name","嘉炜");
+        uploadError("serverForimg.asp","name","嘉炜");
+        loadJsonp("serverForjsonp.asp","name","嘉炜");
+        loadAspByAjax("serverForAjax.asp","name","嘉炜");
+    };
+    function loadByIframe(url,name,value) {
+        var ifr=document.createElement("iframe");
+        document.body.appendChild(ifr);
+        ifr.style.display="none";
+        var name=encodeURIComponent(name);
+        var value=encodeURIComponent(value);
+        ifr.contentWindow.location.href=url+"?"+name+"="+value;
+    }
+    //通过动态script实现远程交互
+    function loadScriptCode(code) {
+        var script=document.createElement("script");
+        script.type="text/javascript";
+        script.innerHTML=code;
+        document.body.appendChild(script);
+    }
+    function loadScriptFile(src,name,value) {
+        var name=encodeURIComponent(name);
+        var value=encodeURIComponent(value);
+        var script=document.createElement("script");
+        script.type="text/javascript";
+        script.src=src+"?"+name+"="+value;
+        document.body.appendChild(script);
+    }
+    //通过script加载asp实现交互
+    //script从asp获取的文本可以读出来吗？好像不能！
+    function loadAspFileByScript(url,name,value) {
+
+        var script=document.createElement("script");
+        script.type="text/javascript";
+        script.src=url+"?"+name+"="+value;
+        document.body.appendChild(script);
+    }
+    //通过img传递消息给asp实现交互
+    function uploadError(url,name,value) {
+        var img=new Image();
+        var name=encodeURIComponent(name);
+        var value=encodeURIComponent(value);
+        var url=url+"?"+name+"="+value;
+        img.src=url;
+        callback("img为单向消息传递，如果服务器成功接收消息会生成log记录！",3)
+    }
+    //通过jsonp传递消息
+    function loadJsonp(url,name,value) {
+        var script=document.createElement("script");
+        script.type="text/javascript";
+        var name=encodeURIComponent(name);
+        var value=encodeURIComponent(value);
+        script.src=url+"?jsonp=callbackForJson&"+name+"="+value;
+        document.body.appendChild(script);
+    }
+    function callbackForJson(info,name,i) {
+        var msg=info["info"]+name;
+        callback(msg,i);
+    }
+    //通过ajax获取消息
+    //Ajax只允许同域进行通信，在服务的设置允许跨域？Access-Control-Allow-Origin:http://localhost:63342
+    function loadAspByAjax(url,name,value) {
+        var name=encodeURIComponent(name);
+        var value=encodeURIComponent(value);
+        var url=url+"?"+name+"="+value;
+        var xhr=new XMLHttpRequest();
+        xhr.open("get",url,true);
+        xhr.send(null);
+        xhr.onreadystatechange=function () {
+            if(xhr.readyState===4 && xhr.status===200){
+                var msg=xhr.responseText;
+                callback(msg,5);
+            }
+        }
+    }
+</script>
+</body>
+</html>

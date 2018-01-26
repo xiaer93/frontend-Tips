@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no">
+    <title>滑动的图片</title>
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <style>
+        #dv{
+            width: 80%;
+            height: 300px;
+            margin: 20px auto;
+            overflow: hidden;
+            background-color: blue;
+        }
+        #dv>div{
+            background-color: red;
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div  id="dv">
+        <div id="d1"></div>
+        <div id="d2"></div>
+        <div id="d3"></div>
+        <div id="d4"></div>
+        <div id="d5"></div>
+    </div>
+    <script>
+        $(document).ready(function ($) {
+            var slide=slideLR("dv",3,2,2000,"swing");
+            slide.slideLoop(true);
+
+            var d=true,
+                p=false;
+            $("#dv").click(function (event) {
+                if(!p){
+                    slide.slideStop();
+                    p=!p;
+                } else{
+                    slide.slideLoop(d);
+                    d=!d;
+                    p=!p;
+                }
+            });
+
+
+
+            /*横幅左右滑动封装函数！*/
+            function slideLR(selector,slideNumbers,margin,slideDuration,slideEasing,slideCallback) {
+                /*jquery插件应该支持传入对象*/
+
+                /*类型检查*/
+                if(typeof selector !=="string"){
+                    throw new TypeError("selector不是字符串");
+                }
+                if(typeof slideNumbers !=="number"){
+                    throw new TypeError("slideNumbers不是数字！");
+                    return undefined;
+                }
+                if(typeof margin !=="number"){
+                    throw new TypeError("margin不是数字！");
+                    return undefined;
+                }
+                if(typeof slideDuration !=="number"){
+                    throw new TypeError("duration不是数字！");
+                    return undefined;
+                }
+                if(typeof slideEasing !=="string"){
+                    throw new TypeError("eading不是字符串！");
+                    return undefined;
+                }
+                /*if(typeof slideCallback !=="function"){
+                    throw new TypeError("callback不是函数！");
+                    return undefined;
+                }*/
+                var slideParent=document.getElementById(selector);
+
+                /*定义父元素relative*/
+                $(slideParent).css("position","relative");
+                /*定义子元素absolute*/
+                $(slideParent).children().css("position","absolute");
+
+                /*储存子元素left值*/
+                var positionAarry=[];
+                /*定义子元素位置*/
+                var slideMargin=margin,
+                    slideWidth=(100-(slideNumbers+1)*margin)/(slideNumbers);
+                var slideStartPos=-slideWidth-(margin+slideWidth),
+                    slideMove=margin+slideWidth;
+                $(slideParent).children().css("top","0");
+                $(slideParent).children().css("left",function (index) {
+                    slideStartPos+=slideMove;
+                    positionAarry.push(slideStartPos);
+                    return slideStartPos.toString()+"%";
+                });
+                /*给子元素设置宽度*/
+                $(slideParent).children().css("width",slideWidth.toString()+"%");
+
+                /*定义动画控制对象，返回给调用者*/
+                var that=slideParent;
+                var slideObject={
+                    flagindex:0,            /*子对象序列*/
+                    flagrunning:false,      /*动画进行中标志*/
+                    flagtime:null,          /*setTime函数的种子*/
+                    flagloop:false,         /*循环标志*/
+                    slideLeft:function () {
+                        /*slideObject.slideLeft()，this指向slideObject*/
+                        var thatOb=this;
+                        /*如果动画正在运行，不接受其他命令*/
+                        if(thatOb.flagrunning==true){
+                            return undefined;
+                        }
+                        /*执行动画，在动画完成后，更改第一个子对象的HTML位置和left属性值*/
+                        thatOb.flagrunning=true;
+                        thatOb.flagindex=0;
+                        $(":last-child",that).css("display","block");
+                        $(that).children().animate({left:"-="+slideMove.toString()+"%"},{duration:slideDuration,easing:slideEasing,complete:function () {
+                            /*动画完成后的返回函数，this指向单独的子对象*/
+                            thatOb.flagindex+=1;
+                            if(thatOb.flagindex===(slideNumbers+2)){
+                                console.log($(":first-child",that));
+                                /*更改文档结构*/
+                                $(that).append($(":first-child",that));
+                                /*更改left值和display属性*/
+                                $(":first-child",that).css("display","none");
+                                $(":last-child",that).css("display","none");
+                                $(":last-child",that).css("left",positionAarry[slideNumbers+2-1].toString()+"%");
+                                /*动画运行结束后，将flagrunning设置为false*/
+                                thatOb.flagrunning=false;
+                            }
+                        }});
+                    },
+                    slideRight:function () {
+                        var thatOb=this;
+                        /*如果动画正在运行，不接受其他命令*/
+                        if(thatOb.flagrunning==true){
+                            return undefined;
+                        }
+                        /*执行动画，在动画完成后，更改最后一个子对象的HTML位置和left属性值*/
+                        thatOb.flagrunning=true;
+                        thatOb.flagindex=0;
+                        /*first为从匹配好的文档挑选第一个，first-child为挑选第一个子元素*/
+                        $(":first-child",that).css("display","block");
+                        $(that).children().animate({left:"+="+slideMove.toString()+"%"},{duration:slideDuration,easing:slideEasing,complete:function () {
+                            thatOb.flagindex+=1;
+                            if(thatOb.flagindex===(slideNumbers+2)){
+                                console.log($(":last-child",that));
+                                /*更改文档结构*/
+                                $(that).prepend($(":last-child",that));
+                                /*更改left值！*/
+                                $(":first-child",that).css("display","none");
+                                $(":last-child",that).css("display","none");
+                                $(":first-child",that).css("left",positionAarry[0].toString()+"%");
+                                /*动画运行结束后，将flagrunning设置为false*/
+                                thatOb.flagrunning=false;
+                            }
+                        }});
+                    },
+                    slideLoop:function (direction) {
+                        /*根据传入参数控制方向，direction为true向左循环运动，否则向右循环运动*/
+                        var tharOb=this;
+                        var slide=null;
+                        if(direction===true){
+                            slide=tharOb.slideLeft;
+                        }else{
+                            slide=tharOb.slideRight;
+                        }
+                        /*设置循环标志，并开始循环*/
+                        tharOb.flagloop=true;
+                        tharOb.flagtime=setTimeout(function run() {
+                            if(tharOb.flagloop){
+                                slide();
+                                tharOb.flagtime=setTimeout(run,slideDuration+1000)
+                            }
+                        },300);
+                    },
+                    slideStop:function () {
+                        var thatOb=this;
+                        /*清除循环setTime，并立刻停止动画*/
+                        thatOb.flagloop=false;
+                        clearTimeout(thatOb.flagtime);
+                        $(that).children().stop(true,true);
+                    }
+                };
+                return slideObject;
+            }
+
+        });
+    </script>
+</body>
+</html>

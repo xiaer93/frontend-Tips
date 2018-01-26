@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.js"></script>
+    <title>注册百度账号</title>
+    <style>
+        body{
+			
+        }
+        form{
+            /*不指定width，无法margin居中！！！form为块元素，默认占满全行！*/
+            width: 720px;
+            margin: 20px auto;
+        }
+		.register_wrap{
+			margin:20px 0;
+		}
+		/*清除浮动*/
+		.register_wrap:before,.register_wrap:after{
+			content:"";
+			display:table;
+		}
+		.register_wrap:after{
+			clear:both;
+		}
+		/*浮动布局*/
+		.txt_wrap label{
+			float:left;
+		}
+		.txt_wrap input{
+			float:left;
+		}
+		.txt_wrap .msg{
+			float:left;
+		}
+		
+		
+		/*label和input样式*/
+		.register_wrap label{
+			display:inline-block;
+			width:65px;
+			height40px;
+			line-height:40px;
+			text-align:right;
+			font-size:14px;
+			color:#666;
+			font-weight:bold;
+			margin-right:10px;
+			
+		}
+		.register_wrap input{
+			box-sizing:content-box;
+			height:18px;
+			width:328px;
+			padding:10px;
+		}
+		.txt_wrap input{
+			border:1px solid #ddd;
+		}
+		
+		.txt_wrap input:target{
+			border:1ps solid #fc4343;
+		}
+		
+		
+		/*提示消息显示隐藏类*/
+		.display_none{
+			display:none !important;
+		}
+
+		/*提示框状态标识*/
+		.register .msg{
+			display:table;
+			padding-left:5px;
+			height:40px;
+			width:250px;
+			color:#333;
+			font-size:12px;
+		}
+		.msg_table span{
+			display:table-cell;
+			vertical-align:middle;
+		}
+		
+		.tips{
+			font-family:Arial, 宋体;
+			opacity:0.6;
+		}
+		.reg_flag{
+			padding-left:20px;
+			color:#fc4343;
+		}
+		.error{
+			background:url("./err_small.png") no-repeat left 45%;
+		}
+		.ok i{
+			display:inline-block;
+			margin-left:-20px;
+			height:16px;
+			width:20px;
+			background:url("./reg_icons.png")  -80px 0 no-repeat;;
+		}
+		/*密码提示框*/
+		.msg_pwd{
+			position:relative;
+			overflow:visible;
+		}
+		.tips_pwd{
+			position:absolute;
+			left:10px;
+			border:1px solid #ddd;
+			background:#fff;
+		}
+		#tips_pwd_triangle{
+			position:absolute;
+			left:-16px;
+			top:8px;
+			width:0;
+			height:0;
+			padding:0;
+			margin:0;
+			display:block;
+			border:8px solid transparent;
+			border-right-color:#ddd;
+		}
+		#tips_pwd_triangle span{
+			position:absolute;
+			left:-5px;
+			top:-7px;
+			width:0;
+			height:0;
+			padding:0;
+			margin:0;
+			display:block;
+			border:7px solid transparent;
+			border-right-color:#fff;
+		}
+		.tips_pwd span{
+			display:block;
+			padding-left:18px;
+			height:20px;
+			line-height:20px;
+			color:#666;
+			margin:3px 0 3px 15px;
+		}
+		
+		.pwd_flag_normal{
+			background: url("./reg_icons.png") no-repeat -86px -112px;
+		}
+		.pwd_flag_error{
+			background-position: -86px -144px;
+			color: #fc4343;
+		}
+		.pwd_flag_ok{
+			background-position: -86px -128px;
+		}
+		
+		/*注册按钮*/
+		.code_wrap input[type="text"]{
+			width:156px;
+			margin-right:10px;
+			padding:11px 10px;
+		}
+		.code_wrap input[type="button"]{
+			width:158px;
+			padding-left:0;
+			padding-right:0;
+		}
+		/*协议按钮*/
+		.agreement_wrap{
+			font-size:12px;
+		}
+		.agreement_wrap input{
+			width:auto;
+			margin-left:75px;
+			vertical-align:middle;
+		}
+		.agreement_wrap span{
+			
+		}
+		/*注册按钮*/
+		.btn_wrap{
+			margin-left:75px;
+
+		}
+		.btn_wrap input{
+			border:none;
+			border-radius:3px;
+			background: #3f89ec;
+			font-size: 16px;
+			font-weight: 700;
+			cursor: pointer;
+			color: #fff;
+		}
+
+    </style>
+	
+	<script>
+	
+	/*js代码*/
+	/*focus和blur不支持冒泡*/
+	$(document).ready(function($){
+		//获得焦点
+		$(".register").focusin(function(event){
+			if(event.target.tagName.toLocaleLowerCase()==="input"){
+				//隐藏错误信息
+				$(event.target).next(".msg").find(".error").addClass("display_none");
+				//隐藏正确信息
+				$(event.target).next(".msg").find(".ok").addClass("display_none");
+				//显示对应输入框的提示信息
+				$(event.target).next(".msg").find(".tips").removeClass("display_none");
+			}
+		});
+		//失去焦点
+		$(".register").focusout(function(event){
+			if(event.target.tagName.toLocaleLowerCase()==="input"){
+				//隐藏提示框信息
+				$(event.target).next(".msg").find(".tips").addClass("display_none");
+				
+				//输入框为空则不进行判断
+				if($(event.target).val().length===0){
+					return;
+				}
+				
+				//输入框检查,并显示判断结果
+				switch(event.target.id){
+					case "user":
+
+						//判断程序
+						var errorType=formCheck.user($(event.target).val());
+						var errorName=["","name_tolong","name_onlynumber","name_format","name_beused"];
+						if(errorType.length===0){
+							$(event.target).next(".msg").find(".ok").removeClass("display_none");
+						}else{
+							$(event.target).next(".msg").find("."+errorName[errorType.pop()]).removeClass("display_none");
+						}
+						break;
+					case "pwd":
+						//密码提示框和错误框相同，所以退出时不需要识别具体那条信息错误！
+						var errorType=formCheck.pwd($(event.target).val());
+						if(errorType.length===0){
+							$(event.target).next(".msg").find(".ok").removeClass("display_none");
+						}else{
+							$(event.target).next(".msg").find(".error").removeClass("display_none");
+						}
+						break;
+					case "iphone":
+						var errorType=formCheck.iphone($(event.target).val());
+						var errorName=["","iphone_format","iphone_beused"];
+						if(errorType.length===0){
+							$(event.target).next(".msg").find(".ok").removeClass("display_none");
+						}else{
+							$(event.target).next(".msg").find(".error").removeClass("display_none");
+						}
+				}
+			}
+		});
+		
+		//密码框的onkeyup事件
+		$("#pwd").keyup(function(event){
+			var time;
+			var that=this;;
+			clearTimeout(time);
+			time=setTimeout(function(event){
+				//如果密码输入框为空，则显示normal图标
+				if($(event.target).val().length===0){
+					$(event.target).next(".msg").find("span[id^='pwd_flag']").removeClass("pwd_flag_error").removeClass("pwd_flag_ok");
+				}else{
+					var errorType=formCheck.pwd($(event.target).val());
+					var errorName=["","pwd_flag_c","pwd_flag_b","pwd_flag_a"];
+					//全部转为ok，根据错误指示将相应提示转为error
+					$(event.target).next(".msg").find("span[id^='pwd_flag']").removeClass("pwd_flag_error").addClass("pwd_flag_ok");
+					for(var i=0;i<errorType.length;++i){
+						$(event.target).next(".msg").find("#"+errorName[errorType[i]]).removeClass("pwd_flag_ok").addClass("pwd_flag_error");
+					}
+				}
+			
+			}.call(that,event),500);
+		});
+		//提交按钮的click事件
+		$("#btn").click(function(event){
+			event.preventDefault();
+			formCheck.btn();
+		});
+	});
+	
+	var formCheck={
+		"flag":{
+			"user":false,
+			"iphone":false,
+			"pwd":false,
+			"agreement":false
+		},
+	
+		"user":function(str){
+			var format_flag=true,	//表示用户名格式合格
+				errorType=[];		//表示输出错误的类型
+		
+			//字符数量检查
+			var strTmp=str;
+			strTmp=strTmp.replace(/[^x00-xff]/g,"aa");
+			if(format_flag && strTmp.length>14){
+				format_flag=false;
+				errorType.push(1);
+			}
+			
+			//纯数字检查
+			if(format_flag && /^\d+$/.test(str)){
+				format_flag=false;
+				errorType.push(2);
+			}
+			
+			//字符类型检查
+			if(format_flag && !/^[\w\u4e00-\u9fa5]+$/.test(str)){
+				format_flag=false;
+				errorType.push(3);
+			}
+		
+			//上传服务器判断是否被占用
+			if(format_flag){
+				var url="https://www.baidu.com?"+"name="+encodeURIComponent(str);
+				var xhr=new XMLHttpRequest();
+				xhr.open("Get",url,true);
+				xhr.send();
+				xhr.onload=function(){
+					if(xhr.status===200){
+						format_flag=JSON.parse(xhr.response) || true;
+						if(format_flag){
+							errorType.push(4);
+						}
+					}
+				};
+			}
+			
+			//判断user是否符合要求
+			if(format_flag){
+				formCheck.flag.user=true;
+			}
+			return errorType;
+		},
+		
+		"pwd":function(str){
+			var format_flag=true;
+			var errorType=[];
+			
+			//检查是否包含空格
+			if(/[ ]+/g.test(str)){
+				errorType.push(1);
+				format_flag=false;
+			}
+			
+			//检查字符类型
+			if(!/^[\w\+\-\*\/]+$/.test(str)){
+				errorType.push(2);
+				format_flag=false;
+			}
+			//检查密码长度
+			if(!(6<=str.length && str.length<=14)){
+				errorType.push(3);
+				format_flag=false;
+			}
+			
+			if(format_flag){
+				formCheck.flag.pwd=true;
+			}
+			
+			return errorType;
+		},
+		"iphone":function(str){
+			var format_flag=true;
+			var errorType=[];
+			
+			//手机号格式检查
+			if(!/^13[\d]{9}$/.test(str)){
+				format_flag=false;
+				errorType.push(1);
+			}
+			//是否被注册检查
+			if(format_flag){
+				var xhr=new XMLHttpRequest();
+				var url="http://www.baidu.com?"+"phone="+encodeURIComponent(str);
+				xhr.open("GET",url,true);
+				xhr.send();
+				xhr.onload=function(){
+					if(xhr.status===200){
+						format_flag=JSON.parse(xhr.response) || false;
+						if(!format_flag){
+							errorType.push(2);
+						}
+					}
+				}
+			}
+			
+			if(format_flag){
+				formCheck.flag.iphone=true;
+			}
+			
+			return errorType;
+		},
+		"btn":function(){
+		
+			if($("#agreement").val()==="agree"){
+				formCheck.flag.agreement=true;
+			}
+			
+			var allowSubmit=true;
+			for(var k in formCheck.flag){
+				if(formCheck.flag[k]===false){
+					allowSubmit=false;
+				}
+			}
+			
+			if(allowSubmit){
+				var data=new Formdata($(".register")[0]);
+				var xhr=new XMLHttpRequest();
+				xhr.open("Post","http://www.baidu.com",true);
+				xhr.send(data);
+				xhr.onload=function(){
+					if(xhr.status===200){
+						console.log("ok");
+					}
+				}
+			}
+			
+		}
+	}
+	
+	</script>
+	
+</head>
+<body>
+<form action="" class="register">
+    <div class="register_wrap txt_wrap">
+		<label for="user">用户名</label><input type="text" name="user" id="user" placeholder="请设置用户名"/>
+		<div class="msg msg_table">
+			<span class="tips display_none">设置后不可更改</br>中英文均可，取长14个英文或7个汉字</span>
+			<span class="reg_flag error display_none name_format">用户仅支持中英文、数字和下划线且不能为纯数字</span>
+			<span class="reg_flag error display_none name_beused">此用户名太受欢迎请更换一个</span>
+			<span class="reg_flag error display_none name_tolong">用户名不能超过7个汉字或14个字符</span>
+			<span class="reg_flag error display_none name_onlynumber">用户名不能为纯数字</span>
+			<span class="reg_flag ok display_none"><i></i></span>
+		</div>
+		<ul class="display_none">
+			<li>123</li>
+			<li>123</li>
+			<li>123</li>
+		</ul>
+	</div>
+	
+	<div class="register_wrap txt_wrap">
+		<label for="iphone">手机号</label><input type="text" name="iphone" id="iphone" placeholder="可用于登录和找回密码"/>
+		<div class="msg msg_table"/>
+			<span class="tips display_none">请输入中国大陆手机号,其他用户不可见</span>
+			<span class="reg_flag error display_none iphone_format">手机号码格式不正确</span>
+			<span class="reg_flag error display_none iphone_beused">手机号码已经被占用</span>
+			<span class="reg_flag ok display_none"><i></i></span>
+		</div>
+	</div>
+	<div class="register_wrap txt_wrap pwd_wrap">
+		<label for="pwd">密码</label><input type="password" name="pwd" id="pwd" placeholder="请设置登录密码"/>
+		<div class="msg msg_pwd">
+			<span class="tips tips_pwd  error display_none">
+				<span id="tips_pwd_triangle">
+					<span></span>
+				</span>
+				<span id="pwd_flag_a" class="pwd_flag_normal">长度为6-14个字符</span>
+				<span id="pwd_flag_b" class="pwd_flag_normal">支持数字,大小写字母和标点符号</span>
+				<span id="pwd_flag_c" class="pwd_flag_normal">不允许有空格</span>
+			</span>
+			<span class="reg_flag ok display_none" style="display:table-cell;vertical-align:middle;"><i></i></span>
+		</div>
+	</div>
+	<div class="register_wrap code_wrap">
+		<label>验证码</label><input type="text" name="identify_code" id="identify_code" placeholder="请输入验证码"/><input type="button" value="获取短信验证码"/>
+	</div>
+	<div class="register_wrap agreement_wrap">
+		<input type="checkbox" id="agreement" value="agree"/><span>阅读并接受《<a href="#">百度用户协议</a>》及《<a href="#">百度隐私权保护声明</a>》</span>
+		<span class="reg_flag error display_none">请勾选阅读并接受百度用户协议</span>
+	</div>
+	<div class="register_wrap btn_wrap">
+		<input type="submit" class="btn" value="注册" id="btn"/>
+	</div>
+	
+
+</form>
+
+<script>
+    $(document).ready(function ($) {
+
+    });
+
+    /*此无效函数为什么不能在$(document)中运行，函数运行环境！*/
+    var input=document.getElementById("pwd");
+    input.oninvalid=function (event) {
+        event.target.setCustomValidity('密码只能为数字！');
+    };
+
+    /*表单控件事件*/
+    /*
+    * oninput，在对象value值发生发生改变时奏效
+    * onchange，失去焦点，对于input时，只有当文本内容改变时才触发！
+    *
+    * 表单控件的方法
+    * input.checkValidity()，用于检测表单控件的值是否有效！
+    * */
+</script>
+</body>
+</html>

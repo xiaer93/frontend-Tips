@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>表单信息验证</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.js" integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
+    <script>
+        try{
+            $(document).ready(function ($) {
+                //表单输入框检查对象
+                var CheckForm={
+                    //定义一个标志数组，用于标识每个输入框是否合法！
+                    flags:(function () {
+                        var flags={};
+                        $("input[type!=submit]").each(function (index) {
+                            flags[$(this).attr("id")]=false;
+                        });
+                        return flags;
+                    })(),
+
+                    //单独为第二行密码验证定义的函数
+                    checkPassword:function (selectText,info) {
+                        $(selectText).bind({"focus":this.focusFunc,"blur":function (event) {
+                            var msg=event.data.msg;
+                            var p=$(this).next();
+                            var input=$("#pwd");
+                            if(input.val().length===0){
+                                p.text(msg[2]).css("color","red");
+                                CheckForm.flags[$(this).attr("id")]=false;
+                            }else if(input.val()===$(this).val()){
+                                //格式正确不显示文字
+                                p.text("");
+                                CheckForm.flags[$(this).attr("id")]=true;
+                            }else{
+                                p.text(msg[2]).css("color","red");
+                                CheckForm.flags[$(this).attr("id")]=false;
+                            }
+                        }},info);
+                    },
+                    //给匹配的元素绑定焦点事件，并给每个event对象绑定数据
+                    checkInfo:function (selectText,info) {
+                        $(selectText).bind({"focus":this.focusFunc,"blur":this.blurFunc},info);
+                    },
+                    //获得焦点的事件函数,逻辑与事件分离
+                    focusFunc:function (event) {
+                        var msg=event.data.msg;
+                        $(this).next().text(msg[0]).css("color","gray");
+                    },
+                    //失去焦点的事件函数
+                    blurFunc:function (event) {
+                        var patternString=event.data.patternString;
+                        var msg=event.data.msg;
+                        if(typeof patternString !=="string"){
+                            throw "正则表达式不是字符串！";
+                        }
+                        var pattern=new RegExp("\^"+patternString+"\$");
+                        var value=this.value;
+                        var p=$(this).next();
+                        if(pattern.test(value)){
+                            //格式正确不显示提醒文字
+                            p.text("");
+                            //p.css("color","gray");
+                            CheckForm.flags[$(this).attr("id")]=true;
+                        }else{
+                            p.text(msg[2]);
+                            p.css("color","red");
+                            CheckForm.flags[$(this).attr("id")]=false;
+                        }
+                    }
+                };
+
+                //名称,必须为中文字符和字母数字
+                CheckForm.checkInfo("#user",{patternString:"\[\\u4e00-\\u9fa5\\w\]+",msg:["请输入名称","数据正确","数据错误"]});
+                //密码,6位以上字母和数字
+                CheckForm.checkInfo("#pwd",{patternString:"\[\\w\]\{6,\}",msg:["请输入6位数以上密码，只能为字母和数字","数据正确","数据错误"]});
+                //密码，6位以上字母和数字
+                CheckForm.checkPassword("#pwdtwo",{patternString:"",msg:["请输入相同的密码","数据正确","数据不同"]});
+                //邮箱
+                CheckForm.checkInfo("#mail",{patternString:"\[\\w\]+?\(\[\\-\\_\\.\]?\[\\w\]+\)*@\(\[\\.\]?\[\\w\]+\)*\(\\.\[\\w\]{2,3})",msg:["请输入邮箱","数据正确","数据错误"]});
+                //手机号，11位手机号
+                CheckForm.checkInfo("#phone",{patternString:"\[1\]\[\\d\]\{10\}",msg:["请输入手机号","数据正确","数据错误"]});
+
+                //注册表单提交事件
+                $("#submit").click(function (event) {
+                    //阻止表单默认提交事件
+                    event.preventDefault();
+                    //$(this).attr("disabled",true);
+
+                    //检查每一项输入框是否符合要求
+                    var flag=true;
+                    for(var i in CheckForm.flags){
+                        if(CheckForm.flags[i]===false){
+                            flag=false;
+                            $("#"+i).trigger("blur");
+                        }
+                    }
+                    //如果结果都正确，则触发表单提交事件
+                    if(flag){
+                        $(this).submit();
+                    }else{
+                        alert("数据格式不正确，请修改后提交！");
+                    }
+                });
+            });
+        }catch (ex){
+            console.log(ex.errorCode);
+        }
+
+
+
+    </script>
+    <style>
+        .unit_center{
+            margin:0 auto;
+        }
+        .loginBox{
+            margin-top: 200px;
+            width: 400px;
+            font-size: 16px;
+        }
+        .loginBox div{
+            width: 400px;
+
+        }
+        .loginBox p{
+            height: 20px;
+            line-height: 20px;
+            padding: 3px 0 3px 80px;
+            margin: 0;
+        }
+        .loginBox label{
+            float: left;
+            width: 70px;
+            margin-right: 10px;
+            text-align: right;
+            line-height: 32px;
+            font-size: 18px;
+        }
+        .loginBox input{
+            height: 22px;
+            width: 300px;
+            padding: 5px 5px 5px 10px;
+        }
+        #submit{
+            width: 317px;
+            height: 40px;
+            padding: 2px 0;
+            float: right;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper unit_center">
+        <div class="loginBox unit_center">
+            <form action="#" name="loginUP" novalidate="novalidate">
+                <div>
+                    <label for="user">名称</label><input type="text" name="user" id="user" autofocus="autofocus">
+                    <p></p>
+                </div>
+                <div>
+                    <label for="pwd">密码</label><input type="password" name="pwd" id="pwd">
+                    <p></p>
+                </div>
+                <div>
+                    <label for="pwdtwo">密码</label><input type="password" name="pwdtwo" id="pwdtwo">
+                    <p></p>
+                </div>
+                <div>
+                    <label for="mail">邮箱</label><input type="email" name="mail" id="mail">
+                    <p></p>
+                </div>
+                <div>
+                    <label for="phone">手机</label><input type="tel" name="phone" id="phone">
+                    <p></p>
+                </div>
+                <div>
+                    <input type="submit" name="submit" id="submit" value="注册">
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

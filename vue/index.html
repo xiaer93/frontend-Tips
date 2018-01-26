@@ -1,0 +1,2177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue-demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="./js/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.14.1/lodash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tween.js@16.3.4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/color-js@1.0.3"></script>
+
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.js"></script>
+    <script src="./js/select2.full.js"></script>
+    <link rel="stylesheet" href="./js/select2.css">
+
+    <!--两个重要的js库-->
+    <script src="https://unpkg.com/marked@0.3.6"></script>
+    <style>
+        .wrapper{
+
+        }
+        .wrapper>section{
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid black;
+            box-shadow: 2px 2px 10px black;
+        }
+
+        /*2*/
+        #addPerson table{
+            margin: 0 2px;
+            width: calc(100% - 4px);
+            border-collapse: collapse;
+        }
+        #addPerson td,#addPerson th{
+            padding: 3px;
+            text-align: center;
+            border: 1px solid #aaa;
+        }
+        #addPerson th{
+            color: #fff;
+            background: green;
+        }
+        #addPerson tr:nth-child(2n){
+            background: #eee;
+        }
+        #addPerson button{
+            background: green;
+            padding: 3px 5px;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <section>
+            <div id="app1">
+                <p>{{message}}</p>
+                <p>计算属性【依赖message进行更新缓存！】：{{reversedMessage}}</p>
+                <p>方法【调用方法不依赖message更新！】：{{ nowT() }}</p>
+                <p>计算属性的set和get：{{fullName}}</p>
+                <input type="text" v-model="message"/>
+                <article>
+                    <h2>常见指令</h2>
+                    <div>
+                        <ul>
+                            <li>v-if="yes"，不满足条件时不会创建元素！</li>
+                            <li>v-show，与if不同的时，会创建元素，通过设置display:none属性隐藏元素</li>
+                            <li>v-else,紧随if或者show元素的后面，否则无法被识别！</li>
+                            <li>v-for='item in items'，遍历数组！</li>
+                            <li>v-bind:argument='',ru v-bind:class="age>18?showClass:''"。可以缩写:class=""【添加标签属性，如id、disabled、href等】</li>
+                            <li>v-on:click="function",监听元素的事件！。可以缩写@click=""</li>
+                            <li>v-once，声明一次性插入值，后期不再随着数据变化！</li>
+                            <li>v-html="rawhtml"，将rawhtml作为html解析！（注意避免用于使用此功能，容易产生xss跨站脚本攻击）</li>
+                            <li>{{message.split('')}}，支持单个表达式、不可以定义变量！</li>
+                            <li>form v-on:submit.prevent="onSubmit"，修饰符。其中.prevent表示preventDefault方法！</li>
+                        </ul>
+                    </div>
+                </article>
+            </div>
+            <script>
+                /*view和module双向数据绑定*/
+                var exampleData={
+                    message:'hello world!',
+                    firstName:'John',
+                    lastName:'Doe'
+                };
+                //vm===exampleData
+                var vm=new Vue({
+                    el:'#app1',
+                    data:exampleData,
+                    //计算属性！
+                    computed:{
+                        reversedMessage:function () {
+                            return this.message.split('').reverse().join('');
+                        },
+                        //可以通过vm.fullName访问设置属性值！
+                        fullName:{
+                            get:function () {
+                                return this.firstName+' '+this.lastName;
+                            },
+                            set:function (name) {
+                                var tmp=name.split(' ');
+                                this.firstName=tmp[0];
+                                this.lastName=tmp[1];
+                            }
+                        }
+                    },
+                    //方法
+                    methods:{
+                        nowT:function (){
+                            return new Date().toLocaleString();
+                        }
+                    },
+                    watch:{
+
+                    }
+                });
+            </script>
+        </section>
+        <section>
+            <div id="app2">
+                <label for="">询问信息的内容：</label><input type="text" v-model="question">
+                <p style="height: 20px;line-height: 20px">{{answer}}</p>
+
+            </div>
+            <script>
+                new Vue({
+                    el:"#app2",
+                    data:{
+                        question:'',
+                        answer:'',
+                        timer:null
+                    },
+                    //侦听属性，当需要在数据变化时执行异步或开销较大的操作时，这个方式是最有用的。
+                    watch:{
+                        question:function () {
+                            var that=this;
+                            this.answer="等待用户输入...";
+                            clearTimeout(this.timer);
+                            this.timer=setTimeout(function () {
+                                that.getAnswer(that.question);
+                            },1000);
+                        }
+                    },
+                    methods:{
+                        getAnswer:function (q) {
+                            //通过ajax获取答案。。。
+                            this.answer="输出结果为："+q;
+                        }
+                    }
+                })
+            </script>
+        </section>
+
+        <section>
+            <div id="app3">
+                <p  v-bind:class="{ 'red-text': isRed }">v-bind:class绑定class！</p>
+                <p  v-bind:class="greenObject">v-bind:class通过object绑定class！</p>
+                <p  v-bind:class="yellowObject">v-bind:class通过计算属性绑定class！</p>
+                <p  v-bind:class="[{'red-text':isRed},'blue-bg']">v-bind:class通过数组绑定class！</p>
+                <p  v-bind:style="txtObject">v-bind:style通过对象绑定style！</p>
+                <p>v-bind:style通过数组将多个对象绑定到style！对于需要添加浏览器前缀的属性，vue会自动添加！</p>
+                <p>在2.3版本之后，可以通过如下形式声明样式，程序将依次执行直到浏览器支持某种属性！:style="{ display: ['-webkit-box', '-ms-flexbox', 'flex'] }"</p>
+            </div>
+            <style>
+                .red-text{
+                    color: red;
+                }
+                .green-text{
+                    color: green;
+                }
+                .yellow-text{
+                    color: yellow;
+                }
+                .blue-bg{
+                    background: darkblue;
+                }
+            </style>
+            <script>
+                new Vue({
+                    el:"#app3",
+                    data:{
+                        isRed:true,
+                        isYellow:false,
+                        greenObject:{
+                            'green-text':true
+                        },
+                        txtObject:{
+                            color:'red',
+                            'font-size':'20px',
+                            backgroundColor:'yellow'
+                        }
+                    },
+                    //计算属性
+                    computed:{
+                        yellowObject:function () {
+                            return {
+                                'yellow-text':!this.isYellow
+                            }
+                        }
+                    }
+                })
+            </script>
+        </section>
+        <!-- v-if -->
+        <section>
+            <div id="app4">
+                <p  v-if="yes===true">v-if输出的内容【v-if和v-for同时使用时，v-for具有更高的优先级！】</p>
+                <p  v-else>No</p>
+                <p  v-show="yes">v-show输出的内容，v-show 不支持 emplate 元素，也不支持 v-else！【v-show的隐藏基于display:none实现！】</p>
+            </div>
+            <script>
+                new Vue({
+                    el:"#app4",
+                    data:{
+                        yes:true
+                    }
+                })
+            </script>
+        </section>
+        <section>
+            <div id="app5">
+                <ul>
+                    <li v-for="(item,index) in info" :key="item.id">
+                        <span>{{item.name}}---{{item.age}}---{{index}}</span>
+                    </li>
+                    <li>v-for 正在更新已渲染过的元素列表时，它默认用“就地复用”策略。如果数据项的顺序被改变，Vue 将不会移动 DOM 元素来匹配数据项的顺序， 而是简单复用此处每个元素，并且确保它在特定索引下显示已被渲染过的每个元素。可以使用key属性跟踪每个节点的身份！</li>
+                    <li>当数组使用下述方法时会触发视图更新：push()、pop()、shift()、unshift()、splice()、sort()、reverse()</br>
+                        当数组使用下述方法时不会触发视图更新：filter(), concat() 和 slice()</br>
+                        不能检测出：vm.items[indexOfItem] = newValue和vm.items.length = newLength行为，可以通过splice实现相应功能！</li>
+                </ul>
+                <ul>
+                    <li v-for="(value,key,index) in infObject">
+                        <span>{{key}}--{{value}}--{{index}}</span>
+                    </li>
+                    <li>Vue 不能检测对象属性的添加或删除，但是可以通过Vue.set(object, key, value) 方法向嵌套对象添加响应式属性！</li>
+                </ul>
+                <ul>
+                    <!--未添加if时显示135，添加后显示3-->
+                    <li v-for="value in even(numbers)" v-if="value===3">{{value}}</li>
+                    <li>同一个标签中，v-for等优先级高于v-if，即在每次for循环中都会再调用if语句！</li>
+                </ul>
+            </div>
+            <script>
+                var vm5=new Vue({
+                    el:"#app5",
+                    data:{
+                        info:[
+                            {
+                                name:'xiaocheng',
+                                age:18
+                            },
+                            {
+                                name:'xiaohua',
+                                age:20
+                            }
+                        ],
+                        infObject:{
+                            'message':'hello world!'
+                        },
+                        numbers:[1,2,3,4,5,6]
+                    },
+                    methods:{
+                        even:function (number) {
+                            return number.filter(function (t) {
+                                return t%2;
+                            })
+                        }
+                    }
+                })
+            </script>
+        </section>
+        <!-- v-on 事件绑定 -->
+        <section>
+            <div id="app6">
+                <button v-on:click.enter="counter++">累加</button>
+                <button @click="reset">清零</button>
+                <button @click="show('total：'+counter,$event)">总计</button>
+                <button @click.prevent="alert('加油！')">加油</button>
+                <p>你已经点击了：{{counter}}次</p>
+                <p>@click.prevent.self 会阻止所有的点击，而 @click.self.prevent 只会阻止对元素自身的点击。【未知顺序很重要？？？】</p>
+                <p>.stop阻止事件继续传播、.prevent阻止默认事件、.capture内部元素触发的事件优先在此元素触发、.self event.target为当前元素触发才触发事件函数！、.once只执行一次！</p>
+                <p>.enter/.tab/.delete (捕获“删除”和“退格”键)/.esc/.space/.up/.down/.left/.right【捕获键盘事件，键盘事件流。。。】【可以自定义全局键盘修饰符Vue.config.keyCodes.f1 = 112】</p>
+                <p>.ctrl/.alt/.shift/.meta【在与keyup事件联用时，只有在按住 ctrl 的情况下释放其它按键，才能触发 keyup.ctrl】</p>
+                <p>.exact 修饰符允许你控制由精确的系统修饰符组合触发的事件。 @click.ctrl.exact="onCtrlClick"，有且只有 Ctrl 被按下的时候才触发</p>
+            </div>
+            <script>
+                var vm6=new Vue({
+                    el:"#app6",
+                    data:{
+                        counter:0
+                    },
+                    methods:{
+                        reset:function (event) {
+                            this.counter=0;
+                            console.log(event.target.tagName);
+                        },
+                        //显示的通过特殊变量 $event传入event对象！
+                        show:function (msg,event) {
+                            alert(msg);
+                            event.preventDefault();
+                        }
+                    }
+                })
+            </script>
+        </section>
+        <!-- v-module 表单输入绑定！-->
+        <section>
+            <div id="app7">
+                <form action="">
+                    <!--v-model 会忽略所有表单元素的 value、checked、selected 特性的初始值而总是将 Vue 实例的数据作为数据来源。-->
+                    <!--对于需要使用输入法 (如中文、日文、韩文等) 的语言，你会发现 v-model 不会在输入法组合文字过程中得到更新。如果你也想处理这个过程，请使用 input 事件。-->
+                    <h3>v-model 指令在表单 &lt;input&gt; 及 &lt;textarea&gt; 元素上创建双向数据绑定</h3>
+                    <input type="text" v-model="msg">
+                    <p>您输入的文字是：{{msg}}</p>
+                    
+                    <h3>单选框，绑定到一个布尔值</h3>
+                    <input type="checkbox" id="check" v-model="checked">
+                    <label for="check">{{checked}}</label>
+
+                    <h3>多个复选框，绑定到同一个数组</h3>
+                    <input type="checkbox" id="jack" value="jack" v-model="checkName">
+                    <label for="jack">jack</label>
+                    <input type="checkbox" id="john" value="john" v-model="checkName">
+                    <label for="john">john</label><br>
+                    <span>Checked names: {{ checkName }}</span>
+
+                    <h3>单选按钮，绑定到一个字符串</h3>
+                    <input type="radio" id="one" value="one" v-model="picked">
+                    <label for="one">One</label>
+                    <input type="radio" id="two" value="two" v-model="picked">
+                    <label for="two">Two</label><br>
+                    <span>Picked：{{picked}}</span>
+
+                    <h3>单选择框，绑定到一个字符串</h3>
+                    <select v-model="selected">
+                        <option value="" disabled="disabled">请选择</option>
+                        <option value="A">A</option>
+                        <option>B</option>
+                        <option>C</option>
+                    </select><br>
+                    <span>Selected：{{selected}}</span>
+                    
+                    <h3>多选择框，绑定到一个数组</h3>
+                    <select name="" id="" multiple v-model="selectedMut">
+                        <option value="" disabled>请选择</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                    </select><br>
+                    <span>Selected：{{selectedMut}}</span>
+
+                    <h3>通过v-for渲染生成的选择框</h3>
+                    <select name="" id="" v-model="selectedFor">
+                        <option value="" disabled>请选择</option>
+                        <option v-for="op in options" v-bind:value="op.value">{{op.text}}</option>
+                    </select><br>
+                    <span>通过For生成的选项：{{selectedFor}}</span>
+
+                    <h3>对于表单控件，可以通过v-bind绑定value值！（可以绑定到一个动态对象上）</h3>
+                    <p>单选按钮、选择框等等都可以通过v-bind绑定value值！，如：v-bind:value="{ number: 123 }</p>
+                    <input type="checkbox" v-model="toggle"  v-bind:true-value="abind" v-bind:false-value="bbind">
+                    <label for="">vbind绑定</label><br>
+                    <span>Toggle：{{toggle}}</span>
+                </form>
+                <p>.lazy在默认情况下，v-model 在每次 input 事件触发后将输入框的值与数据进行同步 (除了上述输入法组合文字时)。你可以添加 lazy 修饰符，从而转变为使用 change 事件进行同步!</p>
+                <p>.number自动将用户的输入值转为数值类型，如：v-model.number="age" type="number"</p>
+                <p>.trim自动过滤用户输入的首尾空白字符</p>
+            </div>
+            <script>
+                var vm7=new Vue({
+                    el:"#app7",
+                    data:{
+                        msg:'',
+                        checked:false,
+                        checkName:[],
+                        picked:'',
+                        selected:'',
+                        selectedMut:[],
+
+                        options:[
+                            {
+                                text:'One',
+                                value:'a'
+                            },
+                            {
+                                text:'Two',
+                                value:'b'
+                            }
+                        ],
+                        selectedFor:'',
+
+                        abind:'a',
+                        bbind:'b',
+                        toggle:''
+                    }
+                })
+            </script>
+        </section>
+        <!-- vue component 组件-->
+        <section>
+            <!--组件可以扩展 HTML 元素，封装可重用的代码-->
+            <div id="app8">
+                <div>
+                    <p>使用下列dom模版时有限制：如ul、ol、table、select等对内部标签有限制，而option等标签只能出现在select中。</p>
+                    <p>
+                        变通的做法，如在table标签中添加元素，如：tr is="my-row"。其中my-row为模版！
+                    </p>
+                    <my-component-one></my-component-one>
+                    <my-component-two></my-component-two>
+                </div>
+                <div>
+                    <p>使用字符串模板？？？？没有限制</p>
+                </div>
+                <div>
+                    <p>构造组件时，如果返回对象d，则下述共享对象！</p>
+                    <my-component-four></my-component-four>
+                    <my-component-four></my-component-four>
+                    <p>构造组件时，如果返回新建对象，则下述各个独立！</p>
+                    <my-component-five></my-component-five>
+                    <my-component-five></my-component-five>
+                </div>
+            </div>
+            <script>
+                //全局注册组件
+                Vue.component('my-component-one',{
+                    template:"<div>全局组件</div>"
+                });
+                //局部注册
+                var my_component_two_obj={
+                    template:"<div>局部组件</div>"
+                };
+
+                //component-four
+                var d={value:0};
+                Vue.component('my-component-four',{
+                    template:"<button @click='value++'>{{value}}</button>",
+                    data:function () {
+                        return d;//所有组件实例共享value！
+                    }
+                });
+
+                //component-five
+                Vue.component('my-component-five',{
+                    template:"<button @click='value++'>{{value}}</button>",
+                    data:function () {
+                        return {
+                            value:0//每个组件实例都有自己的状态
+                        }
+                    }
+                });
+                var vm8=new Vue({
+                    el:"#app8",
+                    components:{
+                        'my-component-two':my_component_two_obj
+                    }
+                });
+            </script>
+        </section>
+        <!--父组件向子组件通信通过prop-->
+        <section>
+            <div id="app9">
+                <p>组件组合，父子组件</p>
+                <!--input为父组件，通过prop传递消息给子组件-->
+                <input type="text" v-model="msg"><br>
+                <!--在此处，驼峰变量应该改为短划线小写变量！-->
+                <my-component-six my-msg="hello world!"></my-component-six>
+                <!--通过v-bind将myMsg绑定到父组件的数据上-->
+                <my-component-six v-bind:my-msg="msg"></my-component-six>
+                <!--直接将对象一个对象的所有属性作为 prop 进行传递，v-bind后可以不带子组件props中的‘info’！-->
+                <my-component-seven v-bind="objMsg"></my-component-seven>
+                <hr>
+                <p>通过在vbind后设置修饰符.sync，子组件可以通过this.$emit('update', newValue)申请修改父组件的值！</p>
+                <p>comp some-prop="1"传递字符串“1”；comp v-bind:some-prop="1"传递数值1 </p>
+                <p>my-component date-picker="true"。在子组件中添加第三方date-picker组件，会被自动添加到根元素上！。</p>
+                <p>在添加第三方组件时，对于多数特性来说，传递给组件的值会覆盖组件本身设定的值，而class和style会合并操作，生成最终的值！。</p>
+            </div>
+            <script>
+                //组件的组合
+                Vue.component('my-component-six',{
+                    props:['myMsg'],
+                    template:"<span>{{myMsg}}</span>"
+                });
+                //vbind绑定对象
+                Vue.component('my-component-seven',{
+                    props:['info'],
+                    template:"<span>{{info}}</span>"
+                });
+                //在子组件中拷贝prop，下述拷贝都为浅拷贝！
+                Vue.component('my-component-eight',{
+                    props:['info'],
+                    data:function () {
+                        //定义局部变量拷贝
+                        return {msg:this.info}
+                    },
+                    computed:{
+                        //定义计算属性拷贝
+                        cmsg:function () {
+                            return this.info.trim().toLowerCase();
+                        }
+                    }
+                });
+                //在子组件中验证传入的数据
+                Vue.component('my-component-nine',{
+                   props:{
+                       //在验证之前，methods、data、computed等还不能使用！
+                       info:{
+                           type:[Number,String],//可以直接为类型：Number
+                           required:true,
+                           default:function () {//可以直接为值：100
+                               return 100;
+                           },
+                           validator:function (value) {
+                               return value>10;
+                           }
+                       }
+                   }
+                });
+
+                var vm9=new Vue({
+                    el:"#app9",
+                    data:{
+                        msg:'',
+                        objMsg:{
+                            info:'object msg!'
+                        }
+                    }
+                })
+            </script>
+        </section>
+        <!--子组件向父组件通信通过自定义事件-->
+        <section>
+            <div id="app10">
+                <!--通过v-on监听事件。-->
+                <p>通过在v-on后设置后缀修饰符.native，表示只监听原生事件</p>
+                <my-compontent-ten v-on:increment="suma"></my-compontent-ten>
+                <br>
+                <my-compontent-ten v-on:increment="sumb"></my-compontent-ten>
+                <br>
+                <span>在父组件监听得到的数据：{{a}}-{{b}}</span>
+                <hr>
+                <!--自定义表单输入控件组件-->
+                <p>此组件直接能输入数值，输入非数值时转为</p>
+                <my-component-eleven v-model="price"></my-component-eleven>
+                <hr>
+                <p>使用插槽slot</p>
+                <section>
+                    <my-component-twelve>
+                        <h1 slot="header">这是页面的标题</h1>
+                        <p>这是文章主要段落</p>
+                        <p>这是另一个段落</p>
+                        <p slot="footer">这里有一些版权信息！</p>
+                    </my-component-twelve>
+                </section>
+                <hr>
+                <!--作用域插槽，从子组件传递信息到父组件-->
+                <section>
+                    <div class="parent">
+                        <my-component-thirteen>
+                            <template slot-scope="props">
+                                <span>hello from parent</span>
+                                <br>
+                                <span>{{props.text}}</span>
+                            </template>
+                        </my-component-thirteen>
+                    </div>
+                </section>
+                <hr>
+                <section>
+                    <keep-alive>
+                        <component v-bind:is="currentView">
+                            <!-- 通过keep-alive标签，非活动组件将被缓存，避免重新渲染！ -->
+                        </component>
+                    </keep-alive>
+                </section>
+            </div>
+
+
+            <script>
+                Vue.component('my-compontent-ten',{
+                    template:"<button @click='add'>累计{{total}}</button>",
+                    data:function () {
+                        return {
+                            total:0
+                        }
+                    },
+                    methods:{
+                        add:function () {
+                            this.total+=1;
+                            this.$emit('increment');//触发事件
+                        }
+                    }
+                });
+                //定义自定义事件的表单输入控件，只接受数值输入
+                Vue.component('my-component-eleven',{
+                   template:"<input ref='input' v-bind:value='value' v-on:input='check($event.target.value)' v-on:click='$event.target.select()'/>",
+                   props:['value'],
+                   methods:{
+                       check:function (value) {
+                            var ret=value;
+                            ret=ret.trim();
+                            try{
+                                ret=parseFloat(ret);
+                            }catch (e){
+                                this.value=NaN;
+                            }
+                            //$refs集合，可以通过名称访问对应的元素！
+                           this.$refs.input.value=ret;
+                           this.$emit('input', ret);
+                           console.log(ret);
+                       }
+                   }
+                });
+
+                //通过插槽实现内容分发
+                Vue.component('my-component-twelve',{
+                   template:"<div class='container'>\
+                                <header>\
+                                    <slot name='header'></slot>\
+                                </header>\
+                                <main>\
+                                    <slot></slot>\
+                                </main>\
+                                <footer>\
+                                    <slot name='footer'></slot>\
+                                </footer>\
+                              </div>"
+                });
+
+                Vue.component('my-component-thirteen',{
+                   template:"<div class='child'>\
+                               <slot text='hello form child'></slot>\
+                               </div>"
+                });
+
+                //
+                var chd={
+                    template:'<p>动态组件，在一个挂载点切换多个组件</p>'
+                };
+                var vm10=new Vue({
+                    el:"#app10",
+                    data:{
+                        a:0,
+                        b:0,
+                        price:0,
+                        currentView: 'home'//也可以直接指向chd，如currentView:chd
+                    },
+                    methods:{
+                        suma:function(){
+                            this.a+=1;
+                        },
+                        sumb:function (){
+                            this.b+=1;
+                        }
+                    },
+                    components:{
+                        home:chd,
+                        archive:{
+                            template:"<p>动态组件之文章组件</p>"
+                        }
+                    }
+                })
+            </script>
+        </section>
+        <!--组件总结-->
+        <section>
+            <div id="app11">
+                <article>
+                    <header>
+                        <h2>编写可复用组件</h2>
+                    </header>
+                    <p>在编写组件时，最好考虑好以后是否要进行复用。一次性组件间有紧密的耦合没关系，但是可复用组件应当定义一个清晰的公开接口，同时也不要对其使用的外层数据作出任何假设。</p>
+                    <p>Vue组件的api来自3部分</p>
+                    <ul>
+                        <li>Prop 允许外部环境传递数据给组件；</li>
+                        <li>事件允许从组件内触发外部环境的副作用；</li>
+                        <li>插槽允许外部环境将额外的内容组合在组件中。</li>
+                    </ul>
+                    <p>$refs 只在组件渲染完成后才填充，并且它是非响应式的。它仅仅是一个直接操作子组件的应急方案——应当避免在模板或计算属性中使用 $refs。</p>
+                    <p>组件命名，可以使用kebab-case (短横线分隔命名)、camelCase (驼峰式命名) 或 PascalCase (单词首字母大写命名)。在 HTML 模板中始终使用 kebab-case！！！</p>
+                    <p>组件可以递归使用，但是必须有name属性，全局声明的组件其name就等于id</p>
+                    <p>组件间可以循环引用，为了告诉浏览器先解析谁，通过生命期钩子函数解决！（beforeCreate）</p>
+                    <p>当页面包含大量静态内容时，考虑通过v-once 将渲染结果缓存起来</p>
+                </article>
+                <hr>
+                <!--异步组件，异步解析组件的定义-->
+                <section>
+                    <my-component-fourteen></my-component-fourteen>
+                </section>
+            </div>
+            <script>
+                Vue.component('my-component-fourteen',function (resolve, reject) {
+                    //reject(reason) 指示加载失败,resolve解析远方传来的组建信息！
+                    //可以通过ajax等等方式获取组建信息
+                    //还可以通过webpack代码分割功能，require(['./my-async-component'], resolve)
+                    setTimeout(function () {
+                        resolve({
+                            template:'<p>我是异步传来的组件信息</p>'
+                        });
+                    },2000);
+                });
+                var vm11=new Vue({
+                    el:"#app11"
+                });
+            </script>
+        </section>
+
+        <!--vue动画，一次只运动一个节点！-->
+        <section>
+            <div id="app12">
+                <article>
+                    <header>
+                        <h2>进入/离开 & 列表过渡</h2>
+                    </header>
+                    <p>Vue 在插入、更新或者移除 DOM 时，提供多种不同方式的应用过渡效果。</p>
+                    <ul>
+                        <li>在 CSS 过渡和动画中自动应用 class</li>
+                        <li>可以配合使用第三方 CSS 动画库，如 Animate.css</li>
+                        <li>在过渡钩子函数中使用 JavaScript 直接操作 DOM</li>
+                        <li>可以配合使用第三方 JavaScript 动画库，如 Velocity.js</li>
+                    </ul>
+                </article>
+                <hr>
+                <!--单元素、组件的过度-->
+                <section>
+                    <button @click="show=!show">动画效果</button>
+                    <transition name="slide">
+                        <p v-show="show">hello world！</p>
+                    </transition>
+                    <transition name="fade">
+                        <p v-show="show">hello world!</p>
+                    </transition>
+                    <p>当插入或删除包含在 transition 组件中的元素时，Vue 将会做以下处理：</p>
+                    <ul>
+                        <li>自动嗅探目标元素是否应用了 CSS 过渡或动画，如果是，在恰当的时机添加/删除 CSS 类名。</li>
+                        <li>如果过渡组件提供了 JavaScript 钩子函数，这些钩子函数将在恰当的时机被调用。</li>
+                        <li>如果没有找到 JavaScript 钩子并且也没有检测到 CSS 过渡/动画，DOM 操作 (插入/删除) 在下一帧中立即执行。</li>
+                    </ul>
+                    <p>在transition标签中通过name修改前缀名，如上述动画fade！</p>
+                    <transition name="bounce">
+                        <img v-if="showImg" @click="showImg=!showImg" src="https://cn.vuejs.org/images/transition.png" alt="css过度动画类名" width="500px">
+                    </transition>
+                </section>
+                <hr>
+                <section>
+                    <p>动画还可以使用类名：（他们的优先级高于普通类名）
+                        enter-class、enter-active-class、enter-to-class (2.1.8+)<br>
+                        leave-class、leave-active-class、leave-to-class (2.1.8+)</p>
+                    <p>可以通过transitionend 或 animationend监听动画完成，如果设置了两种类型动画，则须指定type属性确定监听对象！</p>
+                    <p>可以设置延时:duration="{ enter: 500, leave: 800 }"，动画将不再等待animationend等事件！</p>
+                    <button @click="show=!show">动画效果</button>
+                    <transition :duration="{ enter: 500, leave: 800 }" enter-active-class="animated tada" leave-active-class="animated bounceOutRight">
+                        <p v-if="show"  @animationend="showMsg('ok')">hello world!</p>
+                    </transition>
+                </section>
+                <hr>
+                <section>
+                    <p> 动画还可以使用javascript过度钩子函数实现
+                        v-on:before-enter="beforeEnter"
+                        v-on:enter="enter"
+                        v-on:after-enter="afterEnter"
+                        v-on:enter-cancelled="enterCancelled"
+                        <br>
+                        v-on:before-leave="beforeLeave"
+                        v-on:leave="leave"
+                        v-on:after-leave="afterLeave"
+                        v-on:leave-cancelled="leaveCancelled"</p>
+                    <p>在只使用javascript过度时，enter和leave必须设置回调函数done，否则会被同步执行</p>
+                    <p>推荐对于仅使用 JavaScript 过渡的元素添加 v-bind:css="false"，Vue 会跳过 CSS 的检测。这也可以避免过渡过程中 CSS 的影响。</p>
+                    <p>Velocity 是一个简单易用、高性能、功能丰富的轻量级JS动画库。它能和 jQuery 完美协作，并和$.animate()有相同的 API， 但它不依赖 jQuery，可单独使用。 Velocity 不仅包含了 $.animate() 的全部功能， 还拥有：颜色动画、转换动画(transforms)、循环、 缓动、SVG 动画、和 滚动动画 等特色功能。</p>
+                    <button @click="show=!show">动画效果</button>
+                    <transition
+                            v-on:before-enter="beforeEnter"
+                            v-on:enter="enter"
+                            v-on:leave="leave"
+                            v-bind:css="false"
+                    >
+                        <p v-if="show">hello world!</p>
+                    </transition>
+                </section>
+                <hr>
+                <section>
+                    <p>多个组件的过度：如：table和描述这个列表为空消息的元素</p>
+                    <p>当有相同标签名的元素切换时，需要通过 key 特性设置唯一的值来标记以让 Vue 区分它们，否则 Vue 为了效率只会替换相同标签内部的内容。即使在技术上没有必要，给在 <transition> 组件中的多个元素设置 key 是一个更好的实践。</p>
+                    <p>多个v-if的过渡（如文章状态标签），可以简化为单个元素的过度</p>
+                    <transition key="tableShow">
+                        <ul v-if="tableDate.length>0">
+                            <li v-for="value in tableDate">{{value}}</li>
+                        </ul>
+                        <p v-else>没有任何信息！</p>
+                    </transition>
+                </section>
+                <section>
+                    <p>在transition标签内的多个元素动画默认为同时发生！</p>
+                    <p>同时生效的进入和离开的过渡不能满足所有要求，所以 Vue 提供了 过渡模式
+                        in-out：新元素先进行过渡，完成之后当前元素过渡离开。
+                        out-in：当前元素先进行过渡，完成之后新元素过渡进入。</p>
+                    <p>对于同名标签元素，必须设置key，否则vue直接替换内容！</p>
+                    <button @click="show=!show">动画效果</button>
+                    <transition mode="out-in" name="btn" key="pp">
+                        <p v-if="show" class="bg" key="p1">on</p>
+                        <p v-else class="bg" key="p2">off</p>
+                    </transition>
+                </section>
+                <hr>
+                <section>
+                    <p>不需要设置key，直接使用component动态组件即可！</p>
+                    <button @click="changeComponent">动画效果</button>
+                    <transition name="btn" mode="out-in">
+                        <component v-bind:is="view"></component>
+                    </transition>
+                </section>
+            </div>
+            <script>
+                var vm12=new Vue({
+                    el:"#app12",
+                    data:{
+                        show:true,
+                        showImg:true,
+
+                        tableDate:["xiaocheng","xiaohua"],
+
+                        view:'v-a'
+                    },
+                    methods:{
+                        showMsg:function (value) {
+                            alert(value);
+                        },
+                        changeComponent:function () {
+                            if(this.view==='v-a')
+                                this.view='v-b';
+                            else
+                                this.view='v-a';
+                        },
+
+                        beforeEnter: function (el) {
+                            el.style.opacity = 0;
+                            el.style.transformOrigin = 'left';
+                        },
+                        enter: function (el, done) {
+                            Velocity(el, { opacity: 1, fontSize: '1.4em' }, { duration: 300 });
+                            Velocity(el, { fontSize: '1em' }, { complete: done });
+                        },
+                        leave: function (el, done) {
+                            Velocity(el, { translateX: '15px', rotateZ: '50deg' }, { duration: 600 });
+                            Velocity(el, { rotateZ: '100deg' }, { loop: 2 });
+                            Velocity(el, {
+                                rotateZ: '45deg',
+                                translateY: '30px',
+                                translateX: '30px',
+                                opacity: 0
+                            }, { complete: done });
+                        }
+                    },
+                    components:{
+                        'v-a':{
+                            template:"<p class='bg'>我是组件A</p>"
+                        },
+                        'v-b':{
+                            template:"<p class='bg'>我是组件B</p>"
+                        }
+                    }
+                })
+            </script>
+            <style>
+                .bg{
+                    background: red;
+                    color: #fff;
+                    width: 40px;
+                }
+                
+                .fade-enter-active,.fade-leave-active{
+                    transition: opacity 1s;
+                }
+                .fade-enter{
+                    opacity:0;
+                }
+
+                .slide-enter-active,.slide-leave-active{
+                    transition: all 0.8s cubic-bezier(1.0,0.5,0.8,1.0);
+                }
+                .slide-enter,.slide-leave-to{
+                    transform: translateX(10px);
+                }
+                
+                .bounce-leave-active{
+                    animation: bounce-animation 2s;
+                }
+                @keyframes bounce-animation {
+                    0%{
+                        transform: scale(0);
+                    }
+                    50%{
+                        transform: scale(1.5);
+                    }
+                    100%{
+                        transform: scale(1);
+                    }
+                }
+                .btn-enter{
+                    transform: translateX(20px);
+                    opacity: 0.3;
+                }
+                .btn-leave-to{
+                    transform: translateX(20px);
+                    opacity: 0.3;
+                }
+                .btn-enter-active,.btn-leave-active{
+                    transition: all 1s cubic-bezier(1.0,0.5,0.8,1.0);
+                }
+            </style>
+        </section>
+        <!--vue动画，一次运动多个节点！-->
+        <section>
+            <div id="app13">
+                <article>
+                    <p>Query提供了一套操作DOM的跨浏览器解决方案，lodash更侧重于基础类型的操作，比如数组，对象，字符串，函数。</p>
+                    <p>过渡可以通过 Vue 的组件系统实现复用。</p>
+                </article>
+                <hr>
+                <section>
+                    <p>Vue 使用了一个叫 FLIP 简单的动画队列使用 transforms 将元素从之前的位置平滑过渡新的位置。使用 FLIP 过渡的元素不能设置为 display: inline 。FLIP 动画不仅可以实现单列过渡，多维网格也同样可以过渡作为替代方案，可以设置为 display: inline-block 或者放置于 flex 中</p>
+                    <button @click="add">添加</button>
+                    <button @click="remove">删除</button>
+                    <button @click="shuffle">动画</button>
+                    <transition-group tag="div" name="list">
+                        <!--对于数组的index，设置为key意味着什么？为什么都是末尾元素动起来呢呢？-->
+                        <span v-for="value in items" v-bind:key="value" class="list-item">{{value}}</span>
+                    </transition-group>
+                </section>
+                <hr>
+                <section>
+                    <p>通过 data 属性与 JavaScript 通信 ，就可以实现列表的交错过渡!(延时)</p>
+                    <input type="text" v-model="query">
+                    <transition-group tag="ul" @before-enter="beforeEnter" @enter="enter" @leave="leave">
+                        <li v-for="(item, index) in computedList" v-bind:data-index="index" v-bind:key="item.msg">{{item.msg}}</li>
+                    </transition-group>
+                </section>
+            </div>
+            <script>
+
+                var vm13=new Vue({
+                    el:"#app13",
+                    data:{
+                        items:[1,2,3],
+                        nextNum:4,
+
+                        query:'',
+                        list:[
+                            {msg:"xiaocheng"},
+                            {msg:"xiaohong"},
+                            {msg:"xiaohua"},
+                            {msg:"chenchen"}
+                        ]
+                    },
+                    computed:{
+                        computedList:function () {
+                            var that=this;//执行上下文！！！
+                            return this.list.filter(function (t) {
+                                return t.msg.indexOf(that.query)!==-1;
+                            })
+                        }
+                    },
+                    methods:{
+                        add:function () {
+                            var index=Math.floor(Math.random()*this.items.length);
+                            this.items.splice(index,0,this.nextNum++);
+                        },
+                        remove:function () {
+                            var tmp=this.items;
+                            var index=Math.floor(Math.random()*tmp.length);
+                            tmp.splice(index,1);
+                        },
+                        shuffle: function () {
+                            this.items = _.shuffle(this.items)
+                        },
+
+                        beforeEnter: function (el) {
+                            el.style.opacity = 0
+                            el.style.height = 0
+                        },
+                        enter: function (el, done) {
+                            var delay = el.dataset.index * 150
+                            setTimeout(function () {
+                                Velocity(
+                                    el,
+                                    { opacity: 1, height: '1.6em' },
+                                    { complete: done }
+                                )
+                            }, delay)
+                        },
+                        leave: function (el, done) {
+                            var delay = el.dataset.index * 150
+                            setTimeout(function () {
+                                Velocity(
+                                    el,
+                                    { opacity: 0, height: 0 },
+                                    { complete: done }
+                                )
+                            }, delay)
+                        }
+                    }
+                });
+            </script>
+            <style>
+                .list-item{
+                    display: inline-block;
+                    margin: 0 10px;
+                    transition: all 1s;
+                }
+
+                .list-enter-active,.list-leave-active{
+                    /**/
+
+                }
+                .list-enter,.list-leave-to{
+                    opacity: 0;
+                    transform: translateY(15px);
+                }
+
+            </style>
+        </section>
+        <!-- vue动画，过渡特性是动态绑定的！-->
+        <section>
+            <div id="app14">
+                <article></article>
+                <section>
+                    <label for="">fadeInDuration</label><input type="range" v-model="fadeInDuration" min="0" v-bind:max="maxDuration">
+                    <label for="">fadeOutDuration</label><input type="range" v-model="fadeOutDuration" min="0" v-bind:max="maxDuration">
+                    <button v-if="stop" @click="stop = false; show = false">start Animation</button>
+                    <button v-else @click="stop=true">stop It!</button>
+                    <transition
+                            v-on:before-enter="beforeEnter"
+                            v-on:enter="enter"
+                            v-on:leave="leave"
+                    >
+                        <p v-if="show">hello world!</p>
+                    </transition>
+                </section>
+            </div>
+            <script>
+                var vm14=new Vue({
+                    el:"#app14",
+                    data:{
+                        show:true,
+                        stop:true,
+                        fadeInDuration:1000,
+                        fadeOutDuration:1000,
+                        maxDuration:1500
+                    },
+                    mounted: function () {
+                        this.show = false
+                    },
+                    methods:{
+                        beforeEnter: function (el) {
+                            el.style.opacity = 0;
+                        },
+                        enter: function (el, done) {
+                            var vm = this;
+                            Velocity(el,
+                                { opacity: 1 },
+                                {
+                                    duration: this.fadeInDuration,
+                                    complete: function () {
+                                        done();
+                                        if (!vm.stop) vm.show = false
+                                    }
+                                }
+                            )
+                        },
+                        leave: function (el, done) {
+                            var vm = this;
+                            Velocity(el,
+                                { opacity: 0 },
+                                {
+                                    duration: this.fadeOutDuration,
+                                    complete: function () {
+                                        done();
+                                        vm.show = true
+                                    }
+                                }
+                            )
+                        }
+                    }
+                })
+            </script>
+        </section>
+
+        <!-- vue状态过渡，数据元素变动的特效-->
+        <section>
+            <div id="app15">
+                <article>
+                    <p>数字和运算颜色的显示/SVG 节点的位置/元素的大小和其他的属性</p>
+                    <p>所有原始数字被事先储存起来，当数值更新时触发动画！</p>
+                    <p>svg形状动起来，https://jsfiddle.net/chrisvfritz/65gLu2b6/</p>
+                    <p>Tweenjs用作动画特效</p>
+                </article>
+                <section>
+                    <input v-model="number" type="number" step="20">
+                    <p>{{animatedNumber}}</p>
+                </section>
+                <hr>
+                <section>
+                    <input type="text" v-model="colorQuery">
+                    <button @click="updateColor">更新颜色</button>
+                    <div v-bind:style="{'backgroundColor':tweenedCSSColor}" class="colorBox">
+                        <span style="line-height: 100px;color: #fff;background: #000">{{tweenedCSSColor}}</span>
+                    </div>
+                </section>
+            </div>
+            <style>
+                .colorBox{
+                    width: 100px;
+                    height: 100px;
+                    text-align: center;
+                }
+            </style>
+            <script>
+                var Color = net.brehaut.Color;
+                var vm15=new Vue({
+                    el:"#app15",
+                    data:{
+                        number:0,
+                        animatedNumber:0,
+
+                        colorQuery:'',
+                        color:{
+                            red:0,
+                            green:0,
+                            blue:0,
+                            alpha:1
+                        },
+                        tweenedColor:{}
+                    },
+                    created:function () {
+                        this.tweenedColor=Object.assign({},this.color);
+                    },
+                    watch: {
+                        number: function (newValue, oldValue) {
+                            var vm = this;
+
+                            function animate() {
+                                if (TWEEN.update()) {
+                                    requestAnimationFrame(animate)
+                                }
+                            }
+
+                            new TWEEN.Tween({tweeningNumber: oldValue})
+                                .easing(TWEEN.Easing.Quadratic.Out)
+                                .to({tweeningNumber: newValue}, 500)
+                                .onUpdate(function () {
+                                    vm.animatedNumber = this.tweeningNumber.toFixed(0)
+                                })
+                                .start();
+
+                            animate();
+                        },
+                        color: function () {
+                            function animate() {
+                                if (TWEEN.update()) {
+                                    requestAnimationFrame(animate)
+                                }
+                            }
+
+                            new TWEEN.Tween(this.tweenedColor)
+                                .to(this.color, 750)
+                                .start();
+
+                            animate();
+                        }
+                    },
+                    computed:{
+                        tweenedCSSColor:function () {
+                            return new Color({
+                                red:this.tweenedColor.red,
+                                green:this.tweenedColor.green,
+                                blue:this.tweenedColor.blue,
+                                alpha:this.tweenedColor.alpha
+                            }).toCSS();
+                        }
+                    },
+                    methods:{
+                        updateColor:function () {
+                            this.color=new Color(this.colorQuery).toRGB();
+                            this.colorQuery='';
+                        }
+                    }
+                })
+            </script>
+        </section>
+
+        <!--将动画封装程组件-->
+        <section>
+            <div id="app16">
+                <article></article>
+                <section>
+                    <!--后缀修饰符，限定为数字-->
+                    <input type="number" v-model.number="leftNumber" step="20">+
+                    <input type="number" v-model.number="rightNumber" step="20">
+                    <p>
+                        <animation-number v-bind:value="leftNumber"></animation-number>+
+                        <animation-number :value="rightNumber"></animation-number>=
+                        <animation-number :value="resultNumber"></animation-number>
+                    </p>
+                </section>
+            </div>
+            <script>
+                Vue.component('animation-number',{
+                    props:{
+                        value:{
+                            type:Number,//可以直接为类型：Number
+                            required:true
+                        }
+                    },
+                    template:"<span>{{endNumber}}</span>",
+                    data:function () {
+                        return {
+                            endNumber:0
+                        };
+                    },
+                    watch:{
+                        value: function (newValue, oldValue) {
+                            var vm = this;
+
+                            function animate() {
+                                if (TWEEN.update()) {
+                                    requestAnimationFrame(animate)
+                                }
+                            }
+                            new TWEEN.Tween({tweeningNumber: oldValue})
+                                .easing(TWEEN.Easing.Quadratic.Out)
+                                .to({tweeningNumber: newValue}, 500)
+                                .onUpdate(function () {
+                                    vm.endNumber = this.tweeningNumber.toFixed(0)
+                                })
+                                .start();
+                            animate();
+                        }
+                    }
+                });
+
+                var vm16=new Vue({
+                    el:"#app16",
+                    data:{
+                        leftNumber:0,
+                        rightNumber:0
+                    },
+                    computed:{
+                        resultNumber:function () {
+                            return this.leftNumber+this.rightNumber;
+                        }
+                    }
+                })
+            </script>
+        </section>
+
+        <!--混合-->
+        <section>
+            <div id="app17">
+                <article>
+                    <p>混合 (mixins) 是一种分发 Vue 组件中可复用功能的非常灵活的方式</p>
+                    <ul>
+                        <li>同名钩子函数将混合为一个数组，因此都将被调用。另外，混合对象的 钩子将在组件自身钩子 之前 调用 </li>
+                        <li>值为对象的选项，例如 methods, components 和 directives，将被混合为同一个对象。两个对象键名冲突时，取组件对象的键值对。</li>
+                    </ul>
+
+                    <p>自定义混合方式Vue.config.optionMergeStrategies.myOption = function (toVal, fromVal) {// return mergedVal}</p>
+                </article>
+            </div>
+            <script>
+                var mixin={
+                    created:function () {
+                        console.log("混合对象的钩子被调用！")
+                    },
+                    methods:{
+                        hello:function () {
+                            console.log("混合对象的hello被调用！")
+                        }
+                    }
+                };
+
+                var vm=new Vue({
+                    mixins:[mixin],
+                    methods:{
+                        hello:function () {
+                            console.log("组件中的hello被调用！");
+                        }
+                    },
+                    created:function () {
+                        console.log("组件中的钩子函数被调用！")
+                    }
+                });
+
+                //全局混合，对所有vue实例都将产生影响！
+                //Vue.mixin({});
+            </script>
+        </section>
+
+        <!-- 自定义命令 -->
+        <section>
+            <div id="app18">
+                <article>
+                    <p>自定义命令，可以使用如下钩子函数：</p>
+                    <ul>
+                        <li>bind：只调用一次，指令第一次绑定到元素时调用。在这里可以进行一次性的初始化设置。</li>
+                        <li>inserted：被绑定元素插入父节点时调用 (仅保证父节点存在，但不一定已被插入文档中)。</li>
+                        <li>update：所在组件的 VNode 更新时调用，但是可能发生在其子 VNode 更新之前。指令的值可能发生了改变，也可能没有。但是你可以通过比较更新前后的值来忽略不必要的模板更新 (详细的钩子函数参数见下)。</li>
+                        <li>componentUpdated：指令所在组件的 VNode 及其子 VNode 全部更新后调用。</li>
+                        <li>unbind：只调用一次，指令与元素解绑时调用。</li>
+                    </ul>
+                    <p>钩子函数的参数</p>
+                    <ul>
+                        <li>el：指令所绑定的元素，可以用来直接操作 DOM 。</li>
+                        <li>binding：一个对象，包含以下属性：<br>name：指令名，不包括 v- 前缀。
+                            value：指令的绑定值，例如：v-my-directive="1 + 1" 中，绑定值为 2。
+                            oldValue：指令绑定的前一个值，仅在 update 和 componentUpdated 钩子中可用。无论值是否改变都可用。
+                            expression：字符串形式的指令表达式。例如 v-my-directive="1 + 1" 中，表达式为 "1 + 1"。
+                            arg：传给指令的参数，可选。例如 v-my-directive:foo 中，参数为 "foo"。
+                            modifiers：一个包含修饰符的对象。例如：v-my-directive.foo.bar 中，修饰符对象为 { foo: true, bar: true }。</li>
+                        <li>vnode：Vue 编译生成的虚拟节点。移步 VNode API 来了解更多详情。</li>
+                        <li>oldVnode：上一个虚拟节点，仅在 update 和 componentUpdated 钩子中可用。</li>
+                        <li>除了 el 之外，其它参数都应该是只读的，切勿进行修改。如果需要在钩子之间共享数据，建议通过元素的 dataset 来进行。</li>
+                    </ul>
+                </article>
+                <section>
+                    <p>页面加载后自动获取焦点！</p>
+                    <input type="text" v-focus>
+                </section>
+                <hr>
+                <section>
+                    <p>读取钩子函数参数的属性</p>
+                    <p v-demo:foo.name="message"></p>
+                </section>
+                <hr>
+                <section>
+                    <p>传入对象表达式/p>
+                    <p v-easy="info"></p>
+                </section>
+            </div>
+            <script>
+                //注册全局命令
+                Vue.directive('focus',{
+                    inserted:function (el) {
+                        //el.focus();
+                    }
+                });
+                Vue.directive('demo',{
+                    bind:function (el,binding,vnode) {
+                        var s=JSON.stringify;
+                        el.innerHTML=
+                            'name:'+s(binding.name)+'<br>'+
+                            'value:'+s(binding.value)+'<br>'+
+                            'expression:'+s(binding.expression)+'<br>'+
+                            'argument:'+s(binding.arg)+'<br>'+
+                            'modifiers:'+s(binding.modifiers)+'<br>'+
+                            'vnode keys:'+Object.keys(vnode).join(' ');
+                    }
+                });
+                //自定义指令简写，在update和bind时候触发行为！
+                Vue.directive('easy',function (el,binding) {
+                   console.log(binding.value);//直接输出传入的对象！
+                });
+                //注册局部命令
+                //在组件中使用directives！
+                var vm8=new Vue({
+                    el:"#app18",
+                    data:{
+                        message:"hello world!",
+                        info:{
+                            name:'xiaocheng',
+                            age:18
+                        }
+                    }
+                })
+            </script>
+        </section>
+        
+        <!-- 使用渲染函数render -->
+        <section>
+            <div id="app19">
+                <article>
+                    <p>通过render绘制h标题，如果使用组件template非常麻烦，需要v-if判断使用什么标签！</p>
+                    <p>Vue 通过建立一个虚拟 DOM 对真实 DOM 发生的变化保持追踪。“虚拟 DOM”是我们对由 Vue 组件树建立起来的整个 VNode 树的称呼</p>
+                    <p>createElement创建虚拟节点，第二个参数的可以为对象，属性如下：</p>
+                    <ul>
+                        <li>class，同v-bind:class。v-bind:class={className:true}</li>
+                        <li>style,同v-bind;style。v-bind:style={fontSize:"20px"}</li>
+                        <li>attrs，正常的html标签属性</li>
+                        <li>props，组件props</li>
+                        <li>domProps，dom属性，如innerHtml等</li>
+                        <li>on，事件监听基于on，不再支持v-on:keyup等。on:{click: this.clickHandler}</li>
+                        <li>nativeOn，监听原生事件，而不是使用 `vm.$emit` 触发的事件</li>
+                        <li>directives，自定义指令。如directives:[{name:'demo',value:'2'}]</li>
+                        <li>slot，如果组件为其它组件的子组件，需要为插槽指定名称</li>
+                        <li>key</li>
+                        <li>ref</li>
+                    </ul>
+                    <p>vnode必须唯一！</p>
+                </article>
+                <section>
+                    <p>vnode必须唯一，只能通过工厂函数形式创建大量重复元素！</p>
+                    <render-component v-bind:level="1">hello world!</render-component>
+                </section>
+                <hr>
+                <section>
+                    <cp-one></cp-one>
+                </section>
+                <hr>
+                <section>
+                    <p>render不支持v-if和v-for、不支持v-model。需要通过js直接自己实现！</p>
+                    <p>对于 .passive、.capture 和 .once事件修饰符, Vue 提供了相应的前缀。使用形式：on{ '!click': this.doThisInCapturingMode}</p>
+                    <ul>
+                        <li>.passive	&</li>
+                        <li>.capture	!</li>
+                        <li>.once	~</li>
+                        <li>.capture.once or
+                            .once.capture	~!</li>
+                    </ul>
+                    <p>对于其他修饰符，前缀不是很重要，所以可以直接使用：
+                        .stop	event.stopPropagation()<br>
+                        .prevent	event.preventDefault()<br>
+                        .self	if (event.target !== event.currentTarget) return<br>
+                        Keys:
+                        .enter, .13	if (event.keyCode !== 13) return (change 13 to another key code for other key modifiers)<br>
+                        Modifiers Keys:
+                        .ctrl, .alt, .shift, .meta	if (!event.ctrlKey) return (change ctrlKey to altKey, shiftKey, or metaKey, respectively)</p>
+                    <cp-two @input="update"></cp-two><span>{{msg}}</span>
+                </section>
+                <hr>
+                <section>
+                    <p>插槽？？？？</p>
+                    <p>jsx</p>
+                </section>
+            </div>
+            <script>
+                Vue.component('render-component',{
+                    props:{
+                        level:{
+                            type:Number,
+                            required:true
+                        }
+                    },
+                    render:function (createElement) {
+                        return createElement(
+                            'h' + this.level,
+                            this.$slots.default
+                        );
+                    }
+                });
+
+                var factoryRender={
+                    render:function (createElement) {
+                        return createElement("div",Array.apply(null,{length:3}).map(function (t) {
+                            return createElement('p',"hello world!");
+                        }))
+                    }
+                };
+
+                Vue.component('cp-two',{
+                    render: function (createElement) {
+                        var self = this;
+                        return createElement('input', {
+                            domProps: {
+                                value: self.value
+                            },
+                            on: {
+                                input: function (event) {
+                                    self.value = event.target.value;
+                                    self.$emit('input', self.value);//触发input事件（vue事件），第二项为事件处理参数！
+                                }
+                            }
+                        })
+                    },
+                    props:{}
+                });
+                var vm19=new Vue({
+                    el:"#app19",
+                    data:{
+                        msg:"hello world!"
+                    },
+                    components:{
+                        "cp-one":factoryRender
+                    },
+                    methods:{
+                        update:function (value) {
+                            this.msg=value;
+                        }
+                    }
+                });
+            </script>
+        </section>
+
+        <!--杂项-->
+        <section>
+            <p>插件通常会为 Vue 添加全局功能。插件的范围没有限制——一般有下面几种：
+                添加全局方法或者属性，如: vue-custom-element
+                添加全局资源：指令/过滤器/过渡等，如 vue-touch
+                通过全局 mixin 方法添加一些组件选项，如: vue-router
+                添加 Vue 实例方法，通过把它们添加到 Vue.prototype 上实现。
+                一个库，提供自己的 API，同时提供上面提到的一个或多个功能，如 vue-router</p>
+            <p>MyPlugin.install = function (Vue, options) {
+                // 1. 添加全局方法或属性
+                Vue.myGlobalMethod = function () {
+                // 逻辑...
+                }
+
+                // 2. 添加全局资源
+                Vue.directive('my-directive', {
+                bind (el, binding, vnode, oldVnode) {
+                // 逻辑...
+                }
+                ...
+                })
+
+                // 3. 注入组件
+                Vue.mixin({
+                created: function () {
+                // 逻辑...
+                }
+                ...
+                })
+
+                // 4. 添加实例方法
+                Vue.prototype.$myMethod = function (methodOptions) {
+                // 逻辑...
+                }
+                }</p>
+
+            <p>// 调用 `MyPlugin.install(Vue)`
+                Vue.use(MyPlugin)</p>
+            <p>在commonJS中调用<br>// 用 Browserify 或 webpack 提供的 CommonJS 模块环境时
+                var Vue = require('vue')
+                var VueRouter = require('vue-router')
+
+                // 不要忘了调用此方法
+                Vue.use(VueRouter)</p>
+        </section>
+        <!--过滤器-->
+        <section>
+            <div id="app20">
+                <article>
+                    <p>过滤器可以用在两个地方：双花括号插值和 v-bind 表达式 (后者从 2.1.0+ 开始支持)。</p>
+                    <p> v-bind:id="rawId | formatId   前者为参数，后者为过滤器。可以管道化调用，可以向过滤函数传递参数！</p>
+                </article>
+                <section>
+                    <p>将输入英文，首字母大写</p>
+                    <input type="text" v-model="msg">
+                    <p>{{msg | capitalize}}</p>
+                </section>
+            </div>
+            <script>
+                //定义全局过滤器
+                Vue.filter('capitalize',function (value) {
+                    if(!value) return '';
+                    value=value.toString();
+                    return value.charAt(0).toUpperCase()+value.slice(1);
+                });
+                //可以在组件中定义过滤器
+                //filters：｛｝
+
+                var vm20=new Vue({
+                    el:"#app20",
+                    data:{
+                        msg:''
+                    }
+                })
+            </script>
+        </section>
+        <!--markdown解释器-->
+        <section>
+            <div id="md">
+                <textarea v-model="msg" v-on:input="update"></textarea>
+                <div v-html="computedMsg"></div>
+            </div>
+            <style>
+                #md{
+                    width:100%;
+                    height: 200px;
+                    overflow: auto;
+                }
+                #md>textarea{
+                    display: inline-block;
+                    box-sizing: border-box;
+                    padding: 10px;
+                    width: 48%;
+                    height: 100%;
+                    border:none;
+                    resize: none;
+                    outline: none;
+                    border-right: 1px solid #aaa;
+                    vertical-align: top;
+                }
+                #md>div{
+                    display: inline-block;
+                    box-sizing: border-box;
+                    padding:10px;
+                    width: 49%;
+                    height: 100%;
+                    vertical-align: top;
+                }
+
+            </style>
+            <script>
+                var md=new Vue({
+                    el:"#md",
+                    data:{
+                        msg:"# hello world"
+                    },
+                    computed:{
+                        computedMsg:function () {
+                            return marked(this.msg, { sanitize: true })
+                        }
+                    },
+                    methods:{
+                        update: _.debounce(function (e) {
+                            this.input = e.target.value
+                        }, 300)
+                    }
+                })
+            </script>
+        </section>
+        <!--获取github个人仓库的评论-->
+        <section>
+            <div id="github">
+                <article>
+                    <header>
+                        <h3>最近的提交</h3>
+                    </header>
+                    <button @click="featchData">刷新</button>
+                    <ul>
+                        <li v-for="record in commits">
+                            <a :href="record.html_url" target="_blank" class="commit">{{record.sha.slice(0,7)}}</a>
+                            - <span class="message">{{record.commit.message}}</span><br>
+                            by <span class="author"><a :href="record.author.html_url" target="_blank">{{record.commit.author.name}}</a></span>
+                            at <span class="date">{{record.commit.author.date | formatDate}}</span>
+                        </li>
+                    </ul>
+                </article>
+
+            </div>
+            <script>
+                var apiURL = 'https://api.github.com/repos/xiaer93/xiaer93.github.io/commits?per_page=3&sha=';
+
+                var gt=new Vue({
+                    el:"#github",
+                    data:{
+                        commits:null,
+                        branch:'master'
+                    },
+                    created:function () {
+                        this.featchData();
+                    },
+                    watch:{
+                        commits:function () {
+                            console.log("刷新commits！")
+                        }
+                    },
+                    filters:{
+                        formatDate:function (v) {
+                            return v.replace(/T|Z/g,' ');
+                        }
+                    },
+
+                    methods:{
+                        featchData:function () {
+                            var that=this;
+                            var xhr=new XMLHttpRequest();
+                            xhr.open('GET',apiURL+this.branch,true);
+                            xhr.onload=function () {
+                                if(xhr.status===200){
+                                    that.commits=JSON.parse(xhr.response);
+                                    console.log(that.commits);
+                                }
+                            };
+                            xhr.send();
+                        }
+                    }
+                });
+            </script>
+        </section>
+        <!--表格组件-->
+        <section>
+            <div id="tbComponent">
+                <section>
+                    <label for="">查询</label>
+                    <input type="text" v-model="query">
+                    <tb-component :columns="columns" :data="data" :query="query"></tb-component>
+                </section>
+            </div>
+            <script  type="text/x-template" id="tbTemplate">
+                <table class="tableComponent">
+                    <thead>
+                    <tr class="row">
+                        <th
+                                v-for="key in columns"
+                                @click="sortData(key)"
+                                :class='{active:sortKey===key}'
+                        >
+                            {{key}}
+                            <span :class="sortOrder[key]===1? 'asc':'dsc'"></span>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="entry in filterData">
+                        <td v-for="key in columns" >{{entry[key]}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </script>
+            <script>
+                Vue.component('tb-component',{
+                    template:"#tbTemplate",
+                    data:function () {
+                        var order={};
+                        var key=this.columns[0];//默认第一项为基准
+                        this.columns.forEach(function (t) {
+                            order[t]=1;//默认为降序
+                        });
+                        return {
+                            sortKey:key,
+                            sortOrder:order
+                        }
+                    },
+                    props:{
+                        columns:{
+                            type:Array,
+                            required:true
+                        },
+                        data:{
+                            type:Array,
+                            required:true
+                        },
+                        query:{
+                            type:String
+                        }
+                    },
+                    computed:{
+                        filterData:function () {
+                            var ret;
+                            if(this.query && this.query.length>0){
+                                var q=this.query.toLowerCase();
+                                //不能修改原始数据
+                                ret=this.data.slice().filter(function (t) {
+                                    return Object.keys(t).some(function (t2) {
+                                        return t[t2].toString().toLowerCase().indexOf(q)>-1;
+                                    })
+                                })
+                            }else{
+                                ret=this.data.slice()
+                            }
+                            console.log(ret);
+                            return ret;
+                        }
+                    },
+                    methods:{
+                        sortData:function (key) {
+                            var that=this;
+                            this.sortKey=key;
+                            this.sortOrder[key]=-this.sortOrder[key];
+                            var order=this.sortOrder[key];
+                            this.filterData.sort(function (a,b) {
+                                a = a[key];
+                                b = b[key];
+                                return (a === b ? 0 : a > b ? 1 : -1) * order;
+                            })
+                        }
+                    }
+                });
+            </script>
+            <script>
+
+                var tb=new Vue({
+                    el:"#tbComponent",
+                    data:{
+                        query:'',
+                        columns: ['name', 'power'],
+                        data: [
+                            { name: 'Chuck Norris', power: Infinity },
+                            { name: 'Bruce Lee', power: 9000 },
+                            { name: 'Jackie Chan', power: 7000 },
+                            { name: 'Jet Li', power: 8000 }
+                        ]
+                    }
+                })
+            </script>
+            <style>
+                .tableComponent{
+                    width: 100%;
+                    height: 100%;
+                }
+                .tableComponent td,.tableComponent th{
+                    -webkit-user-select: none;
+                    -moz-user-select: none;
+                    -ms-user-select: none;
+                    user-select: none;
+
+                    text-align: center;
+                    padding: 5px 10px;
+                }
+                .row{
+                    background-color: green;
+                }
+                .row th{
+                    color: #fff;
+                    opacity: 0.66;
+                }
+                th.active{
+                    opacity:1;
+                }
+                th span{
+                    display: inline-block;
+                    margin-bottom: -2px;
+                    vertical-align: middle;
+                    visibility: hidden;/*隐藏不可见*/
+                }
+                th.active span{
+                    visibility: visible;
+                }
+                span.asc{
+                    border: 4px solid transparent;
+                    border-bottom-color: #fff;
+                    border-top: none;
+                }
+                span.dsc{
+                    border: 4px solid transparent;
+                    border-top-color: #fff;
+                    border-bottom: none;
+                }
+            </style>
+        </section>
+
+        <!--树菜单-->
+        <section>
+            <div id="treeMenu">
+                <ul>
+                    <items :model="models[0]"></items>
+                </ul>
+            </div>
+            <script type="text/x-template" id="treeTemplate">
+                <li>
+                    <div
+                        :class="{bold:isFolder}"
+                        @click="toggle"
+                        @dblclick="changeType"
+                    >
+                        {{model.name}}
+                        <span v-if="isFolder">[{{open ? '-' : '+'}}]</span>
+                    </div>
+                    <ul v-show="open" v-if="isFolder">
+                        <items
+                                v-for="(model,index) in model.children"
+                                :model="model"
+                                :key="model.name+index">
+                        </items>
+                        <span @click="add">+</span>
+                    </ul>
+                </li>
+            </script>
+            <script>
+                Vue.component('items',{
+                    template:"#treeTemplate",
+                    data:function () {
+                        //var m=this.model;
+                        //var folder=(m.children && m.children.length>0)? true:false;
+                        return {
+                            //isFolder:folder,//必须为计算属性
+                            open:false
+                        }
+                    },
+                    props:{
+                        model:{
+                            type:[Object]
+                        }
+                    },
+                    computed:{
+                        isFolder:function () {
+                            return (this.model.children && this.model.children.length>0)? true:false;
+                        }
+                    },
+                    methods:{
+                        toggle:function () {
+                            this.open=!this.open;
+                        },
+                        add:function () {
+                            this.model.children.push({
+                                name: 'new stuff'
+                            });
+                        },
+                        changeType:function () {
+                            if(!this.isFolder){
+                                Vue.set(this.model, 'children', []);
+                                this.add();
+                            }
+                        }
+                    }
+                })
+            </script>
+            <script>
+                var tree=new Vue({
+                    el:'#treeMenu',
+                    data: {
+                        models: [
+                            {
+                                name: "菜单1",
+                                children: [
+                                    {
+                                        name: '菜单11',
+                                        children: null
+                                    },
+                                    {
+                                        name: '菜单12',
+                                        children: null
+                                    }
+                                ]
+                            },
+                            {
+                                name: '菜单2',
+                                children: null
+                            }
+                        ]
+                    }
+                })
+            </script>
+            <style>
+                #treeMenu li{
+                    cursor:pointer;
+                }
+            </style>
+        </section>
+
+        <!--遮罩-->
+        <section>
+            <div id="tips">
+                <button @click="showTips=true">{{msgInfo}}</button>
+                <tips-component v-if="showTips" @close="showTips=!showTips">
+                    <header slot="header">来自非默认组件的头部！</header>
+
+                    <p>table居中，opacity对子节点的影响？</p>
+
+                </tips-component>
+            </div>
+            <script type="text/x-template" id="tipsTemplate">
+                <transition name="fmodal">
+                    <div class="mask">
+                        <div class="tips_wrapper">
+                            <article class="tip">
+                                <header>
+                                    <slot name="header">默认组件头部</slot>
+                                </header>
+                                <main>
+                                    <slot>默认组件主体</slot>
+                                </main>
+                                <footer>
+                                    <slot name="footer">默认组件尾部</slot>
+                                </footer>
+                                <button @click="$emit('close')">确认</button>
+                            </article>
+                        </div>
+                    </div>
+                </transition>
+
+            </script>
+            <script>
+                Vue.component('tips-component',{
+                    template:"#tipsTemplate"
+                })
+            </script>
+            <script>
+                var tip=new Vue({
+                    el:"#tips",
+                    data:{
+                        showTips:false,
+                        msg:['打开弹窗','关闭弹窗']
+                    },
+                    computed:{
+                        msgInfo:function () {
+                            return this.msg[this.showTips?1:0];
+                        }
+                    }
+                });
+            </script>
+            <style>
+                .mask{
+                    position: fixed;
+                    width: 100%;
+                    height: 100%;
+                    top:0;
+                    left:0;
+                    background-color: rgba(0, 0, 0, .5);
+                    display: table;
+                    text-align: center;
+                    z-index: 9998;
+                }
+                .tips_wrapper{
+                    display: table-cell;
+                    vertical-align: middle;
+                }
+                .tip{
+                    display: inline-block;
+                    vertical-align: middle;
+                    width: 360px;
+                    height: 160px;
+                    background-color: #fff;
+                    transition: all 0.5s ease;
+
+                }
+                /*动画*/
+                .fmodal-enter{
+                    opacity: 0;
+                    transform: scale(1.1);
+                }
+
+                .fmodal-leave-to{
+                    opacity: 0;
+                }
+                .fmodal-enter-active{
+                    transform: scale(1.0);
+                }
+                .fmodal-leave-active{
+                    transform: scale(1.1);
+
+                }
+            </style>
+        </section>
+
+        <!--select2自定义选择框-->
+        <section>
+            <div id="selectBox">
+
+            </div>
+            <script type="text/x-template" id="select-demo">
+                <div>
+                    <p>使用jq插件select2</p>
+                    <p>自定义选择框，选中{{selected}}</p>
+                    <select2 :options="options" v-model="selected">
+                        <option disabled="disabled" value="0">请选择</option>
+                    </select2>
+                </div>
+            </script>
+            <script type="text/x-template" id="select2">
+                <select>
+                    <slot></slot>
+                </select>
+            </script>
+            <script>
+                Vue.component('select2',{
+                    props:['options', 'value'],//value即为selected
+                    template:'#select2',
+                    mounted:function () {
+                        var vm=this;
+                        //console.log('vm',this);this指向select选择框
+                        $(this.$el)
+                            .select2({ data: this.options })
+                            .val(this.value)
+                            .trigger('change')
+                            // emit event on change.
+                            .on('change', function () {
+                                vm.$emit('input', this.value);//select标签自动捕获？？
+                            })
+                    },
+                    watch:{
+                        value:function (value) {
+                            $(this.$el).val(value);
+                        },
+                        options:function (options) {
+                            $(this.$el).empty().select2({ data: options })
+                        }
+                    },
+                    destroyed:function () {
+                        $(this.$el).off().select2('destroy');
+                    }
+                });
+                var vm = new Vue({
+                    el: '#selectBox',//被替换元素
+                    template: '#select-demo',
+                    data: {
+                        selected: 2,
+                        options: [
+                            { id: 1, text: 'Hello' },
+                            { id: 2, text: 'World' }
+                        ]
+                    }
+                })
+            </script>
+        </section>
+
+        <section>
+            <div id="addPerson">
+                <fieldset>
+                    <legend>添加成员</legend>
+                    <div>
+                        <p><label for="">姓名</label><input type="text" v-model="person.name"/></p>
+                        <p><label for="">年龄</label><input type="number" v-model="person.age"/></p>
+                        <p>
+                            <label for="">性别</label>
+                            <select v-model="person.sex">
+                                <option value="男">男</option>
+                                <option value="女">女</option>
+                            </select>
+                        </p>
+                        <p><button v-on:click="add">添加</button></p>
+                    </div>
+                </fieldset>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>姓名</th>
+                        <th>年龄</th>
+                        <th>性别</th>
+                        <th>删除</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(p,index) in persons">
+                        <td>{{p.name}}</td>
+                        <td>{{p.age}}</td>
+                        <td>{{p.sex}}</td>
+                        <td><button @click="del(index)">删除</button></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <script>
+                var people={
+                    person:{
+                        name:'',
+                        age:undefined,
+                        sex:''
+                    },
+                    persons:[
+                        {
+                            "name":"xiaohong",
+                            "age":18,
+                            "sex":"女"
+                        },
+                        {
+                            "name":"xiaocheng",
+                            "age":24,
+                            "sex":"男"
+                        },
+                        {
+                            "name":"xiaohua",
+                            "age":25,
+                            "sex":"女"
+                        }
+                    ]
+                };
+                var util={
+                    add:function () {
+                        people.persons.push(people.person);
+                        people.person={name:'',age:undefined,sex:''};
+                    },
+                    del:function (index) {
+                        //index的值通过在v-for中获取！
+                        people.persons.splice(index,1);
+                    }
+                };
+                new Vue({
+                    'el':'#addPerson',
+                    data:people,//people指向的对象不变动
+                    methods:util
+                });
+                //debugger;
+            </script>
+        </section>
+
+
+
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>双向跨域</title>
+    <style>
+        body{
+            margin:0;
+        }
+        iframe{
+            width: 100%;
+            margin:0;
+            padding:0;
+        }
+    </style>
+</head>
+<body>
+    <div>本页为63342端口，收到来自localhost:80网页B的消息：<span></span></div>
+    <iframe src="http://localhost:80/exchangeB.html" frameborder="0" id="ifra"></iframe>
+    <script>
+        var ifr=document.getElementById("ifra");
+        var target="http://localhost:80";
+
+        document.body.onclick=function () {
+            //iframe的源为80页面，向80页面发送【63342的信使】
+            ifr.contentWindow.postMessage("我是来自A的信使！",target);
+        };
+
+        window.onmessage=function (event) {
+            var s=document.getElementsByTagName("span")[0];
+            s.innerText=event.data;
+        };
+    </script>
+</body>
+</html>

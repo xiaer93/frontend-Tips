@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>网格布局</title>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.js"></script>
+
+    <script>
+        $(document).ready(function ($) {
+            var img=new Image();
+            img.src="../rec/border.png";
+            img.cssText="width:100%;height:100%;";
+        })
+    </script>
+
+    <style>
+        /*清除样式*/
+        body,html{
+            margin: 0;
+            padding:0;
+        }
+
+        /*设置布局*/
+        .wrapper,.container{
+            width: 100%;
+        }
+        .container{
+            box-sizing: border-box;
+            text-align: center;
+            font-size: 0;
+            padding-left:20px;
+        }
+        .col{
+            display: inline-block;
+            box-sizing: border-box;
+            padding: 20px;
+            height: 50px;
+            /*border: 1px solid #999;*/
+            background-image: url("../rec/border.png"),url("../rec/border.png"),url("../rec/border.png");
+            background-position: left,center top,right;
+            background-repeat: no-repeat;
+            background-origin: content-box;
+        }
+        .cols-md-1{
+            width: 8.33%;
+        }
+        .cols-md-2{
+            width: 16.66%;
+        }
+        .cols-md-3{
+            width: 25.00%;
+        }
+        .cols-md-4{
+            width: 33.33%;
+        }
+        .cols-md-5{
+            width: 41.66%;
+        }
+        .cols-md-6{
+            width: 50.00%;
+        }
+        .row div{
+
+        }
+        .row div:first-child{
+
+        }
+
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col cols-md-4 cols-sm-6"></div>
+            <div class="col cols-md-4 cols-sm-6"></div>
+            <div class="col cols-md-4 cols-sm-12"></div>
+        </div>
+        <div class="row">
+            <div class="col cols-md-3 cols-sm-3"></div>
+            <div class="col cols-md-6 cols-sm-6"></div>
+            <div class="col cols-md-3 cols-sm-3"></div>
+        </div>
+        <div class="row">
+            <div class="col cols-md-1 cols-sm-2"></div>
+            <div class="col cols-md-1 cols-sm-2"></div>
+            <div class="col cols-md-2 cols-sm-8"></div>
+            <div class="col cols-md-2 cols-sm-3"></div>
+            <div class="col cols-md-6 cols-sm-3"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
