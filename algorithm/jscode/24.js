@@ -1,7 +1,6 @@
 /*
 	设计模式-工厂模式
 	- 该模式使一个类的实例化延迟到了子类。而子类可以重写接口方法以便创建的时候指定自己的对象类型。
-	- 应用：1、对象的构建十分复杂；2、需要依赖具体环境创建不同实例；3、处理大量具有相同属性的小对象
 	- 切勿滥用工厂模式，增加代码复杂度，同时增加测试难度！
 	- 工厂模式是创建型的设计模式，它接受指令，创建出符合要求的实例；它主要解决的是资源的统一分发，将对象的创建完全独立出来，让对象的创建和具体的使用客户无关。主要应用在多数据库选择，类库文件加载等。 
 	- 策略模式是为了解决的是策略的切换与扩展，更简洁的说是定义策略族，分别封装起来，让他们之间可以相互替换，策略模式让策略的变化独立于使用策略的客户。
@@ -77,45 +76,49 @@ im.url='https://images.cnblogs.com/cnblogs_com/TomXu/339203/o_jsdp.jpg';
 im.insert(document.body);
 
 //抽象工厂模式
-var BallFactory=function(city){
-	
+var BallFactory=(function(){
+	//产品球类
 	function Ball(){
 	}
 	Ball.prototype={
 		constructor:Ball,
-		city:city,
 		//抽象类！如果子类未重定义次方法，则主动抛出错误！
 		getName:function(){
 			return new Error('抽象函数不能调用');
+		},
+		what:function(){
+			console.log(this.type);
 		}
 	};
-
-	var ball=new Ball();
 	
 	//篮球
-	ball.basketball=function(){};
-	ball.basketball.prototype.getName=function(){
+	Ball.basketball=function(){
+		this.type='basketball';
+	};
+	inherit(Ball.basketball,Ball);
+	Ball.basketball.prototype.getName=function(){
 		console.log('basketball');
 	};
 	//足球
-	ball.football=function(){};
-	ball.football.prototype.getName=function(){
+	Ball.football=function(){
+		this.type='football'
+	};
+	inherit(Ball.football,Ball);
+	Ball.football.prototype.getName=function(){
 		console.log('football');
 	};
 	//羽毛球
-	ball.feather=function(){};
+	Ball.feather=function(){
+		this.type='feather';
+	};
+	inherit(Ball.feather,Ball);
 	
 	
 	//继承Ball，但是不能影响各自定义的方法呀？
-	var inherit=function(sub,sup){
+	function inherit(sub,sup){
 		var p=Object.create(sup.prototype);
 		p.constructor=sub;
-		//子类已经定义的函数要添加进来！
-		for(var key in sub.prototype){
-			p[key]=sub.prototype[key];
-		}
 		sub.prototype=p;
-		
 	};
 	//初始化
 	this.init=function(){
@@ -123,17 +126,17 @@ var BallFactory=function(city){
 	};
 	
 	//工厂
-	this.factory=function(type){
-		if(!ball[type]){
+	return function(type){
+		if(!Ball[type]){
 			return;
 		}
-		inherit(ball[type],Ball);
-		return new ball[type];
+		return new Ball[type]();
 	}
-
-};
-var f=new BallFactory('wh');
-var ft=f.factory('football');
+})();
+var ft=BallFactory('football');
 ft.getName();
+ft.what();
+
+//抽象工厂可以形成多层次结构！
 
 //参考链接：http://www.cnblogs.com/TomXu

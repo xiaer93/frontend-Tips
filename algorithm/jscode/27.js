@@ -120,6 +120,7 @@ var ProxyImg=function(pimg,src){
 		pimg.setSrc(this.src);
 	};
 	return {
+		//代理接口与对象接口一致性，方便使用！
 		setSrc: function( src ){
 			//加载图片loading，大家都一样
             pimg.setSrc( 'http://s.cn.bing.net/th?id=OJ.zolN1O0dDK00aw&w=75&h=75&pid=MSNJVFeeds' );
@@ -131,7 +132,87 @@ var ProxyImg=function(pimg,src){
 
 var img=new myImg();
 var pimg=new ProxyImg(img);
+pimg.setSrc('http://s.cn.bing.net/th?id=OJ.SEYPhWRyxnx3Jw&w=75&h=75&pid=MSNJVFeeds');
 
+/*
+	合并http请求
+*/
+//同步文件
+function asyncFile(fileName){
+	console.log('已经上传文件：'+fileName);
+}
+//代理同步文件，延时2秒，期间触发的任务加入任务队列！
+var proxyAsyncFile=(function (){
+	var timer,
+		cache=[];
+	return function(id){
+		//存入任务
+		cache.push(id);
+		//检查是否已经设置定时
+		if(timer){
+			return;
+		}
+		timer=setTimeout(function(){
+			//函数式编程
+			cache.forEach(function(t){
+				asyncFile(t);
+			})
+		},1000)
+	}
+})();
+//绑定事件，使用闭包创建静态私有变量
+document.body.addEventListener('click',(function(){
+	var clickTimes=0;
+	return function(){
+		asyncFile(++clickTimes);
+		proxyAsyncFile(clickTimes+'s');
+	}
+})());
 
+//缓存代理结果
+//两个函数对外接口一致！
+function mult(){
+	console.log('开始计算结果！');
+	var args=Array.prototype.slice.call(arguments);
+	var ret=args.reduce(function(lf,rg){
+		return lf*rg;
+	});
+	return ret;
+}
+var proxyMult=(function(){
+	//将结果缓存
+	var cache={};
+	return function(){
+		var args=Array.prototype.slice.call(arguments);
+		if(cache[args]){
+			return cache[args];
+		}
+		//调用mult计算！
+		return cache[args]=mult.apply(null,args);
+	}
+})();
+//创建工厂函数，可以为mult函数创建代理函数！
+function createProxyFactory(fn){
+	var cache={};
+	return function(){
+		var args=Array.prototype.slice.call(arguments);
+		if(cache[args]){
+			return cache[args];
+		}
+		return cache[args]=fn.apply(null,args);
+	}
+}
+
+/*
+　　1、防火墙代理：控制网络资源的访问，保护主题不让“坏人”接近
+
+　　2、远程代理：为一个对象在不同的地址空间提供局部代表
+
+　　3、保护代理：用于对象应该有不同访问权限的情况
+
+　　4、智能引用代理：取代了简单的指针，它在访问对象时执行一些附加操作，比如计算一个对象被引用的次数
+
+　　5、写时复制代理：通常用于复制一个庞大对象的情况。写时复制代理延迟了复制的过程，当对象被真正修改时，才对它进行复制操作。写时复制代理是虚拟代理的一种变体，DLL（操作系统中的动态链接库）是其典型运用场景
+*/
 
 //参考链接：http://www.cnblogs.com/TomXu
