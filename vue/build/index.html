@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    <div id="app">
+        <h2>{{title}}</h2>
+        <input type="text" v-model="name">
+        <p>Hi,{{name}}</p>
+        <button v-on:click="clickMe">单击我</button>
+    </div>
+
+<script src="observer.js"></script>
+<script src="watcher.js"></script>
+<script src="compile.js"></script>
+<script src="main.js"></script>
+<script>
+    var v=new Vue({
+        el:"#app",
+        data:{
+            title:'vue code',
+            name:'aaa'
+        },
+        methods:{
+            clickMe:function () {
+                this.title='被单击了！'
+            }
+        },
+        mounted:function () {
+            var self=this;
+            window.setTimeout(function () {
+                self.title='钩子函数被执行！'
+            },1500)
+        }
+    })
+</script>
+</body>
+</html>
