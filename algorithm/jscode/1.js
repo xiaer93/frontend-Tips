@@ -16,7 +16,7 @@ var Node=function(data){
 	this.data=data;
 	this.left=null;
 	this.right=null;
-}
+};
 
 var BST=function(){
 	var root=null;

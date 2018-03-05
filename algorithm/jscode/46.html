@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="container" data-bind="type:'progressbar',data:demo"></div>
+
+<style>
+    .container{
+        position: absolute;
+        width: 100px;
+        height: 20px;
+        border: 1px solid #000;
+    }
+    .box{
+        position: absolute;
+        width: 10px;
+        height:20px;
+        background: red;
+    }
+</style>
+
+<script src="46.js"></script>
+<script>
+
+    var demo={
+        position:50,
+        total:100
+    };
+    window.onload=function () {
+        VM();
+    }
+
+</script>
+</body>
+</html>

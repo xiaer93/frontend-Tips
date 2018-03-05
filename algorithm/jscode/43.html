@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<script type="text/template" id="demo_tag">
+    <div id="tag_cloud">
+        {% for(var i=0,len=tagCloud.length;i<len;++i){
+            var ctx=tagCloud[i];%}
+        <a href="#" class="tag_item
+        {% if(ctx['is_selected']) { %} selected {% } %}
+        " titile="{%=ctx['title']%}">{%=ctx['text']%}</a>
+        {% } %}
+    </div>
+</script>
+
+<div id="app"></div>
+
+<script src="42.js"></script>
+<script>
+    var data={
+        tagCloud:[
+            {is_selected:true,title:'这是一本设计模式书1',text:'设计模式1'},
+            {is_selected:true,title:'这是一本设计模式书2',text:'设计模式2'},
+            {is_selected:true,title:'这是一本设计模式书3',text:'设计模式3'},
+            {is_selected:true,title:'这是一本设计模式书4',text:'设计模式4'},
+            {is_selected:true,title:'这是一本设计模式书5',text:'设计模式5'}
+        ]
+    };
+    F.module(['lib/template','lib/dom'],function (template,dom) {
+        debugger;
+        var str=template('demo_tag',data);
+        dom.html('app',str);
+    })
+</script>
+</body>
+</html>

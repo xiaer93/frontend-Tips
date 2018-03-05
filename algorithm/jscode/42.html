@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div id="app">点击我？</div>
+
+<script src="42.js"></script>
+<script>
+    F.module(['lib/event','lib/dom'],function (events,dom) {
+        events.on('app','click',function () {
+            dom.html('app','我是异步模块的内容！')
+        })
+    })
+</script>
+</body>
+</html>
