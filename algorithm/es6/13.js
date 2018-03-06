@@ -169,3 +169,7 @@ getJSON("abc.json").then(function (json) {
 // now
 // next
 }
+
+/*
+* promise的链式调用与then的返回值有关系！http://es6.ruanyifeng.com/#docs/generator-async
+* */
