@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>自定义分页指示器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.2/css/swiper.css">
+    <style>
+        html,body{
+            height:100%;
+            width: 100%;
+        }
+        body{
+            box-sizing: border-box;
+            margin: 0;
+        }
+        .m-swiper,.swiper-container{
+            height:100%;
+            width: 100%;
+        }
+        .m-swiper{
+            text-align: center;
+            font-size: 60px;
+            line-height: 60px;
+        }
+        .swiper-slide{
+
+            /*将文字居中*/
+            display: flex;
+            align-items: center;/*content为多根轴线才起作用！*/
+            justify-content: center;
+            /*align-self属性允许单个项目有与其他项目不一样的对齐方式，可覆盖align-items属性*/
+        }
+    </style>
+</head>
+<body>
+
+<div class="m-swiper">
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide">
+                <p>图片1</p>
+            </div>
+            <div class="swiper-slide">
+                <p>图片2</p>
+            </div>
+            <div class="swiper-slide">
+                <p>图片3</p>
+            </div>
+        </div>
+        <div class="swiper-pagination"></div>
+    </div>
+</div>
+
+<!--重新定义分页器的样式-->
+<style>
+    .swiper-pagination-bullet{
+        width: 30px;
+        height: 30px;
+        font-size: 25px;
+        line-height: 30px;
+        text-align: center;
+        color: #000;
+        background: #2C8DFB;
+        opacity:0.8;
+    }
+    .swiper-pagination-bullet-active{
+        color: #fff;
+        background: crimson;
+    }
+
+    .swiper-slide:nth-child(2n+1){
+        background: cornflowerblue;
+        color: #fff;
+    }
+    .swiper-wrapper{
+        transition-delay: 0.3s;/*等待p先执行向下动作，再切换幻灯片（wrapper的位置变化实现幻灯片）*/
+    }
+    .swiper-slide p{
+        transform: translateY(200px);
+        opacity: 0;
+        transition: all 0.4s;
+    }
+    .ani-slide p{
+        transform: translateY(0);
+        opacity:1;
+    }
+</style>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.2/js/swiper.js"></script>
+<script>
+    var swiper=new Swiper(".swiper-container",{
+        loop:true,
+        speed:800,//配合on中定义的动画！
+        pagination:{
+            el:".swiper-pagination",
+            clickable:true,
+            //自定义分页按钮，此处还可以为返回span+img结构！
+            renderBullet:function (index,totalClass) {
+                return '<span class="'+totalClass+'">'+(index+1)+"</span>"
+            }
+        },
+        followFinger:false,//为true时，touchend时才进行滑动
+        on:{
+            init:function (swiper) {
+                var slide=this.slides.eq(0);
+                slide.addClass('ani-slide');//css3动画？
+            },
+            transitionStart:function () {
+                for(var i=0,len=this.slides.length;i<len;++i){
+                    var slide=this.slides.eq(i);
+                    slide.removeClass("ani-slide");
+                }
+            },
+            transitionEnd:function () {
+                var slide=this.slides.eq(this.activeIndex);
+                slide.addClass('ani-slide');
+            }
+        }
+    })
+</script>
+
+</body>
+</html>

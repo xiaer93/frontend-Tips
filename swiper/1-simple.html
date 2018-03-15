@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>swiper简单实现！</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.2/css/swiper.css">
+    <style>
+        html,body{
+            height:100%;
+            width: 100%;
+        }
+        body{
+            box-sizing: border-box;
+            margin: 0;
+        }
+        .m-swiper,.swiper-container{
+            height:100%;
+            width: 100%;
+        }
+        .m-swiper{
+            text-align: center;
+            font-size: 60px;
+            line-height: 60px;
+        }
+        .swiper-slide{
+
+            /*将文字居中*/
+            display: flex;
+            align-items: center;/*content为多根轴线才起作用！*/
+            justify-content: center;
+            /*align-self属性允许单个项目有与其他项目不一样的对齐方式，可覆盖align-items属性*/
+        }
+    </style>
+</head>
+<body>
+
+<div class="m-swiper">
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide">
+                Slide1
+            </div>
+            <div class="swiper-slide">
+                Slide2
+            </div>
+            <div class="swiper-slide">
+                Slide3
+            </div>
+            <div class="swiper-slide">
+                Slide4
+            </div>
+        </div>
+        /*分页器，即dots*/
+        <div class="swiper-pagination"></div>
+        /*导航条*/
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+        /*滚动条*/
+        <div class="swiper-scrollbar"></div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.2/js/swiper.js"></script>
+<script>
+    var swiper=new Swiper(".swiper-container",{
+        //horizontal、vertical
+        direction:"horizontal",//此处方向参数如果填错，则有可能无法正常绘制（且没有任何报错）！
+        //设置初始化后默认的索引（即默认显示的项）
+        initialSlide:2,
+        //设置幻灯片的切换速度
+        speed:300,
+        //设置鼠标的图标
+        grabCursor:true,
+        loop:true,
+        //分页器，即dots框
+        pagination:{
+            el:".swiper-pagination",
+            type:"bullets",
+            clickable:true,//dots可以控制幻灯片！
+            dynamicBullets:true,//当分页很多时，部分dot会自动隐藏
+        },
+        //前后按钮
+        navigation:{
+            nextEL:".swiper-button-next",
+            prevEL:".swiper-button-prev",
+        },
+        //滚动条
+        scrollbar:{
+            el:".swiper-scrollbar"
+        },
+        //自动播放
+        autoplay:{
+            delay:3000
+        },
+        //Swiper默认的切换时间曲线是ease，可以通过添加css3的transition-timing-function属性来改变。
+    });
+</script>
+
+</body>
+</html>

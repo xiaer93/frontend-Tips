@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>hash轮播图</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.2/css/swiper.css">
+    <style>
+        html ,body{
+            height:100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .m-swiper{
+            height:100%;
+        }
+        .swiper-container{
+            height:100%;
+            width: 100%;
+        }
+        .swiper-slide{
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="m-swiper">
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide" data-hash="img1" style="background-image: url(http://www.swiper.com.cn/demo/img/nature1.jpg)"></div>
+            <div class="swiper-slide" data-hash="img2" style="background-image: url(http://www.swiper.com.cn/demo/img/nature2.jpg)"></div>
+            <div class="swiper-slide" data-hash="img3" style="background-image: url(http://www.swiper.com.cn/demo/img/nature3.jpg)"></div>
+            <div class="swiper-slide" data-hash="img4" style="background-image: url(http://www.swiper.com.cn/demo/img/nature4.jpg)"></div>
+            <div class="swiper-slide" data-hash="img5" style="background-image: url(http://www.swiper.com.cn/demo/img/nature5.jpg)"></div>
+
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    </div>
+</div>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.2/js/swiper.js"></script>
+<script>
+    var swiper=new Swiper(".swiper-container",{
+        //hashNavigation:true,//可以通过hash跳转至指定slide！
+        hashNavigation:{
+            watchState: true,//监视url，随着hash变化而变化
+        },
+        pagination:{
+            el:".swiper-pagination",
+            clicktrue:true
+        },
+        navigation:{
+            prevEl:".swiper-button-prev",
+            nextEl:".swiper-button-next"
+        }
+    })
+</script>
+</body>
+</html>

@@ -36,3 +36,31 @@ getName();
 new Foo.getName();
 new Foo().getName();
 new new Foo().getName();
+
+//对象内部立即执行函数，this指向window
+var myObj={
+	foo:'bar',
+	func:function(){
+		var self=this;
+		console.log(this.foo,self.foo);
+		(function(){
+			console.log(this.foo,self.foo);//this指向window。函数的执行环境为window！定义环境为myObj！
+		})()
+	}
+};
+myObj.func();
+
+//使用变量作为对象的值，为浅拷贝。！！对象为引用，基本量为拷贝
+function test(){
+	var n=666;
+	function add(){
+		console.log(n++);
+	}
+	return {n:n,add:add};
+}
+var t1=test();
+var t2=test();
+console.log(t1.add(),t1.add(),t1.n,t2.add());//t1和t2的闭包变量n，是在两个不同作用域中创建的！
+
+//html5拖放事件
+

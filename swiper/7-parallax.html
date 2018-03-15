@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>视差轮播图</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.2/css/swiper.css">
+    <style>
+        html ,body{
+            height:100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            color: #fff;
+        }
+        .m-swiper{
+            height:100%;
+        }
+        .swiper-container{
+            height:100%;
+            width: 100%;
+        }
+        .container-bg{
+            position: absolute;
+            width: 130%;
+            height:100%;
+            left:0;
+            top:0;
+            background-size: cover;
+            background-position: center;
+        }
+        .swiper-slide{
+            box-sizing: border-box;
+            padding: 40px 60px;
+            font-size: 40px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="m-swiper">
+    <div class="swiper-container">
+        <div class="container-bg" data-swiper-parallax="-23%" style="background-image: url(http://www.swiper.com.cn/demo/img/Parallax.jpg);"></div>
+        <div class="swiper-wrapper">
+            <div class="swiper-slide">轮播图1</div>
+            <div class="swiper-slide">轮播图2</div>
+            <div class="swiper-slide">轮播图3</div>
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    </div>
+</div>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.2/js/swiper.js"></script>
+<script>
+    var swiper=new Swiper(".swiper-container",{
+        parallax:true,
+        pagination:{
+            el:".swiper-pagination",
+            clicktrue:true
+        },
+        navigation:{
+            prevEl:".swiper-button-prev",
+            nextEl:".swiper-button-next"
+        }
+    })
+</script>
+</body>
+</html>

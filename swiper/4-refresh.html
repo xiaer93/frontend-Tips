@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>上拉反弹加载，下拉释放刷新</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.2/css/swiper.css">
+    <style>
+        html, body {
+            position: relative;
+            height: 100%;
+        }
+        body {
+            background: #fff;
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            color:#000;
+            margin: 0;
+            padding: 0;
+        }
+        .m-swiper{
+            height: 100%;
+        }
+        .swiper-container{
+            height:100%;
+        }
+        .swiper-slide{
+            text-align: center;
+            font-size: 50px;
+            height: 150px;
+
+            display: flex;
+            align-items:center;
+            justify-content: center;
+        }
+        /*顶部*/
+        .refresh{
+            position:absolute;
+            line-height:100px;
+            bottom:100%;
+            text-align:center;
+            width:100%;
+        }
+        /*底部*/
+        .loadmore{
+            position:absolute;
+            line-height:20px;
+            top:100%;
+            text-align:center;
+            width:100%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="m-swiper">
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="refresh">释放刷新</div>
+            <div class="loadmore">加载更多</div>
+            <div class="swiper-slide">菜单1</div>
+            <div class="swiper-slide">菜单2</div>
+            <div class="swiper-slide">菜单3</div>
+            <div class="swiper-slide">菜单4</div>
+            <div class="swiper-slide">菜单5</div>
+            <div class="swiper-slide">菜单6</div>
+            <div class="swiper-slide">菜单7</div>
+            <div class="swiper-slide">菜单8</div>
+            <div class="swiper-slide">菜单9</div>
+        </div>
+        <div class="swiper-scrollbar"></div>
+    </div>
+</div>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.2/js/swiper.js"></script>
+
+<script>
+
+    var times=0,
+        refreshEnd=false,
+        oriSpeed=300;
+
+    var swiper=new Swiper(".swiper-container",{
+        speed: oriSpeed,
+        slidesPerView: 'auto',//自动根据swiper-slide的高度计算数量！
+        freeMode: true, //自由模式，不保证匹配wrapper
+        //freeModeMomentumBounce:true,
+        direction: 'vertical',
+        setWrapperSize: true,//设置wrapper的宽度或高度！对于不支持flex尤为重要
+        mousewheel: true,
+        scrollbar: {
+            el: '.swiper-scrollbar',
+        },
+        on:{
+            touchEnd:function (e) {
+                console.log('end:',e);//触摸释放时候执行，在最后一页释放则跳转？
+                var swiper=this;
+                //下拉刷新数据
+                if(this.translate>100){
+                    var refreshText=swiper.$el.find('.refresh');
+                    swiper.setTransition(this.params.speed);//获取设置的速度
+                    swiper.setTranslate(100);
+                    swiper.touchEventsData.isTouched=false;//禁止touchENd事件后的跳转！???
+                    refreshText.html('刷新中！');
+                    swiper.allowTouchMove=false;
+                    //ajax获取数据
+                    setTimeout(function () {
+                        //删除现有的所有slide！
+                        swiper.removeAllSlides();
+                        for(var i=0;i<15;++i){
+                            swiper.appendSlide('<div class="swiper-slide">'+"新菜单"+(i+1)+"</div>");
+                            refreshText.html('刷新完成');
+                            refreshEnd=true;
+                            swiper.allowTouchMove=true;//允许触摸滑动！
+                        }
+                    },1000)
+                }
+            },
+            touchStart:function (e) {
+                console.log('start:',e);//先执行start事件！当触碰到slide触发，参数为touch事件对象！
+                if(refreshEnd=true){
+                    this.$el.find('.refresh').html('释放刷新');
+                    refreshEnd=false;
+                }
+            },
+            //不支持momentumBounce钩子函数，放入touchEnd事件中判断
+            //此事件在什么时机被调用啊？
+            momentumBounce: function(){//非正式反弹回调函数，???
+                swiper=this;
+                console.log('ok');
+                if(swiper.translate<-100){
+
+                    swiper.allowTouchMove=false;//禁止触摸
+                    swiper.params.virtualTranslate=true;//定住不给回弹
+                    setTimeout(function(){//模仿AJAX
+                        for(m=0;m<20;m++){
+                            swiper.appendSlide('<div class="swiper-slide">moreSlide'+(times*20+m+1)+'</div>');
+                        }
+                        swiper.params.virtualTranslate=false;
+                        swiper.allowTouchMove= true;
+                        times++
+                    },1000)
+
+                }
+            },
+
+        }
+    })
+</script>
+</body>
+</html>

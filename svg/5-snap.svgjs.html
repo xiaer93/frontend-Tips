@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>snap-svg.js</title>
+    <script src="./api/snap.svg.js"></script>
+</head>
+<body>
+    <div class="m-svg"></div>
+
+<script>
+    ////自己创建的svg对象为什么不是标准节点!
+    //类似jquery使用方式，通过snap独有的方法添加对象！
+    var svg=Snap(800,600);//如果要抓取已创建的svg，则Snap("#svg")
+    Snap(".m-svg").append(svg);
+
+    //绘制图形
+    var svgCircle=svg.circle(100,100,50);
+    svgCircle.attr({
+        fill:'#bada55',
+        stroke:'#000',
+        strokeWidth:5,//驼峰转横线形式！
+    });
+    //再绘制一个图像
+    var svgAnother=svg.circle(75,100,25);
+    var g=svg.group(svgAnother,svg.circle(125,100,25));
+    g.attr({
+        fill:'#eee'//绘制白色区域可见？？？===非黑色区域可见！
+    });
+
+    //将g指定为svgCircle的遮罩
+    svgCircle.attr({
+        mask:g
+    });
+
+    //svgAnother创建动画
+    svgAnother.animate({r:15},1000);
+    //将g分组中的另一圆，也创建动画
+    g.select('circle:nth-child(2)').animate({r:15},2000);
+</script>
+</body>
+</html>
